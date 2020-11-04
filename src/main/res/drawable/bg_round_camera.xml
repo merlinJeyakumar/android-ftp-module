@@ -21,7 +21,7 @@
         android:top="@dimen/_8sdp"
         android:left="@dimen/_8sdp"
 
-        android:drawable="@drawable/vd_camera_alt_white_24dp"/>
+        android:drawable="@drawable/ic_baseline_photo_camera_24"/>
 
 
 </layer-list>
