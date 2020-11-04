@@ -8,7 +8,6 @@ import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
-import com.google.android.exoplayer2.util.MimeTypes
 import com.google.gson.Gson
 import com.support.R
 import java.io.File
