@@ -43,9 +43,6 @@
 -keepattributes *Annotation*
 
 
--keep public class com.google.vending.licensing.ILicensingService
--keep public class com.android.vending.licensing.ILicensingService
-
 # For native methods, see http://proguard.sourceforge.net/manual/examples.html#native
 -keepclasseswithmembernames class * {
     native <methods>;
@@ -114,16 +111,10 @@
 
 
 
--keepclassmembers class * implements android.os.Parcelable {
-    static android.os.Parcelable$Creator CREATOR;
-}
-
-
 -keepclassmembers class **.R$* {
     public static <fields>;
 }
 
--keep public class * extends android.support.v4.app.Fragment
 -keep public class * extends android.app.Fragment
 
 
@@ -155,27 +146,12 @@
     public void *ButtonClicked(android.view.View);
 }
 
--keep public class * extends com.android.volley.**
--keep public class * extends com.android.volley.toolbox.**
--keep public class * extends applynow.primelending.com.**
-
--keep class org.apache.commons.logging.**
-
-
--keep class com.android.volley.** {*;}
--keep class com.android.volley.toolbox.** {*;}
 -keep class com.android.volley.Response$* { *; }
 -keep class com.android.volley.Request$* { *; }
 -keep class com.android.volley.RequestQueue$* { *; }
 -keep class com.android.volley.toolbox.HurlStack$* { *; }
 -keep class com.android.volley.toolbox.ImageLoader$* { *; }
--keep interface com.android.volley.** { *; }
 
-
--keep class  com.itextpdf.** {*;}
--keep class com.urbanairship.** {*;}
--keep class  com.google.android.** {*;}
--keep class  com.fasterxml.jackson.** {*;}
 
 
 
@@ -194,13 +170,8 @@
 -dontwarn com.squareup.okhttp.internal.huc.**
 -dontwarn com.android.volley.error.**
 
--keep class com.android.volley.error.** { *; }
--keep class com.squareup.okhttp.internal.huc.** { *; }
--keep class okio.** { *; }
 
 
--keep class android.support.design.widget.** { *; }
--keep interface android.support.design.widget.** { *; }
 -dontwarn android.support.design.**
 
 -dontskipnonpubliclibraryclassmembers
@@ -214,26 +185,15 @@
 -dontnote java.awt.**
 -dontwarn com.google.android.gms.**
 
--keep class javax.** { *; }
-
--keep class * extends java.util.ListResourceBundle {
-protected Object[][] getContents();
-}
-
 -dontwarn **CompatHoneycomb
 -dontwarn android.support.v4.**
--keep class android.support.v4.** { *; }
--keep class android.support.v4.app.** { *; }
--keep interface android.support.v4.app.** { *; }
-
 
 -renamesourcefileattribute SourceFile
 -keepattributes SourceFile,LineNumberTable
 
 
 
--keep com.support.base_model.** { *; }
--keepclassmembers class com.support.base_model.** { *; }
+
 
 
 
@@ -257,7 +217,6 @@ protected Object[][] getContents();
 
 -dontwarn retrofit2.**
 -dontwarn org.codehaus.mojo.**
--keep class retrofit2.** { *; }
 
 -keepattributes Signature
 -keepattributes Exceptions
@@ -265,10 +224,6 @@ protected Object[][] getContents();
 -keepclasseswithmembers class * {
     @retrofit2.http.* <methods>;
 }
-
-
-
-
 
 
 
@@ -300,9 +255,6 @@ protected Object[][] getContents();
     java.lang.Object readResolve();
 }
 
-# support v4
--keep class android.support.v4.app.** { *; }
--keep interface android.support.v4.app.** { *; }
 
 #Maintain java native methods
 -keepclasseswithmembernames class * {
@@ -333,35 +285,18 @@ protected Object[][] getContents();
     public static <fields>;
 }
 
-#To keep parcelable classes (to serialize - deserialize objects to sent through Intents)
--keep class * implements android.os.Parcelable {
-  public static final android.os.Parcelable$Creator *;
-}
-
 # Picasso
 -dontwarn com.squareup.okhttp.**
 
-# Gson
--keep class com.google.gson.** { *; }
 
 # Butterknife
 -dontwarn butterknife.internal.**
 -keep class **$$ViewInjector { *; }
--keepnames class * { @butterknife.InjectView *;}
 
 # Retrofit
 -dontwarn javax.naming.**
 -dontwarn retrofit.appengine.**
--keep class com.google.inject.** { *; }
--keep class org.apache.http.** { *; }
--keep class org.apache.james.mime4j.** { *; }
--keep class javax.inject.** { *; }
--keep class retrofit.** { *; }
 
-
-#Facebook Stetho
--keep class com.facebook.stetho.** { *; }
--dontwarn com.facebook.stetho.**
 
 
 # Glide
@@ -381,34 +316,23 @@ protected Object[][] getContents();
 
 # Needed by google-api-client to keep generic types and @Key annotations accessed via reflection
 
--keepclassmembers class * {
-  @com.google.api.client.util.Key <fields>;
-}
-
 -keepattributes Signature,RuntimeVisibleAnnotations,AnnotationDefault
 
 
--keep class com.facebook.stetho.** { *; }
 -dontwarn com.facebook.stetho.**
 
--keep class io.workwell.stetho.** { *; }
 -dontwarn io.workwell.stetho.**
 
--keep class org.jetbrains.annotations.** { *; }
 -dontwarn org.jetbrains.annotations.**
 
 
 -dontwarn okio.**
 -dontwarn com.squareup.okhttp3.**
--keep class com.squareup.okhttp3.** { *; }
--keep interface com.squareup.okhttp3.** { *; }
 -dontwarn javax.annotation.Nullable
 -dontwarn javax.annotation.ParametersAreNonnullByDefault
 
 
 -keepattributes Signature
--keep class org.jivesoftware.smack.** { *; }
--keep class org.jivesoftware.smackx.** { *; }
 
 
 #########################################################
@@ -420,7 +344,4 @@ protected Object[][] getContents();
 }
 -keepclassmembers class kotlin.Metadata {
     public <methods>;
-}
--assumenosideeffects class kotlin.jvm.internal.Intrinsics {
-    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
 }
