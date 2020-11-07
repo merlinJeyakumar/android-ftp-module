@@ -16,7 +16,7 @@ import androidx.lifecycle.Observer
 import com.support.R
 import com.support.baseApp.mvvm.permission.MEasyPermissions
 import com.support.supportBaseClass.CustomProgressDialog
-import com.support.widgets.dialog.MConfirmationDialog
+import com.support.baseApp.mvvm.dialog.MConfirmationDialog
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import org.jetbrains.anko.support.v4.toast

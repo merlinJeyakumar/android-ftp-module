@@ -1,4 +1,4 @@
-package com.support.widgets.dialog
+package com.support.baseApp.mvvm.dialog
 
 import android.app.Dialog
 import android.content.Context

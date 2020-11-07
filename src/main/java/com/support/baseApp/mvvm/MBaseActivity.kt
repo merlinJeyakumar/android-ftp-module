@@ -26,7 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.support.R
 import com.support.dialog.getLoaderDialog
 import com.support.network.ConnectivityLiveData
-import com.support.widgets.dialog.MConfirmationDialog
+import com.support.baseApp.mvvm.dialog.MConfirmationDialog
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.ma_base_layout.*
@@ -35,7 +35,7 @@ import kotlinx.android.synthetic.main.ma_base_layout.*
 abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppCompatActivity(),
     IMBaseView {
 
-    private lateinit var progressDialog: ProgressDialog
+    private var progressDialog: ProgressDialog?=null
     var alertDialog: AlertDialog? = null
     private val TAG = this::class.java.simpleName
 
@@ -408,10 +408,10 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
             message = message,
             isCancellable = isCancelable
         )
-        progressDialog.setOnDismissListener { disposable?.dispose() }
+        progressDialog?.setOnDismissListener { disposable?.dispose() }
     }
 
     fun hideLoader() {
-        progressDialog.dismiss()
+        progressDialog?.dismiss()
     }
 }

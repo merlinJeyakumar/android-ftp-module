@@ -46,7 +46,7 @@ data class InputDialogModel(
     val input: String = ""
 )
 
-fun Activity.getConfirmationDialog(
+fun Activity.getRxConfirmationDialog(
     title: String = "Alert",
     message: String? = null,
     positiveText: String = this.getString(R.string.label_ok),
@@ -71,6 +71,31 @@ fun Activity.getConfirmationDialog(
             materialAlertDialogBuilder.create().dismiss()
         }.show()
     }
+}
+
+fun Activity.getConfirmationDialog(
+    title: String = "Alert",
+    message: String? = null,
+    positiveText: String = this.getString(R.string.label_ok),
+    negativeText: String = this.getString(R.string.label_cancel),
+    isCancellable: Boolean = true,
+    dialogInterface: DialogInterface.OnClickListener
+): AlertDialog? {
+    val materialAlertDialogBuilder = MaterialAlertDialogBuilder(this)
+    materialAlertDialogBuilder.setTitle(title)
+    materialAlertDialogBuilder.setCancelable(isCancellable)
+    message?.let {
+        materialAlertDialogBuilder.setMessage(it)
+    }
+    materialAlertDialogBuilder.setNegativeButton(negativeText) { dialog, which ->
+        dialogInterface.onClick(dialog, which)
+        materialAlertDialogBuilder.create().dismiss()
+    }
+    materialAlertDialogBuilder.setPositiveButton(positiveText) { dialog, which ->
+        dialogInterface.onClick(dialog, which)
+        materialAlertDialogBuilder.create().dismiss()
+    }
+    return materialAlertDialogBuilder.show()
 }
 
 fun Activity.getProgressiveDialog(

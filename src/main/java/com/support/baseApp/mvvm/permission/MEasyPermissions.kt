@@ -17,7 +17,7 @@ import androidx.annotation.StringRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.support.widgets.dialog.MConfirmationDialog
+import com.support.baseApp.mvvm.dialog.MConfirmationDialog
 import java.util.*
 
 object MEasyPermissions {

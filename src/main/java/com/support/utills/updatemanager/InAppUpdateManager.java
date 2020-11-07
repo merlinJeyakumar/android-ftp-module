@@ -34,8 +34,7 @@ import com.google.android.play.core.tasks.Task;
  * </div>
  */
 public class InAppUpdateManager implements LifecycleObserver {
-
-    public static Integer IN_APP_UPDATE_REQUEST_CODE = 10297;
+    public static int MY_REQUEST_CODE = 10295;
 
     /**
      * Callback methods where update events are reported.
