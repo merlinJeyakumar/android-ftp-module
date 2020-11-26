@@ -1,7 +1,10 @@
 package com.support.utills.file
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import okio.Okio
 import java.io.File
@@ -65,4 +68,13 @@ fun File.getVideoWidthHeight(): MutableList<Int> {
     }
     System.gc()
     return heightWidth;
+}
+
+fun Context.scanMediaPath(file: File) {
+    sendBroadcast(
+        Intent(
+            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+            Uri.parse("file://" + file.absolutePath)
+        )
+    )
 }
