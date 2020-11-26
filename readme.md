@@ -1,7 +1,7 @@
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 -----------------------------------------------------------------------------------------------------------
 
-*Support-Module (1.0.0.1)*
+*Support-Module (1.0.0.2)*
 
 #This module belongs to https://merlinjeyakumar@bitbucket.org/merlinjeyakumar/support.git repository
 
