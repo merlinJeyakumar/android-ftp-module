@@ -58,8 +58,8 @@ fun File.getVideoWidthHeight(): MutableList<Int> {
         inputStream = FileInputStream(this.absolutePath)
         retriever.setDataSource(inputStream.fd)
         bmp = retriever.frameAtTime
-        heightWidth[0] = bmp.width
-        heightWidth[1] = bmp.height
+        heightWidth[0] = bmp?.width!!
+        heightWidth[1] = bmp?.height!!
     } catch (e: Exception) {
         e.printStackTrace()
     } finally {

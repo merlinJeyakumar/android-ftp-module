@@ -38,7 +38,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
             .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
             .build()
 
-        manager.registerNetworkCallback(request, networkCallback)
+        manager.registerNetworkCallback(request, networkCallback!!)
 
         return connectivitySubject.toFlowable(BackpressureStrategy.LATEST).doOnCancel {
             tryToUnregisterCallback(manager)
@@ -78,7 +78,7 @@ class MarshmallowNetworkObservingStrategy : NetworkObservingStrategy {
 
     protected fun tryToUnregisterCallback(manager: ConnectivityManager) {
         try {
-            manager.unregisterNetworkCallback(networkCallback)
+            manager.unregisterNetworkCallback(networkCallback!!)
         } catch (exception: Exception) {
             onError(ERROR_MSG_NETWORK_CALLBACK, exception)
         }

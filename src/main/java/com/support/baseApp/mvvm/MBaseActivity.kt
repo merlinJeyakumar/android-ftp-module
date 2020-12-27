@@ -25,7 +25,6 @@ import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import com.support.R
 import com.support.dialog.getLoaderDialog
-import com.support.network.ConnectivityLiveData
 import com.support.baseApp.mvvm.dialog.MConfirmationDialog
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -98,11 +97,6 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
             viewModel = initializeViewModel()
             setUpObserver()
         }
-
-        ConnectivityLiveData(application)
-            .observe(this, Observer { isConnected ->
-                onNetworkConnectionChanged(isConnected)
-            })
 
         setUpChildUI(savedInstanceState)
     }

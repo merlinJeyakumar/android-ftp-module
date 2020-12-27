@@ -6,11 +6,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import com.support.R
-import com.support.network.ConnectivityLiveData
 import kotlinx.android.synthetic.main.web_view_activity.*
-import org.jetbrains.anko.toast
 
 
 class WebViewActivity : AppCompatActivity() {
@@ -26,14 +23,6 @@ class WebViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.web_view_activity)
-
-        ConnectivityLiveData(this.application)
-            .observe(this, Observer { isConnected ->
-                isNetworkAvailable = isConnected
-                if(!isConnected)
-                    toast("Please Connect to Internet")
-
-            })
 
 
         intent?.extras?.getString(WebView_URL)?.let { pageUrl ->
