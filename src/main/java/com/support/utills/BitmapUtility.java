@@ -1,14 +1,20 @@
 package com.support.utills;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+
+import androidx.annotation.DrawableRes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import static com.support.android_watermark.utils.BitmapUtils.resizeBitmap;
+import static com.support.android_watermark.utils.Constant.MAX_IMAGE_SIZE;
 
 public class BitmapUtility {
 
@@ -62,5 +68,10 @@ public class BitmapUtility {
             var5.printStackTrace();
             return false;
         }
+    }
+
+    public Bitmap getBitmapFromDrawable(Context context, @DrawableRes int imageDrawable) {
+        return resizeBitmap(BitmapFactory.decodeResource(context.getResources(),
+                imageDrawable), MAX_IMAGE_SIZE);
     }
 }
