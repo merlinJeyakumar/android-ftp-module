@@ -42,10 +42,10 @@ private const val MiB = (1024 * 1024).toLong()
 private const val KiB: Long = 1024
 private const val TAG = "FileUtils"
 
-fun loadJSONFromAsset(activity: AppCompatActivity, fileName: String): String? {
+fun loadJSONFromAsset(context: Context, fileName: String): String? {
     var json: String? = null
     try {
-        val `is` = activity.assets.open(fileName)
+        val `is` = context.assets.open(fileName)
         val size = `is`.available()
         val buffer = ByteArray(size)
         `is`.read(buffer)
