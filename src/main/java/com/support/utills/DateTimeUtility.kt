@@ -1,5 +1,6 @@
 package com.support.utills
 
+import android.content.Context
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -282,4 +283,13 @@ fun formatDuration(millis: Long): String? {
     /*b.append(":")
     b.append(if (seconds == 0L) "00" else if (seconds < 10) "0$seconds" else seconds.toString())*/
     return b.toString()
+}
+
+fun getCalendarFromTime(TimeHHmm: String): Calendar {
+    val localArray = TimeHHmm.split(":").toTypedArray()
+    val calendar = Calendar.getInstance()
+    calendar[Calendar.HOUR_OF_DAY] = localArray[0].toInt()
+    calendar[Calendar.MINUTE] = localArray[1].toInt()
+    calendar[Calendar.SECOND] = 0
+    return calendar
 }
