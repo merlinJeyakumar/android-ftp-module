@@ -46,4 +46,8 @@ object TextUtills {
     fun getSingularPluralS(size: Int): String {
         return if (size > 1) "s" else ""
     }
+
+    fun getFirebaseKeyInEmail(email: String): String {
+        return email.replace("\\.".toRegex(), "").replace("@".toRegex(), "")
+    }
 }
