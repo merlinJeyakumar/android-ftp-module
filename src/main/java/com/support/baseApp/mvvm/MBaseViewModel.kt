@@ -4,6 +4,7 @@ package com.support.baseApp.mvvm
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import com.support.inline.orElse
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -12,8 +13,10 @@ abstract class MBaseViewModel constructor(application: Application) :
     private val compositeDisposable = CompositeDisposable()
 
     var showLoaderDialog: MutableLiveData<Pair<String, Disposable>> = MutableLiveData()
-    var showProgressDialog:MutableLiveData<String> = MutableLiveData()
-    var hideLoader: MutableLiveData<Unit> = MutableLiveData()
+    var showProgressDialog: MutableLiveData<String> = MutableLiveData()
+    internal var hideLoader: MutableLiveData<Unit> = MutableLiveData()
+    internal var showInformationDialog: MutableLiveData<Pair<String, String>> =
+        MutableLiveData() //Title,Message
 
     var toastMessage: MutableLiveData<String> = MutableLiveData()
 
@@ -31,6 +34,22 @@ abstract class MBaseViewModel constructor(application: Application) :
         if (!compositeDisposable.isDisposed) {
             compositeDisposable.clear()
         }
+    }
+
+    fun showLoader(message: String = "Loading..", disposable: Disposable? = null) {
+        disposable?.let {
+            showLoaderDialog.value = message to disposable
+        }.orElse {
+            showProgressDialog.value = message
+        }
+    }
+
+    fun showInformationDialog(title: String="Alert", message: String) {
+        showInformationDialog.value = Pair(title, message)
+    }
+
+    fun hideLoader() {
+        hideLoader.value = Unit
     }
 
     abstract fun subscribe()

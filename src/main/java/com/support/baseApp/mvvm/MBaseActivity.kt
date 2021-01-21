@@ -26,6 +26,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.support.R
 import com.support.dialog.getLoaderDialog
 import com.support.baseApp.mvvm.dialog.MConfirmationDialog
+import com.support.dialog.getInformationDialog
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.ma_base_layout.*
@@ -34,7 +35,7 @@ import kotlinx.android.synthetic.main.ma_base_layout.*
 abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppCompatActivity(),
     IMBaseView {
 
-    private var progressDialog: ProgressDialog?=null
+    private var progressDialog: ProgressDialog? = null
     var alertDialog: AlertDialog? = null
     private val TAG = this::class.java.simpleName
 
@@ -102,6 +103,10 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
     }
 
     fun setUpObserver() {
+        viewModel.showInformationDialog.observe(this@MBaseActivity, Observer {
+            alertDialog = getInformationDialog(title = it.first, message = it.second)
+        })
+
         viewModel.showLoaderDialog.observe(this@MBaseActivity, Observer {
             showLoader(
                 message = it.first,
