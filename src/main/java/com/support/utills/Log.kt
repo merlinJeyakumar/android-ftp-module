@@ -12,13 +12,13 @@ import java.io.InputStreamReader
 object Log {
     @JvmStatic
     fun i(TAG: String?, message: String?) {
-        Log.d(TAG, message)
+        Log.d(TAG, "$message")
     }
 
     @JvmStatic
     fun e(TAG: String?, message: String?) {
         FirebaseCrashlytics.getInstance().log("ERROR: ${TAG}, $message")
-        Log.e(TAG, message)
+        Log.e(TAG, "$message")
     }
 
     @JvmStatic
@@ -26,7 +26,7 @@ object Log {
         if (BuildConfig.DEBUG) {
             FirebaseCrashlytics.getInstance().log("VERBOSE: ${TAG}, $message")
         }
-        Log.v(TAG, message)
+        Log.v(TAG, "$message")
     }
 
     @JvmStatic
@@ -34,12 +34,12 @@ object Log {
         if (BuildConfig.DEBUG) {
             FirebaseCrashlytics.getInstance().log("DEBUG: ${TAG}, $message")
         }
-        Log.i(TAG, message)
+        Log.i(TAG, "$message")
     }
 
     fun w(TAG: String?, message: String?) {
         FirebaseCrashlytics.getInstance().log("WTF: ${TAG}, $message")
-        Log.i(TAG, message)
+        Log.i(TAG, "$message")
     }
 
     fun Context.getLogFile(): Single<File> {
