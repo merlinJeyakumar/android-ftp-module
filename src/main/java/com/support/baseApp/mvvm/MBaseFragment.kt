@@ -241,4 +241,11 @@ abstract class MBaseFragment<B : ViewDataBinding, VM : MBaseViewModel> : Fragmen
         clearAllCalls()
         super.onDestroy()
     }
+
+    override fun setMenuVisibility(visible: Boolean) {
+        super.setMenuVisibility(visible)
+        if (!visible) {
+            System.gc()
+        }
+    }
 }
