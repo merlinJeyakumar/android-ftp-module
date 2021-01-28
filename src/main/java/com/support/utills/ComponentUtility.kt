@@ -3,6 +3,7 @@ package com.support.utills
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.content.pm.PackageManager
 
 
 fun Activity.isServiceRunning(serviceClass: Class<*>): Boolean {
@@ -14,4 +15,16 @@ fun Activity.isServiceRunning(serviceClass: Class<*>): Boolean {
         }
     }
     return false
+}
+
+fun Context.isAppInstalled(packageName: String): Boolean {
+    val pm: PackageManager = packageManager
+    val appInstalled: Boolean
+    appInstalled = try {
+        pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
+    return appInstalled
 }
