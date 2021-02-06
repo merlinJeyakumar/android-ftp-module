@@ -42,6 +42,16 @@ private const val MiB = (1024 * 1024).toLong()
 private const val KiB: Long = 1024
 private const val TAG = "FileUtils"
 
+@Throws(IOException::class)
+fun Context.readJsonAsset(fileName: String): String {
+    val inputStream = assets.open(fileName)
+    val size = inputStream.available()
+    val buffer = ByteArray(size)
+    inputStream.read(buffer)
+    inputStream.close()
+    return String(buffer, Charsets.UTF_8)
+}
+
 fun loadJSONFromAsset(context: Context, fileName: String): String? {
     var json: String? = null
     try {

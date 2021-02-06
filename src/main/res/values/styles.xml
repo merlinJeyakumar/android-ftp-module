@@ -10,15 +10,6 @@
         <item name="colorSecondary">@color/colorAccent</item>
         <item name="colorOnSecondary">@android:color/white</item>
 
-        <!--<item name="windowActionModeOverlay">true</item>
-        <item name="actionModeBackground">@drawable/ic_top_back</item>
-        <item name="actionOverflowMenuStyle">@style/OverflowMenu</item>
-        <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
-        <item name="android:windowContentTransitions">true</item>
-
-        &lt;!&ndash; Change Overflow Menu ListView Item Height & Property &ndash;&gt;
-        <item name="android:listPreferredItemHeightSmall">36dp</item>-->
-
         <item name="android:fontFamily">@font/singnika_regular</item>
         <item name="android:windowBackground">@android:color/white</item>
 
@@ -47,25 +38,6 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-
-    <!-- Base application theme. -->
-    <style name="HowzB.AppTheme" parent="BaseAppTheme">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/howzBAccentColor</item>
-        <item name="android:fontFamily">@font/singnika_regular</item>
-        <item name="android:windowBackground">@android:color/white</item>
-        <item name="colorSecondary">@color/colorPrimary</item>
-        <item name="colorOnSecondary">@android:color/white</item>
-        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.MediumComponent</item>
-    </style>
-
-    <style name="HowzB.ToolBar" parent="HowzB.AppTheme">
-        <item name="android:textColorPrimary">@color/primaryTextColor</item>
-        <item name="android:textColorSecondary">@color/secondaryTextColor</item>
-    </style>
-
     <style name="AlertDialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="buttonBarPositiveButtonStyle">@style/Alert.Button.Positive</item>
         <item name="buttonBarNegativeButtonStyle">@style/Alert.Button.Neutral</item>
@@ -83,7 +55,7 @@
     <style name="Alert.Button.Neutral" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="backgroundTint">@android:color/transparent</item>
         <item name="rippleColor">@color/colorAccent</item>
-        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -116,7 +88,7 @@
     </style>
 
     <style name="Regular" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/_18sdp</item>
     </style>
@@ -145,7 +117,7 @@
 
 
     <style name="Medium" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:fontFamily">@font/roboto</item>
         <item name="android:textSize">@dimen/_18sdp</item>
     </style>
@@ -178,7 +150,7 @@
 
     <style name="Bold" parent="@android:style/TextAppearance">
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/primaryTextColor</item>
+        <item name="android:textColor">@color/colorPrimaryText</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:textSize">@dimen/_18sdp</item>
     </style>
@@ -229,10 +201,6 @@
 
     <style name="AppTheme.SmallChipRegular" parent="AppTheme.SmallChipWhite">
         <item name="android:fontFamily">@font/signika_light</item>
-    </style>
-
-    <style name="ShapeAppearance.MediumComponent" parent="HowzB.AppTheme">
-        <item name="dialogCornerRadius">@dimen/_12sdp</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />

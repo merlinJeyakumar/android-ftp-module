@@ -19,7 +19,7 @@
             <corners
                 android:topLeftRadius="@dimen/_15sdp"
                 android:topRightRadius="@dimen/_15sdp" />
-            <solid android:color="@color/colorProfile" />
+            <solid android:color="@color/colorPrimary" />
 
         </shape>
     </item>

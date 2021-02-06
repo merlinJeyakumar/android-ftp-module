@@ -54,7 +54,7 @@ public class BadgedTabLayout extends TabLayout {
 
 
         //set default colors from resources
-        badgeBackgroundColors = ContextCompat.getColorStateList(context, R.color.colorPrimaryLight);
+        badgeBackgroundColors = ContextCompat.getColorStateList(context, R.color.colorLightPrimary);
         //      badgeTextColors = ContextCompat.getColorStateList(context, R.color.badge_text_color);
 
         TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.BadgedTabLayout, 0, 0);

@@ -3,6 +3,7 @@ package com.support.utills;
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -51,7 +52,9 @@ public class ViewUtils {
         }
         popupWindow.setFocusable(true);
         popupWindow.setContentView(contentView);
-        popupWindow.setElevation(5);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            popupWindow.setElevation(5F);
+        }
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         popupWindow.setOutsideTouchable(true);
         popupWindow.showAsDropDown(anchorView); // where u want show on view click event popupwindow.showAsDropDown(view, x, y);

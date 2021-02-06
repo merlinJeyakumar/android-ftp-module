@@ -9,8 +9,8 @@ open class BaseEntity {
         /*const val ID = "id"*/
         const val IS_DELETED = "is_deleted"
         const val IS_ACTIVE = "is_active"
-        const val CREATE_AT = "create_at"
-        const val UPDATE_AT = "update_at"
+        const val CREATED_AT = "created_at"
+        const val UPDATED_AT = "updated_at"
     }
 
     @ColumnInfo(name = Fields.IS_ACTIVE)
@@ -18,6 +18,12 @@ open class BaseEntity {
 
     @ColumnInfo(name = Fields.IS_DELETED)
     var isDeleted: Boolean = false
+
+    @ColumnInfo(name = Fields.CREATED_AT)
+    var createdAt: Long = 0L
+
+    @ColumnInfo(name = Fields.UPDATED_AT)
+    var updatedAt: Long = 0L
 
     /*@TypeConverters(DateConverter::class)
     @ColumnInfo(name = Fields.CREATE_AT)

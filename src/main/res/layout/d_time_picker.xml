@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_5sdp"
             android:layout_weight="1"
-            android:backgroundTint="@color/trans_gray"
+            android:backgroundTint="@android:color/darker_gray"
             android:text="Cancel" />
 
         <com.google.android.material.button.MaterialButton

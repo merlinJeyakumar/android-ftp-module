@@ -131,7 +131,7 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
     }
 
     public fun showDataProgress() {
-        getProgressView().setBackgroundColor(ContextCompat.getColor(this, R.color.whiteLight25))
+        getProgressView().setBackgroundColor(ContextCompat.getColor(this, R.color.whiteLight))
         getProgressView().visibility = View.VISIBLE
     }
 
