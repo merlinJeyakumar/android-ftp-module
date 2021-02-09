@@ -17,7 +17,6 @@ import android.provider.MediaStore
 import android.support.constraint.BuildConfig.APPLICATION_ID
 import android.util.Log
 import android.webkit.MimeTypeMap
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.support.BuildConfig
 import okio.Okio
@@ -27,6 +26,7 @@ import java.nio.charset.Charset
 import java.text.DecimalFormat
 import java.util.*
 import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
 const val MIME_TYPE_AUDIO = "audio/*"
@@ -432,8 +432,10 @@ fun isGooglePhotosUri(uri: Uri): Boolean {
  * @return The value of the _data column, which is typically a file path.
  * @author paulburke
  */
-fun getDataColumn(context: Context, uri: Uri?, selection: String?,
-                  selectionArgs: Array<String>?): String? {
+fun getDataColumn(
+        context: Context, uri: Uri?, selection: String?,
+        selectionArgs: Array<String>?
+): String? {
     var cursor: Cursor? = null
     val column = "_data"
     val projection = arrayOf(
@@ -773,4 +775,28 @@ fun addWatermark(mContext: Context, mFileDirectory: File?, tempImageName: String
     // Free up the bitmap memory
     watermark.recycle()
     return saveTempBitmap(mContext, mFileDirectory, tempImageName, bmp)
+}
+
+fun getZipFileContent(zipFilePath: String): MutableList<String> {
+    val mutableList = mutableListOf<String>()
+    try {
+        val zipFile = ZipFile(zipFilePath)
+        val entries: Enumeration<out ZipEntry> = zipFile.entries()
+        while (entries.hasMoreElements()) {
+            val entry = entries.nextElement()
+            val name = entry.name
+            val compressedSize = entry.compressedSize
+            val normalSize = entry.size
+            val type = if (entry.isDirectory) "DIR" else "FILE"
+            if (!entry.isDirectory) {
+                mutableList.add(name)
+            }
+            //println(name)
+            //System.out.format("\t %s - %d - %d\n", type, compressedSize, normalSize)
+        }
+        zipFile.close()
+    } catch (ex: IOException) {
+        System.err.println(ex)
+    }
+    return mutableList
 }
