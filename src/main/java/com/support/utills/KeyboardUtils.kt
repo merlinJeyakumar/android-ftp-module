@@ -11,48 +11,45 @@ import android.widget.EditText
  * Created by Kumar on 08/09/18.
  */
 
-class KeyboardUtils() {
-
-    fun Activity.closeKeyboard(view: View?) {
-        if (view != null) {
-            getInputMethodService(this).hideSoftInputFromWindow(view.windowToken, 0)
-        }
+fun Activity.closeKeyboard(view: View?) {
+    if (view != null) {
+        getInputMethodService(this).hideSoftInputFromWindow(view.windowToken, 0)
     }
+}
 
-    fun Activity.closeKeyboard() {
-        val view = this?.currentFocus
-        if (view != null) {
-            getInputMethodService(this).hideSoftInputFromWindow(
+fun Activity.closeKeyboard() {
+    val view = this?.currentFocus
+    if (view != null) {
+        getInputMethodService(this).hideSoftInputFromWindow(
                 view.windowToken,
                 InputMethodManager.SHOW_FORCED
-            )
-        }
+        )
     }
+}
 
-    fun Activity.openKeyboard(view: View) {
-        Handler().post {
-            getInputMethodService(this).showSoftInput(view, InputMethodManager.SHOW_FORCED)
-        }
+fun Activity.openKeyboard(view: View) {
+    Handler().post {
+        getInputMethodService(this).showSoftInput(view, InputMethodManager.SHOW_FORCED)
     }
+}
 
 
-    fun Activity.showSoftKeyboard(editText: EditText) {
-        try {
-            editText.requestFocus()
-            editText.postDelayed(
+fun Activity.showSoftKeyboard(editText: EditText) {
+    try {
+        editText.requestFocus()
+        editText.postDelayed(
                 {
                     getInputMethodService(this).showSoftInput(editText, 0)
                 }, 200
-            )
-        } catch (npe: NullPointerException) {
-            npe.printStackTrace()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
+        )
+    } catch (npe: NullPointerException) {
+        npe.printStackTrace()
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 
-    fun getInputMethodService(context: Context): InputMethodManager {
-        return context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-    }
+}
+
+fun getInputMethodService(context: Context): InputMethodManager {
+    return context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
 }
