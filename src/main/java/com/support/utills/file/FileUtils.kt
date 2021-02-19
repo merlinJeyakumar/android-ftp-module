@@ -9,6 +9,7 @@ import android.database.Cursor
 import android.database.DatabaseUtils
 import android.graphics.*
 import android.media.MediaMetadataRetriever
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -799,4 +800,10 @@ fun getZipFileContent(zipFilePath: String): MutableList<String> {
         System.err.println(ex)
     }
     return mutableList
+}
+
+fun Context.notifyFileChanges(file:File) {
+    MediaScannerConnection.scanFile(this, arrayOf(file.path), arrayOf("*/*")) { _, uri ->
+
+    }
 }
