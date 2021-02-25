@@ -1,7 +1,8 @@
 package com.support.rxJava
 
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.PublishSubject
+
 
 /**
  * @link(https://android.jlelse.eu/rxbus-kotlin-listen-where-ever-you-want-e6fc0760a4a8)

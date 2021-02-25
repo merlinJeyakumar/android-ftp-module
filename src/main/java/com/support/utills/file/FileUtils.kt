@@ -20,6 +20,16 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.support.BuildConfig
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.core.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
+import okhttp3.internal.Util
+import okio.Buffer
+import okio.BufferedSink
+import okio.BufferedSource
 import okio.Okio
 import java.io.*
 import java.nio.channels.FileChannel
@@ -29,6 +39,7 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
+
 
 const val MIME_TYPE_AUDIO = "audio/*"
 const val MIME_TYPE_TEXT = "text/*"
@@ -802,8 +813,76 @@ fun getZipFileContent(zipFilePath: String): MutableList<String> {
     return mutableList
 }
 
-fun Context.notifyFileChanges(file:File) {
+fun Context.notifyFileChanges(file: File) {
     MediaScannerConnection.scanFile(this, arrayOf(file.path), arrayOf("*/*")) { _, uri ->
 
     }
+}
+
+fun okioFileDownload(url: String, destFile: File): @NonNull Flowable<Pair<Boolean, Any>> {
+    return Flowable.create<Pair<Boolean, Any>>({ emitter ->
+        var sink: BufferedSink? = null
+        var source: BufferedSource? = null
+        val lastProgress = 0
+        try {
+            val request = Request.Builder().url(url).build()
+            val response = OkHttpClient().newCall(request).execute()
+            val body = response.body()
+            val contentLength = Objects.requireNonNull(body)?.contentLength()
+            source = body!!.source()
+            sink = Okio.buffer(Okio.sink(destFile))
+            val sinkBuffer = sink.buffer()
+            var totalBytesRead: Long = 0
+            val bufferSize = 6 * 1024
+            var bytesRead: Long
+            while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
+                sink.emit()
+                totalBytesRead += bytesRead
+                val progress = (totalBytesRead * 100 / contentLength!!).toInt()
+                if (lastProgress != progress) { //reduce_redundant_callback
+                    emitter.onNext(Pair(false, progress))
+                } else {
+                    emitter.onNext(Pair(true, destFile))
+                }
+            }
+            sink.flush()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException --- ", e)
+            emitter.onError(e)
+        } finally {
+            Util.closeQuietly(sink)
+            Util.closeQuietly(source)
+        }
+        emitter.onComplete()
+    }, BackpressureStrategy.DROP)
+
+}
+
+@Throws(IOException::class)
+ fun download(
+        url: @NonNull String,
+        destFile: @NonNull File
+): @NonNull Flowable<Triple<Boolean, Long, File>> {
+     return Flowable.create({ emitter ->
+         val request = Request.Builder().url(url).build()
+         val response: Response = OkHttpClient().newCall(request).execute()
+         val body: ResponseBody = response.body()!!
+         val contentLength = body.contentLength()
+         val source = body.source()
+         val sink = Okio.buffer(Okio.sink(destFile))
+         val sinkBuffer: Buffer = sink.buffer()
+         var totalBytesRead: Long = 0
+         val bufferSize = 8 * 1024
+         var bytesRead: Long
+         while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
+             sink.emit()
+             totalBytesRead += bytesRead
+             val progress = (totalBytesRead * 100 / contentLength)
+             emitter.onNext(Triple(false,totalBytesRead,destFile))
+         }
+         sink.flush()
+         sink.close()
+         source.close()
+         emitter.onNext(Triple(true,100,destFile))
+    }, BackpressureStrategy.DROP)
 }

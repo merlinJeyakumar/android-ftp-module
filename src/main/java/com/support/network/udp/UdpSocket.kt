@@ -1,10 +1,10 @@
 package com.support.network.udp
 
 import android.content.Context
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.Single
-import io.reactivex.functions.Cancellable
+import io.reactivex.rxjava3.core.ObservableEmitter
+
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.functions.Cancellable
 import org.jetbrains.anko.runOnUiThread
 import java.net.DatagramPacket
 import java.net.DatagramSocket
@@ -30,8 +30,8 @@ object UdpSocket {
      * occurs.
      *
      */
-    fun create(port: Int, byteSize: Int): Observable<UdpConnection> {
-        return Observable.create { emitter: ObservableEmitter<UdpConnection> ->
+    fun create(port: Int, byteSize: Int): io.reactivex.rxjava3.core.Observable<UdpConnection> {
+        return io.reactivex.rxjava3.core.Observable.create { emitter: ObservableEmitter<UdpConnection> ->
             try {
                 emitter.onNext(
                     UdpConnection(

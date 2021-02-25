@@ -2,7 +2,7 @@ package com.support.utills
 
 import com.support.encryption.AesCbcWithIntegrity
 import com.support.encryption.AesCbcWithIntegrity.CipherTextIvMac
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 object EncryptionUtils {
     fun String.encryptAES(hash: String): Single<String> {

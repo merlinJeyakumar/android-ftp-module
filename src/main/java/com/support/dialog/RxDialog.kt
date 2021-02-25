@@ -17,7 +17,7 @@ import androidx.appcompat.widget.AppCompatTextView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.support.R
 import com.support.utills.ViewUtils
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 
 data class ProgressiveDialogModel(

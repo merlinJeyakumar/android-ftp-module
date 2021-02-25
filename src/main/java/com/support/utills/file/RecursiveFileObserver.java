@@ -1,20 +1,42 @@
 package com.support.utills.file;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Stack;
 
 import android.os.FileObserver;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.internal.Util;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.BufferedSource;
+import okio.Okio;
+
 /**
  * Enhanced FileObserver to support recursive directory monitoring basically.
- * @author    uestc.Mobius <mobius@toraleap.com>
- * @version  2011.0121
+ *
+ * @author uestc.Mobius <mobius@toraleap.com>
+ * @version 2011.0121
  */
 public class RecursiveFileObserver extends FileObserver {
-    /** Only modification events */
+    /**
+     * Only modification events
+     */
     public static int CHANGES_ONLY = CREATE | DELETE | CLOSE_WRITE | MOVE_SELF | MOVED_FROM | MOVED_TO;
 
     List<SingleFileObserver> mObservers;
@@ -45,8 +67,7 @@ public class RecursiveFileObserver extends FileObserver {
             File path = new File(parent);
             File[] files = path.listFiles();
             if (null == files) continue;
-            for (File f : files)
-            {
+            for (File f : files) {
                 if (f.isDirectory() && !f.getName().equals(".") && !f.getName().equals("..")) {
                     stack.push(f.getPath());
                 }
@@ -71,8 +92,7 @@ public class RecursiveFileObserver extends FileObserver {
 
     @Override
     public void onEvent(int event, String path) {
-        switch (event)
-        {
+        switch (event) {
             case FileObserver.ACCESS:
                 Log.i("RecursiveFileObserver", "ACCESS: " + path);
                 break;
@@ -117,8 +137,9 @@ public class RecursiveFileObserver extends FileObserver {
 
     /**
      * Monitor single directory and dispatch all events to its parent, with full path.
-     * @author    uestc.Mobius <mobius@toraleap.com>
-     * @version  2011.0121
+     *
+     * @author uestc.Mobius <mobius@toraleap.com>
+     * @version 2011.0121
      */
     class SingleFileObserver extends FileObserver {
         String mPath;

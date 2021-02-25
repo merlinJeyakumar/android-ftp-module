@@ -1,23 +1,25 @@
 package com.support.rxJava
 
-import io.reactivex.Scheduler
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.schedulers.Schedulers
+
 
 /**
  * Provides different types of schedulers.
  */
 object Scheduler { // Prevent direct instantiation.
 
-    fun computation(): Scheduler {
+    fun computation(): @NonNull io.reactivex.rxjava3.core.Scheduler? {
         return Schedulers.computation()
     }
 
-    fun io(): Scheduler {
+    fun io(): @NonNull io.reactivex.rxjava3.core.Scheduler? {
         return Schedulers.io()
     }
 
-    fun ui(): Scheduler {
+    fun ui(): Scheduler? {
         return AndroidSchedulers.mainThread()
     }
 
