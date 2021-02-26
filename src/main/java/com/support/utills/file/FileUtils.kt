@@ -22,6 +22,7 @@ import androidx.core.content.FileProvider
 import com.support.BuildConfig
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.*
+import io.reactivex.rxjava3.core.Observable
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -863,26 +864,34 @@ fun okioFileDownload(url: String, destFile: File): @NonNull Flowable<Pair<Boolea
         url: @NonNull String,
         destFile: @NonNull File
 ): @NonNull Flowable<Triple<Boolean, Long, File>> {
-     return Flowable.create({ emitter ->
-         val request = Request.Builder().url(url).build()
-         val response: Response = OkHttpClient().newCall(request).execute()
-         val body: ResponseBody = response.body()!!
-         val contentLength = body.contentLength()
-         val source = body.source()
-         val sink = Okio.buffer(Okio.sink(destFile))
-         val sinkBuffer: Buffer = sink.buffer()
-         var totalBytesRead: Long = 0
-         val bufferSize = 8 * 1024
-         var bytesRead: Long
-         while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
-             sink.emit()
-             totalBytesRead += bytesRead
-             val progress = (totalBytesRead * 100 / contentLength)
-             emitter.onNext(Triple(false,totalBytesRead,destFile))
+     return Flowable.create<Triple<Boolean, Long, File>>({ emitter ->
+         var source: BufferedSource? = null
+         var sink: BufferedSink? = null
+         try {
+             val request = Request.Builder().url(url).build()
+             val response: Response = OkHttpClient().newCall(request).execute()
+             val body: ResponseBody = response.body()!!
+             val contentLength = body.contentLength()
+             source = body.source()
+             sink = Okio.buffer(Okio.sink(destFile))
+             val sinkBuffer: Buffer = sink.buffer()
+             var totalBytesRead: Long = 0
+             val bufferSize = 8 * 1024
+             var bytesRead: Long
+             while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
+                 sink.emit()
+                 totalBytesRead += bytesRead
+                 val progress = (totalBytesRead * 100 / contentLength)
+                 emitter.onNext(Triple(false, totalBytesRead, destFile))
+             }
+             emitter.onComplete()
+             //emitter.onNext(Triple(true, 100, destFile))
+         } catch (e: Exception) {
+             emitter.onError(e)
+         } finally {
+             sink?.flush()
+             sink?.close()
+             source?.close()
          }
-         sink.flush()
-         sink.close()
-         source.close()
-         emitter.onNext(Triple(true,100,destFile))
-    }, BackpressureStrategy.DROP)
+     }, BackpressureStrategy.DROP)
 }
