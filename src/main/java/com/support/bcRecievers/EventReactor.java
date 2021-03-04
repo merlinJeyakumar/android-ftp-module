@@ -51,6 +51,7 @@ public class EventReactor {
         eventsContextMap.put(context.hashCode(), contextEmissionHashList);
     }
 
+    //FIXME: Concurrent Modification while iterate and adding item same time
     public void unsubscribeEvent(Context context) {
         Log.e(TAG, "unsubscribeEvent " + context.hashCode());
         if (!eventsContextMap.containsKey(context.hashCode())) {

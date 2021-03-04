@@ -5,6 +5,8 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.database.Cursor
 import android.database.DatabaseUtils
 import android.graphics.*
@@ -22,7 +24,6 @@ import androidx.core.content.FileProvider
 import com.support.BuildConfig
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.*
-import io.reactivex.rxjava3.core.Observable
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -740,8 +741,7 @@ fun mSaveInputStreamToFile(mContext: Context?, mFileDirectory: File?, mFileName:
     }
 }
 
-fun saveTempBitmap(mContext: Context?, externalCacheDir: File?, mFileName: String?, mBitmap: Bitmap): File? {
-    val file = File(externalCacheDir, mFileName)
+fun saveTempBitmap(file: File, mBitmap: Bitmap): File? {
     file.mkdirs() // don't forget to make the directory
     if (file.exists()) {
         file.delete()
@@ -750,44 +750,6 @@ fun saveTempBitmap(mContext: Context?, externalCacheDir: File?, mFileName: Strin
     mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
     stream.close()
     return file
-}
-
-fun addWatermark(mContext: Context, mFileDirectory: File?, tempImageName: String?, mWaterMarkRes: Int, mFile: File): File? {
-    val w: Int
-    val h: Int
-    val c: Canvas
-    val paint: Paint
-    val bmp: Bitmap
-    val watermark: Bitmap
-    val matrix: Matrix
-    val scale: Float
-    val r: RectF
-    val source = BitmapFactory.decodeFile(mFile.absolutePath)
-    w = source.width
-    h = source.height
-    // Create the new bitmap
-    bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-    paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG or Paint.FILTER_BITMAP_FLAG)
-    // Copy the original bitmap into the new one
-    c = Canvas(bmp)
-    c.drawBitmap(source, 0f, 0f, paint)
-    // Load the watermark
-    watermark = BitmapFactory.decodeResource(mContext.resources, mWaterMarkRes)
-    // Scale the watermark to be approximately 40% of the source image height
-    scale = (h.toFloat() * 0.40 / watermark.height.toFloat()).toFloat()
-    // Create the matrix
-    matrix = Matrix()
-    matrix.postScale(scale, scale)
-    // Determine the post-scaled size of the watermark
-    r = RectF(0F, 0F, watermark.width.toFloat(), watermark.height.toFloat())
-    matrix.mapRect(r)
-    // Move the watermark to the bottom right corner
-    matrix.postTranslate(w - r.width(), h - r.height())
-    // Draw the watermark
-    c.drawBitmap(watermark, matrix, paint)
-    // Free up the bitmap memory
-    watermark.recycle()
-    return saveTempBitmap(mContext, mFileDirectory, tempImageName, bmp)
 }
 
 fun getZipFileContent(zipFilePath: String): MutableList<String> {
@@ -894,4 +856,15 @@ fun okioFileDownload(url: String, destFile: File): @NonNull Flowable<Pair<Boolea
              source?.close()
          }
      }, BackpressureStrategy.DROP)
+}
+
+fun Context.grandUriPermission(
+        intent: Intent,
+        uri: Uri
+){
+    val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    for (resolveInfo in resInfoList) {
+        val packageName = resolveInfo.activityInfo.packageName
+        grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
 }
