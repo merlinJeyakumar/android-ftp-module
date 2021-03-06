@@ -1,111 +1,168 @@
 package com.support.bcRecievers;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 
+import com.support.utills.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/*FIXME: COMPLETE TEST REQUIRED */
 public class EventReactor {
-    private String TAG = "EventReactor";
-    private static Map<String, List<Pair<Integer, EventEmission>>> eventsEmissionsMap = new HashMap<>(); //EventKey, Pair(DefaultHash, Emission)
-    private static Map<Integer, List<Pair<String, Integer>>> eventsContextMap = new HashMap<>(); //ContextHash, Pair(EventKey, EmissionHash)
+    private static String TAG = "MappedEventReactor";
 
-    public void pushEvent(String eventName, Object object) {
-        if (eventsEmissionsMap.containsKey(eventName)) {
-            for (Pair<Integer, EventEmission> integerEventEmissionPair : eventsEmissionsMap.get(eventName)) {
-                if (object != null) {
-                    integerEventEmissionPair.second.onEmit(object);
-                } else {
-                    integerEventEmissionPair.second.onEmit();
-                }
+    private static Map<String, Map<Pair<Integer, Integer>, EventEmission>> primaryMap = new HashMap(); //key: EventName & value: Map(Pair(ContextHashCode & EventHashCode), EventEmissionObject)
+
+    public void pushEvent(String eventName){
+        pushEvent(eventName,null);
+    }
+
+    public void pushEvent(String eventName,
+                                 Object object){
+        if (primaryMap.containsKey(eventName)) {
+            Map<Pair<Integer, Integer>, EventEmission> primaryMapValue = primaryMap.get(eventName);
+
+            ArrayList<EventEmission> eventEmissionList = new ArrayList(primaryMapValue.values());
+            for (EventEmission eventEmission : eventEmissionList) {
+                eventEmission.onEmit(object);
+                eventEmission.onEmit();
             }
-        } else {
-            Log.e(TAG, "Event not found");
+            if (eventEmissionList.isEmpty()) {
+                Log.e(TAG, "push_event_empty_list");
+            }
+        }else{
+            Log.e(TAG, "push_event_name_not_found");
         }
     }
 
-    public void subscribeEvent(Context context, String eventName, EventEmission eventEmission) {
-        Log.e(TAG, "SubscribeEvent eventEmission_HashCode" + eventEmission.hashCode());
-        Log.e(TAG, "SubscribeEvent contextHashCode" + context.hashCode());
-        Log.e(TAG, "SubscribeEvent eventName" + eventName);
+    public void subscribeEvent(Context context,
+                                      String eventName,
+                                      EventEmission eventEmission) {
+        int contextHash = context.hashCode();
 
-        List<Pair<Integer, EventEmission>> eventEmissionList = new ArrayList<>();
-        List<Pair<String, Integer>> contextEmissionHashList = new ArrayList<>();
+        Log.e(TAG, "subscribeEvent - eventName: "+eventName+" eventEmissionHash: "+eventEmission.hashCode());
 
-        if (eventsEmissionsMap.containsKey(eventName)) {
-            if (isEventSubscribed(eventName, eventEmission)) {
-                Log.e(TAG, "Event already subscribed");
-                return;
-            }
-            eventEmissionList = eventsEmissionsMap.get(eventName);
-        }
-        eventEmissionList.add(new Pair(eventEmission.hashCode(), eventEmission));
-        contextEmissionHashList.add(new Pair(eventName, eventEmission.hashCode()));
-
-        eventsEmissionsMap.put(eventName, eventEmissionList);
-        eventsContextMap.put(context.hashCode(), contextEmissionHashList);
+        /* Required to update Primary Map at First*/
+        addOrUpdateSubscription(contextHash,
+                eventName,
+                eventEmission);
     }
 
-    //FIXME: Concurrent Modification while iterate and adding item same time
-    public void unsubscribeEvent(Context context) {
-        Log.e(TAG, "unsubscribeEvent " + context.hashCode());
-        if (!eventsContextMap.containsKey(context.hashCode())) {
-            Log.e(TAG, "No Event Registered");
-            return;
-        }
-        for (Pair<String, Integer> stringIntegerPair : eventsContextMap.get(context.hashCode())) { //Pair(EventKey, EmissionHash)
-            List<Pair<Integer, EventEmission>> eventsList = eventsEmissionsMap.get(stringIntegerPair.first);
-            for (Pair<Integer, EventEmission> integerEventEmissionPair : eventsList) {
-                if (integerEventEmissionPair.first.equals(stringIntegerPair.second)) {
-                    eventsList.remove(integerEventEmissionPair);
-                }
-            }
-            if (eventsList.isEmpty()) {
-                eventsEmissionsMap.remove(stringIntegerPair.first);
-            }
-            return;
-        }
-        Log.e(TAG, "Unsubscribe failed");
+    public void unsubscribeEvent(Context context,String eventName){
+        unsubscribeEvent(context,null,null);
     }
 
-    public void unsubscribeEvent(Context context, EventEmission paraEventEmission) {
-        for (Pair<String, Integer> eventKeyEmissionHashPair : eventsContextMap.get(context.hashCode())) { //Pair(EventKey,EmissionHash)
-            String remEventKey = eventKeyEmissionHashPair.first;
-            Integer remEmissionHash = paraEventEmission.hashCode();
+    /*
+    * Unsubscribe Event by EventName & EventEmissionHashCode
+    * Unsubscribe Event by ContextHashCode
+    * Unsubscribe Event by EventName
+    */
+    public void unsubscribeEvent(Context context,
+                                        String eventName,
+                                        EventEmission eventEmission) {
+        int contextHash = context.hashCode();
 
-            List<Pair<Integer, EventEmission>> remContextEmissionList = eventsEmissionsMap.get(remEventKey);
+        if (eventName != null && eventEmission != null) {
+            //Check Event Subscribed
+            if (primaryMap.containsKey(eventName)) {
+                Log.e(TAG, "unsubscribeEvent - eventName: "+eventName+" eventEmissionHash: "+eventEmission.hashCode());
 
-            for (Pair<Integer, EventEmission> integerEventEmissionPair : remContextEmissionList) { //Pair(DefaultHash, Emission)
-                Integer originEmissionHash = integerEventEmissionPair.first;
-                EventEmission eventEmission = integerEventEmissionPair.second;
+                int eventEmissionHashCode = eventEmission.hashCode();
 
-                if (originEmissionHash.equals(remEmissionHash)) {
-                    if (remContextEmissionList.remove(integerEventEmissionPair)) {
-                        Log.e(TAG, "Specific event unsubscribed " + originEmissionHash);
-                        return;
+                removeEventEmission(contextHash,
+                        eventEmissionHashCode,
+                        eventName);
+            } else {
+                Log.e(TAG, "unsubscribe_event_emission_missing_event");
+            }
+        }else if (eventName == null){
+            Log.e(TAG, "unsubscribeEvent - contextHash: "+contextHash);
+
+            removeContextEvents(contextHash,
+                    null,
+                    1);
+
+        }else if (eventName != null){
+            Log.e(TAG, "unsubscribeEvent - contextHash: "+contextHash+" eventName: "+eventName);
+
+            removeContextEvents(contextHash,
+                    eventName,
+                    2);
+        }else{
+            throw new  IllegalStateException("invalid_unsubscribe_state");
+        }
+    }
+
+    private void removeEventEmission(Integer contextHash,
+                                            Integer eventEmissionHashCode,
+                                            String eventName){
+        Map<Pair<Integer, Integer>, EventEmission> primaryMapValue = primaryMap.get(eventName); //EventMap {Key: Pair(ContextHashCode, EventHashCode), value: EventEmissionObject}
+
+        Pair exactPair = new Pair(contextHash, eventEmissionHashCode); //Prepare Pair(ContextHashCode, EventHashCode)
+
+        //Check pair exist
+        if (primaryMapValue.containsKey(exactPair)) {
+            primaryMapValue.remove(primaryMapValue); //remove
+
+        }else{
+            Log.e(TAG, "unsubscribe_context_missing_event_pair");
+        }
+    }
+
+    private static void removeContextEvents(Integer contextHash,
+                                            String eventName,
+                                            Integer type){
+        // 1-Context 2-Events
+        List<String> primaryMapKeySet = new ArrayList(primaryMap.keySet());
+
+        for (String primaryMapKey : primaryMapKeySet) {
+            if (primaryMap.containsValue(primaryMapKey)) {
+                Map<Pair<Integer, Integer>, EventEmission> innerMapPrimaryMap = primaryMap.get(primaryMapKey);
+
+                List<Pair<Integer, Integer>> arrayList = new ArrayList(innerMapPrimaryMap.values());
+                for (Pair<Integer, Integer> pair : arrayList) {
+                    Integer pairContextHash = pair.first;
+                    Integer pairEventName = pair.second;
+
+                    switch (type) {
+                        case 1: {
+                            if (contextHash.equals(pairContextHash)) {
+                                innerMapPrimaryMap.remove(pair); //remove
+                                break;
+                            }
+                            break;
+                        }
+                        case 2: {
+                            if (eventName.equals(pairEventName)) {
+                                innerMapPrimaryMap.remove(pair); //remove
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
-        Log.e(TAG, "UnsubscribeEvent Failed");
     }
 
-    public boolean isEventSubscribed(String eventName, EventEmission eventEmission) {
-        if (!eventsEmissionsMap.containsKey(eventName)) {
-            return false;
-        }
-        int subscEventHashCode = eventEmission.hashCode();
+    private static void addOrUpdateSubscription(int contextHash,
+                                                String eventName,
+                                                EventEmission eventEmission) {
+        int eventEmissionHash = eventEmission.hashCode();
 
-        for (Pair<Integer, EventEmission> integerEventEmissionPair : eventsEmissionsMap.get(eventName)) { //Pair(DefaultHash, Emission)
-            if (subscEventHashCode == integerEventEmissionPair.first) {
-                return true;
-            }
+
+        Pair<Integer,Integer> primaryMapValueKeyPair = new Pair(contextHash, eventEmissionHash);
+        if (primaryMap.containsKey(eventName)) {
+            Map<Pair<Integer, Integer>, EventEmission> primaryMapValue = primaryMap.get(eventName); //re-use stored map
+
+            primaryMapValue.put(primaryMapValueKeyPair,eventEmission);
+        }else{
+            Map map = new HashMap();
+            map.put(primaryMapValueKeyPair,eventEmission); //create and put value to map
+
+            primaryMap.put(eventName, map); //insert-map-to-primary-map
         }
-        return false;
     }
 }
