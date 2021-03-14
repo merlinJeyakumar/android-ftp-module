@@ -6,7 +6,6 @@ import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.database.Cursor
 import android.database.DatabaseUtils
 import android.graphics.*
@@ -42,6 +41,8 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 
+@JvmField
+var EXPORT_IMAGE_FORMAT: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 
 const val MIME_TYPE_AUDIO = "audio/*"
 const val MIME_TYPE_TEXT = "text/*"
@@ -741,15 +742,18 @@ fun mSaveInputStreamToFile(mContext: Context?, mFileDirectory: File?, mFileName:
     }
 }
 
-fun saveTempBitmap(file: File, mBitmap: Bitmap): File? {
+fun saveTempBitmap(file: File, mBitmap: Bitmap): File {
     file.mkdirs() // don't forget to make the directory
     if (file.exists()) {
         file.delete()
     }
-    val stream = FileOutputStream(file) // overwrites this image every time
-    mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    stream.close()
+    saveTempBitmap(FileOutputStream(file), mBitmap)
     return file
+}
+
+fun saveTempBitmap(stream: OutputStream, bitmap: Bitmap) {
+    bitmap.compress(EXPORT_IMAGE_FORMAT, 50, stream)
+    stream.close()
 }
 
 fun getZipFileContent(zipFilePath: String): MutableList<String> {
@@ -822,46 +826,46 @@ fun okioFileDownload(url: String, destFile: File): @NonNull Flowable<Pair<Boolea
 }
 
 @Throws(IOException::class)
- fun download(
+fun download(
         url: @NonNull String,
         destFile: @NonNull File
 ): @NonNull Flowable<Triple<Boolean, Long, File>> {
-     return Flowable.create<Triple<Boolean, Long, File>>({ emitter ->
-         var source: BufferedSource? = null
-         var sink: BufferedSink? = null
-         try {
-             val request = Request.Builder().url(url).build()
-             val response: Response = OkHttpClient().newCall(request).execute()
-             val body: ResponseBody = response.body()!!
-             val contentLength = body.contentLength()
-             source = body.source()
-             sink = Okio.buffer(Okio.sink(destFile))
-             val sinkBuffer: Buffer = sink.buffer()
-             var totalBytesRead: Long = 0
-             val bufferSize = 8 * 1024
-             var bytesRead: Long
-             while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
-                 sink.emit()
-                 totalBytesRead += bytesRead
-                 val progress = (totalBytesRead * 100 / contentLength)
-                 emitter.onNext(Triple(false, totalBytesRead, destFile))
-             }
-             emitter.onComplete()
-             //emitter.onNext(Triple(true, 100, destFile))
-         } catch (e: Exception) {
-             emitter.onError(e)
-         } finally {
-             sink?.flush()
-             sink?.close()
-             source?.close()
-         }
-     }, BackpressureStrategy.DROP)
+    return Flowable.create<Triple<Boolean, Long, File>>({ emitter ->
+        var source: BufferedSource? = null
+        var sink: BufferedSink? = null
+        try {
+            val request = Request.Builder().url(url).build()
+            val response: Response = OkHttpClient().newCall(request).execute()
+            val body: ResponseBody = response.body()!!
+            val contentLength = body.contentLength()
+            source = body.source()
+            sink = Okio.buffer(Okio.sink(destFile))
+            val sinkBuffer: Buffer = sink.buffer()
+            var totalBytesRead: Long = 0
+            val bufferSize = 8 * 1024
+            var bytesRead: Long
+            while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
+                sink.emit()
+                totalBytesRead += bytesRead
+                val progress = (totalBytesRead * 100 / contentLength)
+                emitter.onNext(Triple(false, totalBytesRead, destFile))
+            }
+            emitter.onComplete()
+            //emitter.onNext(Triple(true, 100, destFile))
+        } catch (e: Exception) {
+            emitter.onError(e)
+        } finally {
+            sink?.flush()
+            sink?.close()
+            source?.close()
+        }
+    }, BackpressureStrategy.DROP)
 }
 
 fun Context.grandUriPermission(
         intent: Intent,
         uri: Uri
-){
+) {
     val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
     for (resolveInfo in resInfoList) {
         val packageName = resolveInfo.activityInfo.packageName
