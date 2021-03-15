@@ -753,6 +753,7 @@ fun saveTempBitmap(file: File, mBitmap: Bitmap): File {
 
 fun saveTempBitmap(stream: OutputStream, bitmap: Bitmap) {
     bitmap.compress(EXPORT_IMAGE_FORMAT, 50, stream)
+    stream.flush()
     stream.close()
 }
 
