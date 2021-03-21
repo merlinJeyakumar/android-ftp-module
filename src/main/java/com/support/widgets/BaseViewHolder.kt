@@ -3,6 +3,7 @@ package com.support.widgets
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import org.jetbrains.anko.toast
+import java.io.File
 
 abstract class BaseViewHolder<M>(
     itemView: View
@@ -16,5 +17,5 @@ abstract class BaseViewHolder<M>(
         itemView.context.toast(text)
     }
 
-    abstract fun bind(position: Int, item: M)
+    abstract fun bind(position: Int, item: File)
 }
