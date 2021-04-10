@@ -27,8 +27,8 @@ import com.support.R
 import com.support.dialog.getLoaderDialog
 import com.support.baseApp.mvvm.dialog.MConfirmationDialog
 import com.support.dialog.getInformationDialog
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.ma_base_layout.*
 
 

@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.support.BuildConfig
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader

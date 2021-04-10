@@ -7,8 +7,9 @@ import androidx.recyclerview.widget.DiffUtil;
 import java.util.Collections;
 import java.util.List;
 
-import io.reactivex.ObservableTransformer;
-import io.reactivex.functions.BiFunction;
+import io.reactivex.rxjava3.core.ObservableTransformer;
+import io.reactivex.rxjava3.functions.BiFunction;
+
 
 public class RxDiffUtil {
 

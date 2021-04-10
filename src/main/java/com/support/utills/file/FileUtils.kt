@@ -5,10 +5,12 @@ import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.database.DatabaseUtils
 import android.graphics.*
 import android.media.MediaMetadataRetriever
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -19,6 +21,16 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.support.BuildConfig
+import io.reactivex.rxjava3.annotations.NonNull
+import io.reactivex.rxjava3.core.*
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody
+import okhttp3.internal.Util
+import okio.Buffer
+import okio.BufferedSink
+import okio.BufferedSource
 import okio.Okio
 import java.io.*
 import java.nio.channels.FileChannel
@@ -28,6 +40,9 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
+
+@JvmField
+var EXPORT_IMAGE_FORMAT: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 
 const val MIME_TYPE_AUDIO = "audio/*"
 const val MIME_TYPE_TEXT = "text/*"
@@ -727,54 +742,19 @@ fun mSaveInputStreamToFile(mContext: Context?, mFileDirectory: File?, mFileName:
     }
 }
 
-fun saveTempBitmap(mContext: Context?, externalCacheDir: File?, mFileName: String?, mBitmap: Bitmap): File? {
-    val file = File(externalCacheDir, mFileName)
+fun saveTempBitmap(file: File, mBitmap: Bitmap): File {
     file.mkdirs() // don't forget to make the directory
     if (file.exists()) {
         file.delete()
     }
-    val stream = FileOutputStream(file) // overwrites this image every time
-    mBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-    stream.close()
+    saveTempBitmap(FileOutputStream(file), mBitmap)
     return file
 }
 
-fun addWatermark(mContext: Context, mFileDirectory: File?, tempImageName: String?, mWaterMarkRes: Int, mFile: File): File? {
-    val w: Int
-    val h: Int
-    val c: Canvas
-    val paint: Paint
-    val bmp: Bitmap
-    val watermark: Bitmap
-    val matrix: Matrix
-    val scale: Float
-    val r: RectF
-    val source = BitmapFactory.decodeFile(mFile.absolutePath)
-    w = source.width
-    h = source.height
-    // Create the new bitmap
-    bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-    paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG or Paint.FILTER_BITMAP_FLAG)
-    // Copy the original bitmap into the new one
-    c = Canvas(bmp)
-    c.drawBitmap(source, 0f, 0f, paint)
-    // Load the watermark
-    watermark = BitmapFactory.decodeResource(mContext.resources, mWaterMarkRes)
-    // Scale the watermark to be approximately 40% of the source image height
-    scale = (h.toFloat() * 0.40 / watermark.height.toFloat()).toFloat()
-    // Create the matrix
-    matrix = Matrix()
-    matrix.postScale(scale, scale)
-    // Determine the post-scaled size of the watermark
-    r = RectF(0F, 0F, watermark.width.toFloat(), watermark.height.toFloat())
-    matrix.mapRect(r)
-    // Move the watermark to the bottom right corner
-    matrix.postTranslate(w - r.width(), h - r.height())
-    // Draw the watermark
-    c.drawBitmap(watermark, matrix, paint)
-    // Free up the bitmap memory
-    watermark.recycle()
-    return saveTempBitmap(mContext, mFileDirectory, tempImageName, bmp)
+fun saveTempBitmap(stream: OutputStream, bitmap: Bitmap) {
+    bitmap.compress(EXPORT_IMAGE_FORMAT, 50, stream)
+    stream.flush()
+    stream.close()
 }
 
 fun getZipFileContent(zipFilePath: String): MutableList<String> {
@@ -799,4 +779,97 @@ fun getZipFileContent(zipFilePath: String): MutableList<String> {
         System.err.println(ex)
     }
     return mutableList
+}
+
+fun Context.notifyFileChanges(file: File) {
+    MediaScannerConnection.scanFile(this, arrayOf(file.path), arrayOf("*/*")) { _, uri ->
+
+    }
+}
+
+fun okioFileDownload(url: String, destFile: File): @NonNull Flowable<Pair<Boolean, Any>> {
+    return Flowable.create<Pair<Boolean, Any>>({ emitter ->
+        var sink: BufferedSink? = null
+        var source: BufferedSource? = null
+        val lastProgress = 0
+        try {
+            val request = Request.Builder().url(url).build()
+            val response = OkHttpClient().newCall(request).execute()
+            val body = response.body()
+            val contentLength = Objects.requireNonNull(body)?.contentLength()
+            source = body!!.source()
+            sink = Okio.buffer(Okio.sink(destFile))
+            val sinkBuffer = sink.buffer()
+            var totalBytesRead: Long = 0
+            val bufferSize = 6 * 1024
+            var bytesRead: Long
+            while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
+                sink.emit()
+                totalBytesRead += bytesRead
+                val progress = (totalBytesRead * 100 / contentLength!!).toInt()
+                if (lastProgress != progress) { //reduce_redundant_callback
+                    emitter.onNext(Pair(false, progress))
+                } else {
+                    emitter.onNext(Pair(true, destFile))
+                }
+            }
+            sink.flush()
+        } catch (e: IOException) {
+            Log.e(TAG, "IOException --- ", e)
+            emitter.onError(e)
+        } finally {
+            Util.closeQuietly(sink)
+            Util.closeQuietly(source)
+        }
+        emitter.onComplete()
+    }, BackpressureStrategy.DROP)
+
+}
+
+@Throws(IOException::class)
+fun download(
+        url: @NonNull String,
+        destFile: @NonNull File
+): @NonNull Flowable<Triple<Boolean, Long, File>> {
+    return Flowable.create<Triple<Boolean, Long, File>>({ emitter ->
+        var source: BufferedSource? = null
+        var sink: BufferedSink? = null
+        try {
+            val request = Request.Builder().url(url).build()
+            val response: Response = OkHttpClient().newCall(request).execute()
+            val body: ResponseBody = response.body()!!
+            val contentLength = body.contentLength()
+            source = body.source()
+            sink = Okio.buffer(Okio.sink(destFile))
+            val sinkBuffer: Buffer = sink.buffer()
+            var totalBytesRead: Long = 0
+            val bufferSize = 8 * 1024
+            var bytesRead: Long
+            while (source.read(sinkBuffer, bufferSize.toLong()).also { bytesRead = it } != -1L) {
+                sink.emit()
+                totalBytesRead += bytesRead
+                val progress = (totalBytesRead * 100 / contentLength)
+                emitter.onNext(Triple(false, totalBytesRead, destFile))
+            }
+            emitter.onComplete()
+            //emitter.onNext(Triple(true, 100, destFile))
+        } catch (e: Exception) {
+            emitter.onError(e)
+        } finally {
+            sink?.flush()
+            sink?.close()
+            source?.close()
+        }
+    }, BackpressureStrategy.DROP)
+}
+
+fun Context.grandUriPermission(
+        intent: Intent,
+        uri: Uri
+) {
+    val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    for (resolveInfo in resInfoList) {
+        val packageName = resolveInfo.activityInfo.packageName
+        grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
 }

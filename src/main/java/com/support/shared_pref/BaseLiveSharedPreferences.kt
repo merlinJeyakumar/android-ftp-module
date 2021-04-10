@@ -1,7 +1,7 @@
-package com.data.utils
+package com.support.shared_pref
 
 import android.content.SharedPreferences
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 class BaseLiveSharedPreferences constructor(private val preferences: SharedPreferences) {
 

@@ -1,12 +1,12 @@
-package com.data.utils
+package com.support.shared_pref
 
 import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DisposableObserver
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.observers.DisposableObserver
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class BaseLivePreference<T> constructor(private val updates: Observable<String>,
                                         private val preferences: SharedPreferences,

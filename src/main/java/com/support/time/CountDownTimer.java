@@ -2,10 +2,12 @@ package com.support.time;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.Observer;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
  * Created by Angelo Moroni on 27/04/17.
@@ -27,8 +29,8 @@ public abstract class CountDownTimer {
     public abstract void onFinish();
 
     public void start(){
-        io.reactivex.Observable.zip(
-                io.reactivex.Observable.range(0, startValue.intValue()), io.reactivex.Observable.interval(1, timeUnit), (integer, aLong) -> {
+        Observable.zip(
+                Observable.range(0, startValue.intValue()), Observable.interval(1, timeUnit), (integer, aLong) -> {
                     return startValue-integer;
                 }
         ).subscribeOn(Schedulers.io())

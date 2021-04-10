@@ -16,10 +16,11 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 
 import androidx.annotation.NonNull;
-import io.reactivex.Observable;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.functions.Function;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 import static com.support.advance_luban.Preconditions.checkNotNull;
 

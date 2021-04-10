@@ -9,7 +9,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.snackbar.Snackbar
 import com.support.R
 import com.support.bcRecievers.ConnectivityReceiver
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 abstract class BaseActivity : AppCompatActivity(), ConnectivityReceiver.ConnectivityReceiverListener,
     BaseView<BasePresenter> {
