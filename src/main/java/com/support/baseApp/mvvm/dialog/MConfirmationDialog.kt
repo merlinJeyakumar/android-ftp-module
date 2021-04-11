@@ -28,12 +28,8 @@ class MConfirmationDialog(
         if (!TextUtils.isEmpty(builder.getMessage())) {
             d_confirmation_message.text = builder.getMessage()
         }
-        if (builder.negativeTextResId != -1) {
-            d_confirmation_cancel.setText(builder.negativeTextResId)
-        }
-        if (builder.positiveTextResId != -1) {
-            d_confirmation_ok.setText(builder.positiveTextResId)
-        }
+        d_confirmation_cancel.setText(builder.negativeTextResId)
+        d_confirmation_ok.setText(builder.positiveTextResId)
 
         d_confirmation_ok.setOnClickListener {
             if (builder.getPositiveClickListener() == null) {
@@ -60,12 +56,9 @@ class MConfirmationDialog(
     }
 
     class Builder(private val context: Context) : Serializable {
-
-        @StringRes
-        var positiveTextResId = -1
+        var positiveTextResId = "Ok"
             private set
-        @StringRes
-        var negativeTextResId = -1
+        var negativeTextResId = "Cancel"
             private set
         private var message = ""
         private var title = ""
@@ -73,6 +66,7 @@ class MConfirmationDialog(
         private var onPositiveButtonClickListener: DialogInterface.OnClickListener? = null
         private var onNegativeButtonClickListener: DialogInterface.OnClickListener? = null
         var showNegative = true
+        var isCancellable = true
 
         fun setMessage(message: String): Builder {
             this.message = message.trim { it <= ' ' }
@@ -85,12 +79,22 @@ class MConfirmationDialog(
         }
 
         fun setPositiveButton(@StringRes textResId: Int): Builder {
-            this.positiveTextResId = textResId
+            this.positiveTextResId = context.getString(textResId)
             return this
         }
 
         fun setNegativeButton(@StringRes textResId: Int): Builder {
-            this.negativeTextResId = textResId
+            this.negativeTextResId = context.getString(textResId)
+            return this
+        }
+
+        fun setPositiveButton(text: String): Builder {
+            this.positiveTextResId = text
+            return this
+        }
+
+        fun setNegativeButton (text: String): Builder {
+            this.negativeTextResId = text
             return this
         }
 

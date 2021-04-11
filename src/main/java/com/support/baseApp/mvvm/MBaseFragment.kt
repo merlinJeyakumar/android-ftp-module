@@ -17,8 +17,8 @@ import com.support.R
 import com.support.baseApp.mvvm.dialog.MConfirmationDialog
 import com.support.baseApp.mvvm.permission.MEasyPermissions
 import com.support.supportBaseClass.CustomProgressDialog
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.disposables.Disposable
 import org.jetbrains.anko.support.v4.toast
 
 
@@ -213,17 +213,14 @@ abstract class MBaseFragment<B : ViewDataBinding, VM : MBaseViewModel> : Fragmen
     }
 
     fun showConfirmationDialog(
-        @StringRes title: Int,
-        @StringRes infoMessage: Int,
-        positiveClickListener: DialogInterface.OnClickListener,
-        negativeClickListener: DialogInterface.OnClickListener
-    ): MConfirmationDialog {
-        val alertBuilder = MConfirmationDialog.Builder(getBaseActivity())
-        alertBuilder.setTitle(resources.getString(title))
-        alertBuilder.setMessage(getString(infoMessage))
-        alertBuilder.setOnPositiveClickListener(positiveClickListener)
-        alertBuilder.setOnNegativeClickListener(negativeClickListener)
-        return alertBuilder.create()
+        title: String = getString(R.string.alert),
+        message: String,
+        positiveText: String = this.getString(R.string.label_ok),
+        negativeText: String = this.getString(R.string.label_cancel),
+        isCancellable: Boolean = true,
+        dialogInterface: DialogInterface.OnClickListener
+    ) {
+        getBaseActivity().showConfirmationDialog(title, message, positiveText, negativeText, isCancellable, dialogInterface)
     }
 
     open fun readIntent() {}

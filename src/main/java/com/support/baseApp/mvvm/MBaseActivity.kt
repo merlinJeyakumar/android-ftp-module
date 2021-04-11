@@ -248,26 +248,34 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
     }
 
     fun showConfirmationDialog(
-        @StringRes title: Int,
-        @StringRes infoMessage: Int
+        title: String,
+        infoMessage: String,
+        positiveText: String = this.getString(R.string.label_ok),
+        negativeText: String = this.getString(R.string.label_cancel),
+        isCancellable: Boolean = true,
+        dialogInterface: DialogInterface.OnClickListener
     ): MConfirmationDialog {
         val alertBuilder = MConfirmationDialog.Builder(this)
-        alertBuilder.setTitle(resources.getString(title))
-        alertBuilder.setMessage(getString(infoMessage))
+        alertBuilder.setTitle(title)
+        alertBuilder.setMessage(infoMessage)
+        alertBuilder.setPositiveButton(positiveText)
+        alertBuilder.setNegativeButton(negativeText)
+        alertBuilder.setOnNegativeClickListener(dialogInterface)
+        alertBuilder.setOnPositiveClickListener(dialogInterface)
+        alertBuilder.isCancellable = isCancellable
         return alertBuilder.create()
     }
 
     fun showConfirmationDialog(
         @StringRes title: Int,
         @StringRes infoMessage: Int,
-        positiveClickListener: DialogInterface.OnClickListener,
-        negativeClickListener: DialogInterface.OnClickListener
+        listener: DialogInterface.OnClickListener
     ): MConfirmationDialog {
         val alertBuilder = MConfirmationDialog.Builder(this)
         alertBuilder.setTitle(resources.getString(title))
         alertBuilder.setMessage(getString(infoMessage))
-        alertBuilder.setOnPositiveClickListener(positiveClickListener)
-        alertBuilder.setOnNegativeClickListener(negativeClickListener)
+        alertBuilder.setOnPositiveClickListener(listener)
+        alertBuilder.setOnNegativeClickListener(listener)
         return alertBuilder.create()
     }
 

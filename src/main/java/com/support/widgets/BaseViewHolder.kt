@@ -17,5 +17,5 @@ abstract class BaseViewHolder<M>(
         itemView.context.toast(text)
     }
 
-    abstract fun bind(position: Int, item: File)
+    abstract fun bind(position: Int, item: M)
 }
