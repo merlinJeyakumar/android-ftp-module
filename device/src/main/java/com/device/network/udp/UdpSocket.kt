@@ -1,4 +1,4 @@
-package com.support.network.udp
+package com.device.network.udp
 
 import android.content.Context
 import io.reactivex.rxjava3.core.ObservableEmitter

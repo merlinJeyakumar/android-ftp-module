@@ -1,4 +1,4 @@
-package com.support.network.udp
+package com.device.network.udp
 
     enum class UdpConnectionStatus {
         CONNECTING,
