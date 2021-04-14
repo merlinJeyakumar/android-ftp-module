@@ -267,13 +267,13 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
     }
 
     fun showConfirmationDialog(
-        @StringRes title: Int,
-        @StringRes infoMessage: Int,
+         title: String,
+         infoMessage: String,
         listener: DialogInterface.OnClickListener
     ): MConfirmationDialog {
         val alertBuilder = MConfirmationDialog.Builder(this)
-        alertBuilder.setTitle(resources.getString(title))
-        alertBuilder.setMessage(getString(infoMessage))
+        alertBuilder.setTitle(title)
+        alertBuilder.setMessage(infoMessage)
         alertBuilder.setOnPositiveClickListener(listener)
         alertBuilder.setOnNegativeClickListener(listener)
         return alertBuilder.create()
