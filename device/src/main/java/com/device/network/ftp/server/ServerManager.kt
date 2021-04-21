@@ -1,12 +1,10 @@
 package com.device.network.ftp.server
 
 import android.content.Context
-import android.content.DialogInterface
 import android.net.wifi.WifiManager
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.device.R
+import org.apache.ftpserver.ConnectionConfigFactory
 import org.apache.ftpserver.FtpServer
 import org.apache.ftpserver.FtpServerFactory
 import org.apache.ftpserver.ftplet.*
@@ -19,16 +17,17 @@ import java.io.File
 import java.io.IOException
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
-import java.util.ArrayList
-import java.util.HashMap
+import java.util.*
 
 class ServerManager private constructor(val context: Context) : IServerManager {
     private val TAG: String = this::class.java.simpleName
 
+    val ANONYMOUS_USER_NAME = "anonymous@example.com"
     var ftpServerFactory = FtpServerFactory()
     lateinit var ftpServer: FtpServer
     var listenerFactory = ListenerFactory()
     var propertiesUserManagerFactory = PropertiesUserManagerFactory()
+    val listeners = mutableListOf<FileTransferServerConnectionListener>()
 
     companion object {
         @JvmStatic
@@ -36,7 +35,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
 
         fun getInstance(context: Context): IServerManager {
 
-            if (INSTANCE !=null) {
+            if (INSTANCE != null) {
                 INSTANCE
             } else {
                 INSTANCE = ServerManager(context).init()
@@ -62,21 +61,34 @@ class ServerManager private constructor(val context: Context) : IServerManager {
     }
 
     override fun createConnection(
-            userPropsFile: File,
-            username: String,
-            password: String,
-            serverBrowserPath: String,
-            port: Int,
-            connectionStatusFTP: (m: ServerConnectionStatusFTP) -> Unit
+        username: String?,
+        password: String?,
+        serverBrowserPath: String,
+        port: Int
     ) {
+        var username = username
+        if (username == null) {
+            username = ANONYMOUS_USER_NAME
+        }
         listenerFactory.port = port
         ftpServerFactory.addListener("default", listenerFactory.createListener())
-        propertiesUserManagerFactory.file = userPropsFile
+        propertiesUserManagerFactory.file = getPropsFile()
         propertiesUserManagerFactory.passwordEncryptor = SaltedPasswordEncryptor()
         val um = propertiesUserManagerFactory.createUserManager()
-        val user = BaseUser()
-        user.name = username
-        user.password = password
+        val user = if (username == ANONYMOUS_USER_NAME) {
+            val connectionConfigFactory = ConnectionConfigFactory()
+            connectionConfigFactory.isAnonymousLoginEnabled = true
+            ftpServerFactory.connectionConfig = connectionConfigFactory.createConnectionConfig()
+            getAnonymousUser()
+        } else {
+            if (password != null) {
+                getAuthenticatedUser(username, password)
+            } else {
+                //connectionStatusFTP?.invoke(ServerConnectionStatusFTP.Error)
+                Log.e(TAG, "password_required")
+                return
+            }
+        }
         user.homeDirectory = serverBrowserPath
         val auths: MutableList<Authority> = ArrayList()
         val auth: Authority = WritePermission()
@@ -93,12 +105,22 @@ class ServerManager private constructor(val context: Context) : IServerManager {
             @Throws(FtpException::class)
             override fun init(ftpletContext: FtpletContext) {
                 //no-op
-                connectionStatusFTP(ServerConnectionStatusFTP.Initialized)
+                updateConnectionStatus(
+                    FileTransferConnection(
+                        FileTransferServerConnectionStatus.Initialized,
+                        null
+                    )
+                )
             }
 
             override fun destroy() {
                 //no-op
-                connectionStatusFTP(ServerConnectionStatusFTP.Disconnected)
+                updateConnectionStatus(
+                    FileTransferConnection(
+                        FileTransferServerConnectionStatus.Disconnected,
+                        null
+                    )
+                )
             }
 
             @Throws(FtpException::class, IOException::class)
@@ -108,26 +130,60 @@ class ServerManager private constructor(val context: Context) : IServerManager {
             }
 
             @Throws(FtpException::class, IOException::class)
-            override fun afterCommand(session: FtpSession, request: FtpRequest, reply: FtpReply): FtpletResult {
+            override fun afterCommand(
+                session: FtpSession,
+                request: FtpRequest,
+                reply: FtpReply
+            ): FtpletResult {
                 Log.e(TAG, "afterCommand ${session.sessionId} ${request.command} ${reply.message}")
                 return FtpletResult.DEFAULT
             }
 
             @Throws(FtpException::class, IOException::class)
             override fun onConnect(session: FtpSession): FtpletResult {
-                connectionStatusFTP(ServerConnectionStatusFTP.Connected)
+                updateConnectionStatus(
+                    FileTransferConnection(
+                        FileTransferServerConnectionStatus.Connected,
+                        null
+                    )
+                )
                 return FtpletResult.DEFAULT
             }
 
             @Throws(FtpException::class, IOException::class)
             override fun onDisconnect(session: FtpSession): FtpletResult {
-                connectionStatusFTP(ServerConnectionStatusFTP.Disconnected)
                 return FtpletResult.DEFAULT
             }
         }
         ftpServerFactory.ftplets = m
+        resumeOrStart()
     }
 
+    private fun getAuthenticatedUser(
+        username: String = "admin",
+        pass: String = "pass"
+    ): BaseUser {
+        val user = BaseUser()
+        user.name = username
+        user.password = pass
+        val auths: MutableList<Authority> = ArrayList()
+        val auth: Authority = WritePermission()
+        auths.add(auth)
+        user.authorities = auths
+        return user
+    }
+
+    private fun getAnonymousUser(): BaseUser {
+        val user = BaseUser()
+        user.name = "anonymous"
+        return user
+    }
+
+    private fun updateConnectionStatus(fileTransferConnection: FileTransferConnection){
+        for (listener in listeners) {
+            listener.whenConnectionStatusChanged(fileTransferConnection)
+        }
+    }
 
     override fun isConnected(): Boolean {
         return !(ftpServer.isStopped || ftpServer.isSuspended)
@@ -160,7 +216,8 @@ class ServerManager private constructor(val context: Context) : IServerManager {
 
     @Throws(InvocationTargetException::class, IllegalAccessException::class)
     private fun wifiHotspotEnabled(context: Context): Boolean {
-        val manager = context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+        val manager =
+            context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
         var method: Method? = null
         try {
             method = manager.javaClass.getDeclaredMethod("isWifiApEnabled")
@@ -172,7 +229,8 @@ class ServerManager private constructor(val context: Context) : IServerManager {
     }
 
     private fun checkWifiOnAndConnected(context: Context): Boolean {
-        val wifiMgr = (context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager)
+        val wifiMgr =
+            (context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager)
         return if (wifiMgr.isWifiEnabled) { // Wi-Fi adapter is ON
             val wifiInfo = wifiMgr.connectionInfo
             wifiInfo.networkId != -1
@@ -181,11 +239,32 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         }
     }
 
-    enum class ServerConnectionStatusFTP {
-        Initialized,
-        Connected,
-        Disconnected,
-        Paused,
-        Error
+    override fun getWiFiIpAddress(): String {
+        try {
+            if (wifiHotspotEnabled(context)) {
+                return "192.168.43.1"
+            }
+        } catch (e: InvocationTargetException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+        }
+        return Utils.getIPAddress(true)
+    }
+
+    override fun addServerConnectionListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener) {
+        if (!listeners.contains(fileTransferServerConnectionListener)) {
+            listeners.add(fileTransferServerConnectionListener)
+        }
+    }
+
+    override fun clearListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener) {
+        if (!listeners.contains(fileTransferServerConnectionListener)) {
+            listeners.remove(fileTransferServerConnectionListener)
+        }
+    }
+
+    override fun getPropsFile(): File {
+        return File(context.filesDir, "connection.properties")
     }
 }

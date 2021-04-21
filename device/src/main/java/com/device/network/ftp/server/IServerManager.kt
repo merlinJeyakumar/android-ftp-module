@@ -5,12 +5,12 @@ import java.io.File
 
 interface IServerManager {
     fun checkConnection(): Boolean
-    fun createConnection(userPropsFile: File,
-                         username: String,
-                         password: String,
-                         serverBrowserPath: String = Environment.getExternalStorageDirectory().path + "/",
-                         port: Int = 2121,
-                         connectionStatusFTP: (m: ServerManager.ServerConnectionStatusFTP) -> Unit)
+    fun createConnection(
+            username: String?=null,
+            password: String?=null,
+            serverBrowserPath: String = Environment.getExternalStorageDirectory().path + "/",
+            port: Int = 2121
+    )
 
     fun isConnected(): Boolean
     fun isPaused(): Boolean
@@ -18,4 +18,8 @@ interface IServerManager {
     fun disconnect()
     fun pause()
     fun isStopped(): Boolean
+    fun getWiFiIpAddress(): String
+    fun addServerConnectionListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener)
+    fun clearListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener)
+    fun getPropsFile(): File
 }
