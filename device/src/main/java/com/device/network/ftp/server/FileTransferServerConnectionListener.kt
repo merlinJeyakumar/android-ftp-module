@@ -12,7 +12,15 @@ enum class FileTransferServerConnectionStatus {
     Error
 }
 
+data class FileTransferServerConnectionProperties(
+    val userName: String,
+    val password: String? = null,
+    val address: String,
+    val port: Int,
+    val exception: Exception?
+)
+
 data class FileTransferConnection(
-    val fileTransferServerConnectionStatus: FileTransferServerConnectionStatus,
-    val exception: Exception?=null
+    val connectionStatus: FileTransferServerConnectionStatus,
+    val connectionProperties: FileTransferServerConnectionProperties
 )

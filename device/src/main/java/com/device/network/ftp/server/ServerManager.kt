@@ -20,6 +20,7 @@ import java.lang.reflect.Method
 import java.util.*
 
 class ServerManager private constructor(val context: Context) : IServerManager {
+    private var fileTransferConnection: FileTransferConnection? = null
     private val TAG: String = this::class.java.simpleName
 
     val ANONYMOUS_USER_NAME = "anonymous@example.com"
@@ -108,7 +109,13 @@ class ServerManager private constructor(val context: Context) : IServerManager {
                 updateConnectionStatus(
                     FileTransferConnection(
                         FileTransferServerConnectionStatus.Initialized,
-                        null
+                        FileTransferServerConnectionProperties(
+                            userName = username,
+                            password = password,
+                            address = getWiFiIpAddress(),
+                            port = port,
+                            exception = null
+                        )
                     )
                 )
             }
@@ -118,7 +125,14 @@ class ServerManager private constructor(val context: Context) : IServerManager {
                 updateConnectionStatus(
                     FileTransferConnection(
                         FileTransferServerConnectionStatus.Disconnected,
-                        null
+                        FileTransferServerConnectionProperties(
+                            userName = username,
+                            password = password,
+                            address = getWiFiIpAddress(),
+                            port = port,
+                            exception = null
+                        )
+
                     )
                 )
             }
@@ -144,7 +158,13 @@ class ServerManager private constructor(val context: Context) : IServerManager {
                 updateConnectionStatus(
                     FileTransferConnection(
                         FileTransferServerConnectionStatus.Connected,
-                        null
+                        FileTransferServerConnectionProperties(
+                            userName = username,
+                            password = password,
+                            address = getWiFiIpAddress(),
+                            port = port,
+                            exception = null
+                        )
                     )
                 )
                 return FtpletResult.DEFAULT
@@ -180,6 +200,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
     }
 
     private fun updateConnectionStatus(fileTransferConnection: FileTransferConnection){
+        this.fileTransferConnection = fileTransferConnection
         for (listener in listeners) {
             listener.whenConnectionStatusChanged(fileTransferConnection)
         }
@@ -237,6 +258,10 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         } else {
             false // Wi-Fi adapter is OFF
         }
+    }
+
+    override fun getConnectionStatus(): FileTransferConnection? {
+        return fileTransferConnection
     }
 
     override fun getWiFiIpAddress(): String {

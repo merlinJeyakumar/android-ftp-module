@@ -43,7 +43,6 @@ dependencies {
     /*api rxJavaDependencies.values()*/
 
     implementation ftpServer.values()
-    implementation project(path: ':domain')
     implementation project(path: ':support')
 
 }

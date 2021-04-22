@@ -22,4 +22,5 @@ interface IServerManager {
     fun addServerConnectionListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener)
     fun clearListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener)
     fun getPropsFile(): File
+    fun getConnectionStatus(): FileTransferConnection?
 }
