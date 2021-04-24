@@ -14,7 +14,6 @@ abstract class BaseBottomSheetDialogFragment : BottomSheetDialogFragment() {
 
         dialog?.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-//        setStyle(DialogFragment.STYLE_NORMAL, R.style.AppTheme_Dialog)
     }
 
 
