@@ -27,14 +27,14 @@ fun Activity.closeKeyboard() {
     }
 }
 
-fun Activity.openKeyboard(view: View) {
+fun Context.openKeyboard(view: View) {
     Handler().post {
         getInputMethodService(this).showSoftInput(view, InputMethodManager.SHOW_FORCED)
     }
 }
 
 
-fun Activity.showSoftKeyboard(editText: EditText) {
+fun Context.showSoftKeyboard(editText: EditText) {
     try {
         editText.requestFocus()
         editText.postDelayed(
