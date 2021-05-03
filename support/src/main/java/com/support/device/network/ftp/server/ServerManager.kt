@@ -1,9 +1,10 @@
-package com.device.network.ftp.server
+package com.support.device.network.ftp.server
 
 import android.content.Context
 import android.net.wifi.WifiManager
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.device.network.ftp.server.*
 import org.apache.ftpserver.ConnectionConfigFactory
 import org.apache.ftpserver.FtpServer
 import org.apache.ftpserver.FtpServerFactory

@@ -1,4 +1,4 @@
-package com.device.connection
+package com.support.device.connection
 
 data class WiFiConnectionModel(
     var isConnected: Boolean = false,

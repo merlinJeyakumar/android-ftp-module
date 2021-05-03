@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.device.connection
+package com.support.device.connection
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -23,8 +23,7 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.text.TextUtils
 import android.util.Log
-import com.device.R
-import com.device.connection.WiFiUtility.*
+import com.support.device.connection.WiFiUtility.*
 import com.support.utills.NetworkUtils.isConnectedToWifi
 import com.support.utills.text.TextUtills.trimBeginEndDoubleQuotes
 import java.util.*
@@ -75,9 +74,6 @@ open class WiFiReceiverManager(
         connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-        if (!context.isConnectedToWifi()) {
-            networkCallback.onLost(null)
-        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             connectivityManager.registerDefaultNetworkCallback(networkCallback)
         } else {
@@ -90,7 +86,7 @@ open class WiFiReceiverManager(
     @SuppressLint("NewApi")
     private var networkCallback: ConnectivityManager.NetworkCallback =
         object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network?) {
+            override fun onAvailable(network: Network) {
                 if (context.isConnectedToWifi()) {
                     val currentWiFiModel = getCurrentWiFiModel()
                     postConnectionState(
@@ -102,7 +98,7 @@ open class WiFiReceiverManager(
                 }
             }
 
-            override fun onLost(network: Network?) {
+            override fun onLost(network: Network) {
                 postConnectionState(WiFiConnectionStatusModel(wiFiConnectionStatus = WiFiConnectionStatus.Disconnected))
             }
         }
@@ -111,9 +107,9 @@ open class WiFiReceiverManager(
         var ssid: String? = null
         val connManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val networkInfo: NetworkInfo =
+        val networkInfo: NetworkInfo? =
             connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-        if (networkInfo.isConnected) {
+        if (networkInfo!!.isConnected) {
             val connectionInfo = wifiManager.connectionInfo
             if (connectionInfo != null && !TextUtils.isEmpty(connectionInfo.ssid)) {
                 ssid = connectionInfo.ssid

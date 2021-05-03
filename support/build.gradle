@@ -54,8 +54,7 @@ dependencies {
     api glideDependencies.values()
     api libraries.anko_jetbrains
     api fireBaseDependencies.firebase_crashlytics
-    //api exo_player.values()
-    //api libraries.duration_picker
+    api ftpServer.values()
 
     kapt kaptProcessorDep.room_compiler
 

@@ -22,6 +22,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
+import com.support.device.connection.ConnectivityLiveData
 import com.google.android.material.snackbar.Snackbar
 import com.support.R
 import com.support.dialog.getLoaderDialog
@@ -103,6 +104,11 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
     }
 
     fun setUpObserver() {
+        ConnectivityLiveData(application)
+            .observe(this, Observer { isConnected ->
+                onNetworkConnectionChanged(isConnected)
+            })
+
         viewModel.showInformationDialog.observe(this@MBaseActivity, Observer {
             alertDialog = getInformationDialog(title = it.first, message = it.second)
         })
@@ -267,8 +273,8 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
     }
 
     fun showConfirmationDialog(
-         title: String,
-         infoMessage: String,
+        title: String,
+        infoMessage: String,
         listener: DialogInterface.OnClickListener
     ): MConfirmationDialog {
         val alertBuilder = MConfirmationDialog.Builder(this)

@@ -1,4 +1,4 @@
-package com.device.connection;
+package com.support.device.connection;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

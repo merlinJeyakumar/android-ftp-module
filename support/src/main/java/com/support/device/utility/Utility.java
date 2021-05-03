@@ -1,4 +1,4 @@
-package com.device.utility;
+package com.support.device.utility;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -34,7 +34,7 @@ public class Utility {
     public static boolean isMockEnabled(Context context, Location location) {
         // returns true if mock location enabled, false if not enabled.
         boolean isMock = false;
-        if (android.os.Build.VERSION.SDK_INT >= 18) { //TODO: required to find out correct procedure to Check Mock Location is Enabled/Disabled
+        if (Build.VERSION.SDK_INT >= 18) { //TODO: required to find out correct procedure to Check Mock Location is Enabled/Disabled
             isMock = location.isFromMockProvider();
             if (!isMock) {
                 AppOpsManager opsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
@@ -59,7 +59,7 @@ public class Utility {
     }
 
     public static void getLocationSettings(Activity mActivity, int requestCode) {
-        mActivity.startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), requestCode);
+        mActivity.startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), requestCode);
     }
 
     public static void getAppSettings(Activity mActivity, int resultCode) {
