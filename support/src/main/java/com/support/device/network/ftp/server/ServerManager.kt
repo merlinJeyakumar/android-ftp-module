@@ -74,7 +74,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         }
         listenerFactory.port = port
         ftpServerFactory.addListener("default", listenerFactory.createListener())
-        propertiesUserManagerFactory.file = getPropsFile()
+        //propertiesUserManagerFactory.file = getPropsFile()
         propertiesUserManagerFactory.passwordEncryptor = SaltedPasswordEncryptor()
         val um = propertiesUserManagerFactory.createUserManager()
         val user = if (username == ANONYMOUS_USER_NAME) {
