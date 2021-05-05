@@ -1,4 +1,4 @@
-package com.device.network.ftp.server
+package com.support.device.network.ftp.server
 
 import android.content.ClipData
 import android.content.ClipboardManager
