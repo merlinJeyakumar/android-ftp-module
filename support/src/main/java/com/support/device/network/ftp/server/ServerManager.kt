@@ -74,7 +74,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         }
         listenerFactory.port = port
         ftpServerFactory.addListener("default", listenerFactory.createListener())
-        //propertiesUserManagerFactory.file = getPropsFile()
+        //propertiesUserManagerFactory.file = getPropsFile() //todo
         propertiesUserManagerFactory.passwordEncryptor = SaltedPasswordEncryptor()
         val um = propertiesUserManagerFactory.createUserManager()
         val user = if (username == ANONYMOUS_USER_NAME) {
@@ -86,7 +86,6 @@ class ServerManager private constructor(val context: Context) : IServerManager {
             if (password != null) {
                 getAuthenticatedUser(username, password)
             } else {
-                //connectionStatusFTP?.invoke(ServerConnectionStatusFTP.Error)
                 Log.e(TAG, "password_required")
                 return
             }
