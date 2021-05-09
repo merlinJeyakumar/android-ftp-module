@@ -117,7 +117,7 @@ open class WiFiReceiverManager(
             return WiFiConnectionModel(
                 isConnected = networkInfo.isConnected,
                 ssid = ssid?.trimBeginEndDoubleQuotes()!!,
-                ipAddress = getHotspotAddress(wifiManager),
+                ipAddress = wifiAddress4(context)!!,
                 networkId = connectionInfo.networkId,
                 state = if (networkInfo.isConnected) WiFiConnectionModel.CONNECTED else WiFiConnectionModel.DISCONNECTED
             )

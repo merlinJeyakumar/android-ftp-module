@@ -1,4 +1,4 @@
-package com.device.network.udp
+package com.support.device.network.udp
 
 import java.net.DatagramPacket
 

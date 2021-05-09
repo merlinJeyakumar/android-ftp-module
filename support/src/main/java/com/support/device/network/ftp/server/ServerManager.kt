@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.wifi.WifiManager
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.device.network.ftp.server.*
+import com.support.device.network.ftp.server.*
 import org.apache.ftpserver.ConnectionConfigFactory
 import org.apache.ftpserver.FtpServer
 import org.apache.ftpserver.FtpServerFactory
@@ -74,7 +74,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         }
         listenerFactory.port = port
         ftpServerFactory.addListener("default", listenerFactory.createListener())
-        propertiesUserManagerFactory.file = getPropsFile()
+        //propertiesUserManagerFactory.file = getPropsFile() //todo
         propertiesUserManagerFactory.passwordEncryptor = SaltedPasswordEncryptor()
         val um = propertiesUserManagerFactory.createUserManager()
         val user = if (username == ANONYMOUS_USER_NAME) {
@@ -86,7 +86,6 @@ class ServerManager private constructor(val context: Context) : IServerManager {
             if (password != null) {
                 getAuthenticatedUser(username, password)
             } else {
-                //connectionStatusFTP?.invoke(ServerConnectionStatusFTP.Error)
                 Log.e(TAG, "password_required")
                 return
             }
@@ -255,7 +254,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
             (context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager)
         return if (wifiMgr.isWifiEnabled) { // Wi-Fi adapter is ON
             val wifiInfo = wifiMgr.connectionInfo
-            wifiInfo.networkId != -1
+            wifiInfo.networkId != -1 || getWiFiIpAddress().isNotEmpty()
         } else {
             false // Wi-Fi adapter is OFF
         }
