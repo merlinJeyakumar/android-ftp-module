@@ -52,11 +52,16 @@ abstract class MActionBarActivity<B : ViewDataBinding, VM : MBaseViewModel> :
     }
 
     fun setHeaderTitle(headerTitle: String) {
-        supportActionBar!!.title = headerTitle
+        supportActionBar?.title = headerTitle
     }
 
     fun getToolbar(): Toolbar? {
         return toolbar
+    }
+
+    fun setAppBarLayout(resLayout:Int){
+        appBarLayoutViewStub.layoutResource = resLayout
+        appBarLayoutViewStub.inflate()
     }
 
     override fun onNetworkStatusChanged(isConnected: Boolean) {
