@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="design_navigation_icon_padding" tools:override="true">24dp</dimen>
+
     <dimen name="card_insets">8dp</dimen>
     <dimen name="reveal_height">500dp</dimen>
 

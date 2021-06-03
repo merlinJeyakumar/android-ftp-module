@@ -2,6 +2,7 @@ package com.support.baseApp.mvvm
 
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import com.support.R
@@ -51,9 +52,17 @@ abstract class MActionBarActivity<B : ViewDataBinding, VM : MBaseViewModel> :
     }
 
     fun setHeaderTitle(headerTitle: String) {
-        supportActionBar!!.title = headerTitle
+        supportActionBar?.title = headerTitle
     }
 
+    fun getToolbar(): Toolbar? {
+        return toolbar
+    }
+
+    fun setAppBarLayout(resLayout:Int){
+        appBarLayoutViewStub.layoutResource = resLayout
+        appBarLayoutViewStub.inflate()
+    }
 
     override fun onNetworkStatusChanged(isConnected: Boolean) {
 
