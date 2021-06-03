@@ -10,7 +10,7 @@ interface IServerManager {
     fun createConnection(
             username: String?=null,
             password: String?=null,
-            serverBrowserPath: String = Environment.getExternalStorageDirectory().path + "/",
+            serverBrowserPath: String = Environment.getExternalStorageDirectory().path,
             port: Int = 2121
     )
 

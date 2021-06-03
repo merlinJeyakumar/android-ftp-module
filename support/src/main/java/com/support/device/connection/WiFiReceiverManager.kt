@@ -128,21 +128,21 @@ open class WiFiReceiverManager(
         )
     }
 
-    fun wifiAddress1(context: Context): String? {
+    fun wifiAddress1(context: Context = this.context): String? {
         val connManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         return getDefaultIpAddresses(connManager)
     }
 
-    fun wifiAddress2(context: Context): String? {
+    fun wifiAddress2(context: Context = this.context): String? {
         return getHotspotAddress(wifiManager)
     }
 
-    fun wifiAddress3(context: Context): String {
+    fun wifiAddress3(context: Context = this.context): String {
         return getDefaultIpAddresses(getConnectionManager(context))
     }
 
-    fun wifiAddress4(context: Context): String {
+    fun wifiAddress4(context: Context = this.context): String {
         return getIpAddress(context, wifiManager)
     }
 

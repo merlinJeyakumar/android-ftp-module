@@ -16,8 +16,25 @@ object Log {
     }
 
     @JvmStatic
+    fun i(message: String?) {
+        Log.d("info", "$message")
+    }
+
+    @JvmStatic
+    fun e( message: String?) {
+        FirebaseCrashlytics.getInstance().log("ERROR, $message")
+        Log.e("ERROR", "$message")
+    }
+
+    @JvmStatic
     fun e(TAG: String?, message: String?) {
         FirebaseCrashlytics.getInstance().log("ERROR: ${TAG}, $message")
+        Log.e(TAG, "$message")
+    }
+
+    @JvmStatic
+    fun e(TAG: String?, message: Throwable?) {
+        FirebaseCrashlytics.getInstance().log("ERROR: ${TAG}, ${message?.localizedMessage}")
         Log.e(TAG, "$message")
     }
 
@@ -35,6 +52,14 @@ object Log {
             FirebaseCrashlytics.getInstance().log("DEBUG: ${TAG}, $message")
         }
         Log.i(TAG, "$message")
+    }
+
+    @JvmStatic
+    fun d(message: String?) {
+        if (BuildConfig.DEBUG) {
+            FirebaseCrashlytics.getInstance().log("DEBUG: $message")
+        }
+        Log.i("verbose", "$message")
     }
 
     fun w(TAG: String?, message: String?) {
