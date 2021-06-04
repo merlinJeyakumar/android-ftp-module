@@ -95,16 +95,14 @@ class ServerManager private constructor(val context: Context) : IServerManager {
     }
 
     private fun getUser(transferServerConnectionProperties: FileTransferServerConnectionProperties): BaseUser {
-        val user  = if (transferServerConnectionProperties.userName != null && transferServerConnectionProperties.password != null) {
+        return if (transferServerConnectionProperties.userName != null && transferServerConnectionProperties.password != null) {
             getAuthenticatedUser()
         } else {
             getAnonymousUser()
         }
-        user.homeDirectory = transferServerConnectionProperties.browsePath
-        return user
     }
 
-    val ftpLetCallback = object : Ftplet {
+    private val ftpLetCallback = object : Ftplet {
         @Throws(FtpException::class)
         override fun init(ftpletContext: FtpletContext) {
             //no-opsdsd
@@ -159,25 +157,6 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         }
     }
 
-    @Throws(FileNotFoundException::class)
-    private fun setupStart(
-            port: Int,
-            propsFile: File,
-            user: BaseUser
-    ) {
-        listenerFactory.port = port
-        ftpServerFactory.addListener("default", listenerFactory.createListener())
-
-        val propertiesUserManagerFactory = PropertiesUserManagerFactory()
-        propertiesUserManagerFactory.file = propsFile
-        propertiesUserManagerFactory.passwordEncryptor = SaltedPasswordEncryptor()
-        val userManager = propertiesUserManagerFactory.createUserManager()
-        ftpServerFactory.userManager = userManager
-        userManager.save(user)
-        ftpServerFactory.ftplets = mutableMapOf<String, Ftplet>("miaFtplet" to ftpLetCallback)
-        ftpServer?.start()
-    }
-
     private fun getAuthenticatedUser(
             username: String = "admin",
             pass: String = "pass"
@@ -185,6 +164,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         val user = BaseUser()
         user.name = username
         user.password = pass
+        user.homeDirectory = Environment.getExternalStorageDirectory().path + "/"
         val auths: MutableList<Authority> = ArrayList()
         val auth: Authority = WritePermission()
         auths.add(auth)
@@ -248,6 +228,47 @@ class ServerManager private constructor(val context: Context) : IServerManager {
     }
 
     @Throws(FileNotFoundException::class)
+    private fun setupStart(
+            port: Int,
+            propsFile: File,
+            user: BaseUser
+    ) {
+        listenerFactory.port = port
+        ftpServerFactory.addListener("default", listenerFactory.createListener())
+        val files = File(Environment.getExternalStorageDirectory().path + "/users.properties")
+        if (!files.exists()) {
+            try {
+                files.createNewFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        val userManagerFactory = PropertiesUserManagerFactory()
+        userManagerFactory.file = propsFile
+        userManagerFactory.passwordEncryptor = SaltedPasswordEncryptor()
+
+        val userManager = userManagerFactory.createUserManager()
+        userManager.save(user)
+        ftpServerFactory.userManager = userManager
+        ftpServerFactory.ftplets = mutableMapOf<String, Ftplet>("miaFtplet" to ftpLetCallback)
+        ftpServer?.start()
+    }
+
+
+    fun getUser(): BaseUser {
+        val user = BaseUser()
+        user.name = "merlin"
+        user.password = "pass"
+        val home = Environment.getExternalStorageDirectory().path + "/"
+        user.homeDirectory = home
+        val auths: MutableList<Authority> = ArrayList()
+        val auth: Authority = WritePermission()
+        auths.add(auth)
+        user.authorities = auths
+        return user
+    }
+
+    @Throws(FileNotFoundException::class)
     private fun setupStart(username: String, password: String, subLoc: String) {
         listenerFactory.port = 2121
         ftpServerFactory.addListener("default", listenerFactory.createListener())
@@ -264,8 +285,8 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         userManagerFactory.passwordEncryptor = SaltedPasswordEncryptor()
         val um = userManagerFactory.createUserManager()
         val user = BaseUser()
-        user.name = "@@@"
-        user.password = "###"
+        user.name = username
+        user.password = password
         val home = Environment.getExternalStorageDirectory().path + "/" + subLoc
         user.homeDirectory = home
         val auths: MutableList<Authority> = ArrayList()
@@ -286,6 +307,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
             }
 
             override fun destroy() {}
+
             @Throws(FtpException::class, IOException::class)
             override fun beforeCommand(session: FtpSession, request: FtpRequest): FtpletResult {
                 return FtpletResult.DEFAULT
@@ -356,10 +378,18 @@ class ServerManager private constructor(val context: Context) : IServerManager {
     }
 
     override fun getPropsFile(): File {
-        val propsFile = File(context.filesDir, "connection.properties")
-        propsFile.apply {
-            this.createNewFile()
+        val files = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path + "/users.properties")
+        } else {
+            File(Environment.getExternalStorageDirectory().path + "/users.properties")
         }
-        return propsFile
+        if (!files.exists()) {
+            try {
+                files.createNewFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+        return files
     }
 }
