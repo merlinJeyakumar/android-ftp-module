@@ -1,16 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.support">
+    package="com.support">
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
-                 android:label="@string/app_name"
-                 android:supportsRtl="true"
-                 android:theme="@style/AppTheme">
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".widgets.webView.WebViewActivity" />
+        <activity
+            android:name=".activity.RequestActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
     </application>
 </manifest>

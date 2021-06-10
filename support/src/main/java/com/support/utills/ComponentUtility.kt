@@ -3,7 +3,9 @@ package com.support.utills
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 
 
 fun Activity.isServiceRunning(serviceClass: Class<*>): Boolean {
@@ -27,4 +29,12 @@ fun Context.isAppInstalled(packageName: String): Boolean {
         false
     }
     return appInstalled
+}
+
+fun openURL(context: Context, url: String) {
+    var url = url
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "http://$url"
+    }
+    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }

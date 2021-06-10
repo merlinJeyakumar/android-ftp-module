@@ -330,4 +330,15 @@
         <item name="android:textSize">@dimen/_10sdp</item>
     </style>
 
+    <style name="Title">
+        <item name="android:textSize">@dimen/_12sdp</item>
+        <item name="android:padding">@dimen/_2sdp</item>
+    </style>
+
+
+    <style name="Subtitle">
+        <item name="android:textSize">@dimen/_8sdp</item>
+        <item name="android:padding">@dimen/_2sdp</item>
+    </style>
+
 </resources>
