@@ -1,4 +1,4 @@
-package com.support.device.network.ftp.server
+package com.nativedevps.ftp.server
 
 interface FileTransferServerConnectionListener {
     fun whenConnectionStatusChanged(fileTransferConnection: FileTransferConnection)

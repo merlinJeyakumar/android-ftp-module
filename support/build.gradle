@@ -55,7 +55,6 @@ dependencies {
     api glideDependencies.values()
     api libraries.anko_jetbrains
     api fireBaseDependencies.firebase_crashlytics
-    api ftpServer.values()
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 

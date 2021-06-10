@@ -1,10 +1,11 @@
-package com.support.device.network.ftp.server
+package com.nativedevps.ftp.server
 
 import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import com.nativedevps.ftp.server.*
 import com.support.device.connection.WiFiReceiverManager
 import org.apache.ftpserver.ConnectionConfigFactory
 import org.apache.ftpserver.FtpServer
@@ -23,7 +24,7 @@ import java.lang.reflect.Method
 import java.util.*
 
 
-class ServerManager private constructor(val context: Context) : IServerManager {
+class ServerManager private constructor(val context: Context) : IServerManager { ///TODO: Add it to seperate module
     private var fileTransferServerConnectionProperties: FileTransferServerConnectionProperties? = null
     private var fileTransferConnection: FileTransferConnection? = null
     private val TAG: String = this::class.java.simpleName

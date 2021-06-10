@@ -1,8 +1,8 @@
-package com.support.device.network.ftp.server
+package com.nativedevps.ftp.server
 
 import android.os.Environment
-import com.support.device.network.ftp.server.FileTransferConnection
-import com.support.device.network.ftp.server.FileTransferServerConnectionListener
+import com.nativedevps.ftp.server.FileTransferConnection
+import com.nativedevps.ftp.server.FileTransferServerConnectionListener
 import java.io.File
 
 interface IServerManager {

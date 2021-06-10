@@ -1,8 +1,13 @@
-package com.support.device.network.ftp.server;
+package com.nativedevps.ftp.server;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Shrey on 10/29/2017.
