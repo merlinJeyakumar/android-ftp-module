@@ -1,4 +1,4 @@
-package com.support.model
+package com.raju.domain.models
 
 import android.os.Parcel
 import android.os.Parcelable
