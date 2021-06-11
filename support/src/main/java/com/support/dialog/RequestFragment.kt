@@ -15,6 +15,7 @@ import com.support.databinding.FRequestBinding
 import com.support.device.utility.DeviceUtility
 import com.support.device.utility.Utility
 import com.support.device.utility.Utility.sendEmail
+import com.support.model.DeveloperModel
 import com.support.utills.ValidationUtility
 import com.support.utills.parseDateFromMilliseconds
 
@@ -140,11 +141,11 @@ class RequestFragment : Fragment() {
     }
 
     private fun getDeveloperEmail(): String {
-        return argRequestModel.developerEmail
+        return argRequestModel.developerModel.developerEmail
     }
 
     private fun getDeveloperPhone(): String {
-        return argRequestModel.developerMobile
+        return argRequestModel.developerModel.developerPhone
     }
 
     private fun isSendingInformation(): Boolean {
@@ -166,22 +167,19 @@ class RequestFragment : Fragment() {
 
     data class RequestModel(
         var name: String,
-        var developerEmail: String,
-        var developerMobile: String,
+        var developerModel: DeveloperModel,
         var requestType: String
     ) : Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readString()!!,
-            parcel.readString()!!,
-            parcel.readString()!!,
+            parcel.readParcelable<DeveloperModel>(DeveloperModel::class.java.classLoader)!!,
             parcel.readString()!!
         ) {
         }
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(name)
-            parcel.writeString(developerEmail)
-            parcel.writeString(developerMobile)
+            parcel.writeParcelable(developerModel, flags)
             parcel.writeString(requestType)
         }
 

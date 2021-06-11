@@ -24,8 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:padding="5dp"
-                app:tint="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_baseline_close_24" />
+                app:srcCompat="@drawable/ic_baseline_close_24"
+                app:tint="@color/colorPrimary" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/appNameAppCompatTextView"
@@ -80,26 +80,28 @@
                     app:srcCompat="@drawable/ic_baseline_link_24"
                     app:tint="@color/colorPrimary" />
 
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:padding="10dp"
+                    app:srcCompat="@drawable/ic_baseline_link_24"
+                    app:tint="@color/colorPrimary" />
+
 
             </FrameLayout>
 
-            <LinearLayout
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/requestSomethingAppCompatTextView"
+                style="@style/TextAppearance.AppCompat.Small"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/requestSomethingAppCompatTextView"
-                    style="@style/TextAppearance.AppCompat.Small"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/colorPrimary"
-                    android:gravity="center"
-                    android:padding="10dp"
-                    android:text="Request something!"
-                    android:textColor="#FFF"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                android:background="@color/colorPrimary"
+                android:gravity="center"
+                android:text="Contact us"
+                android:textAllCaps="false"
+                android:textColor="@color/colorText"
+                android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </layout>

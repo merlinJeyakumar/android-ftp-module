@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import com.support.R
 import com.support.dialog.RequestFragment
+import com.support.model.DeveloperModel
 import com.support.supportBaseClass.BaseActivity
 import com.support.utills.FragmentUtility.replaceFragment
 import com.support.utills.Log
@@ -18,8 +19,7 @@ class RequestActivity : BaseActivity() {
         fun getActivity(
             context: Context,
             name: String,
-            developerEmail: String,
-            developerMobile: String,
+            developerModel:DeveloperModel,
             isInformation: Boolean
         ): Intent {
             return Intent(context,RequestActivity::class.java).apply {
@@ -27,8 +27,7 @@ class RequestActivity : BaseActivity() {
                     RequestFragment.ARG_REQUEST_MODEL,
                     RequestFragment.RequestModel(
                         name = name,
-                        developerEmail = developerEmail,
-                        developerMobile = developerMobile,
+                        developerModel = developerModel,
                         requestType = (if (isInformation) RequestFragment.RequestType.INFORM else RequestFragment.RequestType.REPORT).name
                     )
                 )

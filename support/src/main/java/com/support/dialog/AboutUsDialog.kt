@@ -3,11 +3,14 @@ package com.support.dialog
 import android.view.View
 import androidx.fragment.app.FragmentActivity
 import com.support.databinding.DAboutUsBinding
+import com.support.model.DeveloperModel
 import com.support.supportBaseClass.MBaseDialog
 import com.support.utills.openURL
 
-class ContactUsDialog(
-    private val activity: FragmentActivity
+class AboutUsDialog(
+    private val activity: FragmentActivity,
+    private val developerModel: DeveloperModel,
+    private val contactUs: () -> Unit
 ) : MBaseDialog(activity) {
 
     private lateinit var binding: DAboutUsBinding
@@ -18,9 +21,15 @@ class ContactUsDialog(
     }
 
     override fun prepareUi(view: View) {
-        binding.requestSomethingAppCompatTextView.setOnClickListener {
-            openURL(activity,"www.example.com")
+        binding.profileFrameLayout.setOnClickListener {
+            openURL(activity, developerModel.developerLink)
         }
+        binding.requestSomethingAppCompatTextView.setOnClickListener {
+            contactUs()
+        }
+        binding.ivClose.setOnClickListener {
+            dismiss()
+        }
+        binding.developerAppCompatTextView.text = developerModel.developerName
     }
-
 }
