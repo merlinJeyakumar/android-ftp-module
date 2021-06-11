@@ -1,25 +1,22 @@
-package com.support.activity
+package com.raju.native_developers.ui.activity
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.support.R
-import com.support.dialog.RequestFragment
-import com.support.model.DeveloperModel
+import com.raju.domain.models.DeveloperModel
+import com.raju.native_developers.R
+import com.raju.native_developers.ui.fragment.RequestFragment
 import com.support.supportBaseClass.BaseActivity
 import com.support.utills.FragmentUtility.replaceFragment
-import com.support.utills.Log
 import kotlinx.android.synthetic.main.a_request.*
-import kotlinx.android.synthetic.main.a_request.toolbar
-import kotlinx.android.synthetic.main.ma_header.*
 
-class RequestActivity : BaseActivity() {
+class RequestActivity : BaseActivity() { //TODO: REMOTE_CONFIG_REQUIRED
 
     companion object {
         fun getActivity(
             context: Context,
             name: String,
-            developerModel:DeveloperModel,
+            developerModel: DeveloperModel,
             isInformation: Boolean
         ): Intent {
             return Intent(context,RequestActivity::class.java).apply {

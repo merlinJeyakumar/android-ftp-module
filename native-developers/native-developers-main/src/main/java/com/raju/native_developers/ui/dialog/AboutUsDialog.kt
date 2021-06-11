@@ -1,15 +1,15 @@
-package com.support.dialog
+package com.raju.native_developers.ui.dialog
 
 import android.view.View
 import androidx.fragment.app.FragmentActivity
-import com.support.databinding.DAboutUsBinding
-import com.support.model.DeveloperModel
+import com.raju.native_developers.databinding.DAboutUsBinding
+import com.raju.domain.models.DeveloperModel
 import com.support.supportBaseClass.MBaseDialog
 import com.support.utills.openURL
 
 class AboutUsDialog(
     private val activity: FragmentActivity,
-    private val developerModel: DeveloperModel,
+    private val developerModel: com.raju.domain.models.DeveloperModel,
     private val contactUs: () -> Unit
 ) : MBaseDialog(activity) {
 

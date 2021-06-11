@@ -12,8 +12,5 @@
             android:resource="@array/preloaded_fonts" />
 
         <activity android:name=".widgets.webView.WebViewActivity" />
-        <activity
-            android:name=".activity.RequestActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
     </application>
 </manifest>
