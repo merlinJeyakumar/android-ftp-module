@@ -69,7 +69,7 @@
                     android:padding="10dp"
                     android:text="Jeyakumar - Developer"
                     android:textColor="@color/colorSecondaryText"
-                    android:textSize="@dimen/_9sdp"
+                    android:textSize="@dimen/_15sdp"
                     android:textStyle="normal" />
 
                 <androidx.appcompat.widget.AppCompatImageView

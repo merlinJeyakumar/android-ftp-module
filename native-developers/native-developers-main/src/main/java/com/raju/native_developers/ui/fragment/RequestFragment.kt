@@ -1,7 +1,5 @@
-package com.support.dialog
+package com.raju.native_developers.ui.fragment
 
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -13,9 +11,8 @@ import androidx.fragment.app.Fragment
 import com.support.R
 import com.support.databinding.FRequestBinding
 import com.support.device.utility.DeviceUtility
-import com.support.device.utility.Utility
 import com.support.device.utility.Utility.sendEmail
-import com.support.model.DeveloperModel
+import com.raju.domain.models.DeveloperModel
 import com.support.utills.ValidationUtility
 import com.support.utills.parseDateFromMilliseconds
 
@@ -167,12 +164,13 @@ class RequestFragment : Fragment() {
 
     data class RequestModel(
         var name: String,
-        var developerModel: DeveloperModel,
+        var developerModel: com.raju.domain.models.DeveloperModel,
         var requestType: String
     ) : Parcelable {
         constructor(parcel: Parcel) : this(
             parcel.readString()!!,
-            parcel.readParcelable<DeveloperModel>(DeveloperModel::class.java.classLoader)!!,
+            parcel.readParcelable<com.raju.domain.models.DeveloperModel>(
+                com.raju.domain.models.DeveloperModel::class.java.classLoader)!!,
             parcel.readString()!!
         ) {
         }
