@@ -68,5 +68,4 @@ dependencies {
 
     implementation project(path: ':native-developers-domain')
     implementation project(path: ':support')
-    implementation project(path: ':ftp')
 }

@@ -42,7 +42,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     api project(path: ':support')
-    api project(path: ':ftp')
 
     api rxJavaDependencies.values()
     api networkDependencies.values()
