@@ -24,7 +24,6 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
 
     private lateinit var notify: NotifyCreator
     private val TAG = javaClass.simpleName
-    private val appSettingsRepository = Injection.provideAppDataSource()
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
@@ -113,12 +112,6 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
             e.printStackTrace()
             null
         }
-    }
-
-    override fun onNewToken(token: String) {
-        //handle token
-        Log.e(TAG, "onNewToken $token")
-        appSettingsRepository.setFcmToken(token)
     }
 
     abstract fun getAppIcon(): Int //R.mipmap.ic_launcher
