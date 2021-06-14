@@ -105,6 +105,6 @@ abstract class BaseActivity : AppCompatActivity(), ConnectivityReceiver.Connecti
     }
 
 
-    abstract fun onNetworkStatusChanged(isConnected: Boolean)
+    open fun onNetworkStatusChanged(isConnected: Boolean){}
 
 }

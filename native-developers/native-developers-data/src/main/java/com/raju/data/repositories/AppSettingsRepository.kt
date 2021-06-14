@@ -16,7 +16,7 @@ class AppSettingsRepository(
 ) : IAppSettingsDataSource {
 
     private var liveSharedPreferences: BaseLiveSharedPreferences
-    private val SP_NAME = "prefs_myapp"
+    private val SP_NAME = "native_developers"
 
     companion object {
 
@@ -37,10 +37,7 @@ class AppSettingsRepository(
             INSTANCE = null
         }
 
-        private const val PREFS_USERNAME = "PREFS_USERNAME"
-        private const val PREFS_PASSWORD = "PREFS_PASSWORD"
-        private const val PREFS_IS_AUTHENTICATED = "PREFS_IS_AUTHENTICATED"
-        private const val PREFS_PORT = "PREFS_PORT"
+        private const val PREFS_FCM_TOKEN = "PREFS_FCM_TOKEN"
         private const val PREFS_DEVELOPER_MODEL = "PREFS_DEVELOPER_MODEL"
     }
 
@@ -71,6 +68,14 @@ class AppSettingsRepository(
     }
 
     override fun putDeveloperModel(developerModel: DeveloperModel) {
+        Prefs.putString(PREFS_DEVELOPER_MODEL, plainGson.toJson(developerModel))
+    }
 
+    override fun setFcmToken(token: String) {
+        Prefs.putString(PREFS_FCM_TOKEN,token)
+    }
+
+    fun getFcmToken(): String? {
+        return Prefs.getString(PREFS_FCM_TOKEN,null)
     }
 }

@@ -5,7 +5,16 @@ import com.google.gson.Gson
 import com.raju.data.repositories.AppSettingsRepository
 
 object Injection {
-    fun provideAppDataSource(context: Context): AppSettingsRepository {
-        return AppSettingsRepository.getInstance(context, Gson())
+
+    fun provideContext(): AppController {
+        return AppController.instance
+    }
+
+    fun provideAppDataSource(): AppSettingsRepository {
+        return AppSettingsRepository.getInstance(provideContext(), Gson())
+    }
+
+    fun provideAnalyticsManager(): AnalyticsManager {
+        return AnalyticsManager.getInstance(provideContext(), provideAppDataSource())
     }
 }

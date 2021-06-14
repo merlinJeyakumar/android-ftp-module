@@ -48,6 +48,8 @@ dependencies {
     implementation project(path: ':native-developers-domain')
     implementation project(path: ':native-developers-data')
     implementation project(path: ':support')
+    implementation fireBaseDependencies.values()
+    api notification.values()
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.5.0'

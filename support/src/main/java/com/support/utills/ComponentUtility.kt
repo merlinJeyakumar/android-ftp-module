@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import com.support.R
 
 
 fun Activity.isServiceRunning(serviceClass: Class<*>): Boolean {
@@ -37,4 +38,17 @@ fun openURL(context: Context, url: String) {
         url = "http://$url"
     }
     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+}
+
+fun shareLink(activity: Activity,title:String, body:String,urlTitle:String) {
+    try {
+        val localPackageName = activity.application.packageName
+        val i = Intent(Intent.ACTION_SEND)
+        i.type = "text/plain"
+        i.putExtra(Intent.EXTRA_SUBJECT, activity.resources.getString(R.string.app_name))
+        i.putExtra(Intent.EXTRA_TEXT, "$title\n$body\n$urlTitle:\nhttps://play.google.com/store/apps/details?id=$localPackageName")
+        activity.startActivity(Intent.createChooser(i, "Choose sharing"))
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
 }
