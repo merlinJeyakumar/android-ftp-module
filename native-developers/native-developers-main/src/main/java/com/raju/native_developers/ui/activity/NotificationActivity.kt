@@ -12,7 +12,7 @@ import com.support.utills.shareLink
 class NotificationActivity : BaseActivity() {
     private val TAG = NotificationActivity::class.java.simpleName
 
-    private val analyticsManager by lazy { Injection.provideAnalyticsManager() }
+    private val analyticsManager by lazy { Injection.provideAnalyticsManager(this@NotificationActivity) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
