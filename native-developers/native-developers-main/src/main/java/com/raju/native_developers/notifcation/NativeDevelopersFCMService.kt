@@ -147,3 +147,25 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
         const val CONST_SHARE_APP = "share_app"
     }
 }
+
+
+/*
+* https://fcm.googleapis.com/fcm/send
+*
+* {
+  "to": "/topics/global_development-debug",
+  "data": {
+    "notification": "global",
+    "body": "Lorem Ipsum is simply dummy...,",
+    "link_url":"null",
+    "image_url":"null",
+    "function_mode":"start_praising",
+    "content_available": true,
+    "priority": "high",
+    "title": "Portugal vs. Denmark"
+  }
+}
+*
+*
+* FirebaseMessaging.getInstance().subscribeToTopic("global_${BuildConfig.FLAVOR}-${BuildConfig.BUILD_TYPE}").addOnSuccessListener {} //global_development_debug
+* */
