@@ -11,6 +11,7 @@
         <activity
             android:name="com.raju.native_developers.ui.activity.RequestActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
+        <activity android:name=".ui.activity.NotificationActivity" />
     </application>
 
 </manifest>

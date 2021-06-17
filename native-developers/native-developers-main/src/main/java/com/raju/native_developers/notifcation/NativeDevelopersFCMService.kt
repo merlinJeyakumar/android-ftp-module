@@ -8,6 +8,7 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.raju.native_developers.Injection
+import com.raju.native_developers.notifcation.utility.NativeDevelopersNotificationUtility
 import com.raju.native_developers.ui.activity.NotificationActivity
 import io.karn.notify.Notify
 import io.karn.notify.NotifyCreator
@@ -19,6 +20,7 @@ import java.util.*
 /**
  * developed by merlin-jeyakumar at 14June2021
  * handle notification by it properties
+ * https://merlinjeyakumar.atlassian.net/wiki/spaces/JS/pages/30900236/Notification-Global-Channel+Native+Developers
  **/
 abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
 
@@ -34,16 +36,20 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
             this.notification = remoteMessage.data["notification"]!!
             this.body = remoteMessage.data["body"]!!
             this.title = remoteMessage.data["title"]!!
-            this.imageUrl = remoteMessage.data["image_url"]!!.let { imageUrl -> if (imageUrl != "null") imageUrl else null }
-            this.linkUrl = remoteMessage.data["link_url"]!!.let { linkUrl -> if (linkUrl != "null") linkUrl else null }
-            this.functionMode = remoteMessage.data["function_mode"]!!.let { linkUrl -> if (linkUrl != "null") linkUrl else "" }
+            this.imageUrl =
+                remoteMessage.data["image_url"]!!.let { imageUrl -> if (imageUrl != "null") imageUrl else null }
+            this.linkUrl =
+                remoteMessage.data["link_url"]!!.let { linkUrl -> if (linkUrl != "null") linkUrl else null }
+            this.functionMode =
+                remoteMessage.data["function_mode"]!!.let { linkUrl -> if (linkUrl != "null") linkUrl else "" }
         }
 
         notify = Notify.with(this).header {
             this.icon = getAppIcon()
         }
         if (notificationModel.linkUrl != null
-                || notificationModel.functionMode == CONST_SHARE_APP) {
+            || notificationModel.functionMode == CONST_SHARE_APP
+        ) {
             val reqCode = when (notificationModel.functionMode) {
                 CONST_SHARE_APP -> REQ_SHARE_APP
                 else -> REQ_OPEN_URL
@@ -59,14 +65,34 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
                 else -> notificationModel.linkUrl!!
             }
             showNotification {
-                clickIntent = PendingIntent.getActivity(this@NativeDevelopersFCMService,
-                        reqCode,
-                        Intent(this@NativeDevelopersFCMService, NotificationActivity::class.java).apply {
-                            putExtra(navKey, navValue)
-                            putExtra(CONST_NOTIFICATION_TYPE, navKey)
-                        },
-                        0)
+                clickIntent = PendingIntent.getActivity(
+                    this@NativeDevelopersFCMService,
+                    reqCode,
+                    Intent(
+                        this@NativeDevelopersFCMService,
+                        NotificationActivity::class.java
+                    ).apply {
+                        putExtra(navKey, navValue)
+                        putExtra(CONST_NOTIFICATION_TYPE, navKey)
+                    },
+                    0
+                )
             }
+
+            if ((notificationModel.imageUrl != null)) {
+                notify.asBigPicture {
+                    this.expandedText = remoteMessage.data["body"]
+                    this.image = bitmapFromUrl(notificationModel.imageUrl);
+                }
+            } else {
+                notify.asBigText {
+                    this.title = remoteMessage.data["title"]
+                    this.text = remoteMessage.data["body"]
+                    this.expandedText = remoteMessage.data["body"]
+                    this.bigText = ""
+                }
+            }
+            notify.show(NativeDevelopersNotificationUtility().getNotificationId(navKey))
         } else {
             functionalEvent(notificationModel)
         }
@@ -131,6 +157,12 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
 
     companion object {
         const val CONST_NOTIFICATION_TYPE = "NOTIFICATION_TYPE"
+
+
+        //Notification Code
+        const val NOTIFICATION_DEFAULT = 1000
+        const val NOTIFICATION_OPEN_URL = 1001
+        const val NOTIFICATION_SHARE_APP = 1003
 
         //RequestCode
         const val REQ_OPEN_URL = 1001
