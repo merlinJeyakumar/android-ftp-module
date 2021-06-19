@@ -179,6 +179,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
         connectionConfigFactory.isAnonymousLoginEnabled = true
         ftpServerFactory.connectionConfig = connectionConfigFactory.createConnectionConfig();
         user.name = ANONYMOUS_USER_NAME
+        user.homeDirectory = Environment.getExternalStorageDirectory().path + "/"
         //user.password = ANONYMOUS_USER_PASSWORD
         val auths: MutableList<Authority> = ArrayList()
         val auth: Authority = WritePermission()
@@ -379,11 +380,7 @@ class ServerManager private constructor(val context: Context) : IServerManager {
     }
 
     override fun getPropsFile(): File {
-        val files = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-            File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.path + "/users.properties")
-        } else {
-            File(Environment.getExternalStorageDirectory().path + "/users.properties")
-        }
+        val files = File(Environment.getExternalStorageDirectory().path + "/users.properties")
         if (!files.exists()) {
             try {
                 files.createNewFile()
@@ -391,6 +388,6 @@ class ServerManager private constructor(val context: Context) : IServerManager {
                 e.printStackTrace()
             }
         }
-        return files
+        return  files
     }
 }
