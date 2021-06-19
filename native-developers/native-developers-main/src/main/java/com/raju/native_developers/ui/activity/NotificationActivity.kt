@@ -26,12 +26,12 @@ class NotificationActivity : BaseActivity() {
         }
         Log.e(TAG, "initIntent ${intent.dataString}")
 
-        intent?.getStringExtra(NativeDevelopersFCMService.CONST_OPEN_URL)?.let {
+        intent?.getStringExtra(NativeDevelopersFCMService.CONST_FUNC_OPEN_URL)?.let {
             openURL(this@NotificationActivity, it)
             finish()
         }
 
-        intent?.getStringExtra(NativeDevelopersFCMService.CONST_SHARE_APP)?.let {
+        intent?.getStringExtra(NativeDevelopersFCMService.CONST_FUNC_SHARE_APP)?.let {
             shareLink(this,"title","body_text","hope you like this app")
             finish()
         }

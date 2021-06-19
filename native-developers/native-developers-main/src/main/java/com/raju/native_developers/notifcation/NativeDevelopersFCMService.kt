@@ -7,9 +7,10 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.raju.native_developers.Injection
+import com.google.gson.Gson
 import com.raju.native_developers.notifcation.utility.NativeDevelopersNotificationUtility
 import com.raju.native_developers.ui.activity.NotificationActivity
+import com.support.utills.toJson
 import io.karn.notify.Notify
 import io.karn.notify.NotifyCreator
 import io.karn.notify.entities.Payload
@@ -32,69 +33,66 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
 
         Log.e(TAG, "onMessageReceived ${remoteMessage.data}")
 
-        val notificationModel = NotificationModel().apply {
-            this.notification = remoteMessage.data["notification"]!!
-            this.body = remoteMessage.data["body"]!!
-            this.title = remoteMessage.data["title"]!!
-            this.imageUrl =
-                remoteMessage.data["image_url"]!!.let { imageUrl -> if (imageUrl != "null") imageUrl else null }
-            this.linkUrl =
-                remoteMessage.data["link_url"]!!.let { linkUrl -> if (linkUrl != "null") linkUrl else null }
-            this.functionMode =
-                remoteMessage.data["function_mode"]!!.let { linkUrl -> if (linkUrl != "null") linkUrl else "" }
-        }
-
+        val notificationModel = Gson().fromJson<NotificationModel>(remoteMessage.data.toJson(), NotificationModel::class.java)
         notify = Notify.with(this).header {
             this.icon = getAppIcon()
         }
-        if (notificationModel.linkUrl != null
-            || notificationModel.functionMode == CONST_SHARE_APP
+        if (notificationModel.function_mode == CONST_FUNC_SHARE_APP
+                || notificationModel.function_mode == CONST_FUNC_OPEN_URL
         ) {
-            val reqCode = when (notificationModel.functionMode) {
-                CONST_SHARE_APP -> REQ_SHARE_APP
-                else -> REQ_OPEN_URL
-            }
+            val keyValueCode =
+                    NativeDevelopersNotificationUtility().getNotificationIntent(notificationModel)
 
-            val navKey = when (notificationModel.functionMode) {
-                CONST_SHARE_APP -> CONST_SHARE_APP
-                else -> CONST_OPEN_URL
-            }
-
-            val navValue = when (notificationModel.functionMode) {
-                CONST_SHARE_APP -> ""
-                else -> notificationModel.linkUrl!!
-            }
-            showNotification {
-                clickIntent = PendingIntent.getActivity(
-                    this@NativeDevelopersFCMService,
-                    reqCode,
-                    Intent(
-                        this@NativeDevelopersFCMService,
-                        NotificationActivity::class.java
-                    ).apply {
-                        putExtra(navKey, navValue)
-                        putExtra(CONST_NOTIFICATION_TYPE, navKey)
-                    },
-                    0
-                )
-            }
-
-            if ((notificationModel.imageUrl != null)) {
-                notify.asBigPicture {
-                    this.expandedText = remoteMessage.data["body"]
-                    this.image = bitmapFromUrl(notificationModel.imageUrl);
-                }
-            } else {
-                notify.asBigText {
-                    this.title = remoteMessage.data["title"]
-                    this.text = remoteMessage.data["body"]
-                    this.expandedText = remoteMessage.data["body"]
-                    this.bigText = ""
-                }
-            }
-            notify.show(NativeDevelopersNotificationUtility().getNotificationId(navKey))
+            setNotification(
+                    getPendingIntent(reqCode = keyValueCode.third,
+                            intent = Intent(
+                                    this@NativeDevelopersFCMService,
+                                    NotificationActivity::class.java
+                            ).apply {
+                                putExtra(keyValueCode.first, keyValueCode.second)
+                                putExtra(CONST_NOTIFICATION_TYPE, keyValueCode.first)
+                            })
+                    ,
+                    if (!notificationModel.image_url.isNullOrEmpty()) {
+                        getPictureNotification(body = notificationModel.body,
+                                imageUrl = notificationModel.image_url)
+                    } else {
+                        notificationModel.let {
+                            getTextNotification(
+                                    it.title,
+                                    it.body,
+                                    it.body
+                            )
+                        }
+                    }
+            )
+            showNotification(NativeDevelopersNotificationUtility().getNotificationId(keyValueCode.first))
         } else {
             functionalEvent(notificationModel)
+        }
+    }
+
+    fun getPendingIntent(
+            reqCode: Int,
+            intent: Intent,
+            flags: Int = 0
+    ): PendingIntent {
+        return PendingIntent.getActivity(
+                this@NativeDevelopersFCMService,
+                reqCode,
+                intent,
+                flags
+        )
+    }
+
+
+    fun setNotification(
+            pendingIntent: PendingIntent? = null,
+            notifyCreator: NotifyCreator
+    ) {
+        notify.meta {
+            clickIntent = pendingIntent
+            notifyCreator
         }
     }
 
@@ -120,9 +118,8 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
         }
     }
 
-    fun showNotification(meta: Payload.Meta.() -> Unit) {
-        notify.meta { meta }
-        notify.show()
+    fun showNotification(notificationId: Int) {
+        notify.show(notificationId)
     }
 
     private fun bitmapFromUrl(imageUrl: String?): Bitmap? {
@@ -148,16 +145,17 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
             flags: Int = 0
     ): NotifyCreator {
         return notify.meta {
-            clickIntent = PendingIntent.getActivity(this@NativeDevelopersFCMService,
+            clickIntent = PendingIntent.getActivity(
+                    this@NativeDevelopersFCMService,
                     reqCode,
                     intent,
-                    flags)
+                    flags
+            )
         }
     }
 
     companion object {
         const val CONST_NOTIFICATION_TYPE = "NOTIFICATION_TYPE"
-
 
         //Notification Code
         const val NOTIFICATION_DEFAULT = 1000
@@ -165,11 +163,12 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
         const val NOTIFICATION_SHARE_APP = 1003
 
         //RequestCode
-        const val REQ_OPEN_URL = 1001
-        const val REQ_SHARE_APP = 1002
+        const val REQ_ID_FUNC_OPEN_URL = 1001
+        const val REQ_ID_FUNC_SHARE_APP = 1002
 
-        const val CONST_OPEN_URL = "open_url"
-        const val CONST_SHARE_APP = "share_app"
+        //Navigation Intent Name
+        const val CONST_FUNC_OPEN_URL = "open_url"
+        const val CONST_FUNC_SHARE_APP = "share_app"
     }
 }
 
@@ -185,7 +184,6 @@ abstract class NativeDevelopersFCMService : FirebaseMessagingService() {
     "link_url":"null",
     "image_url":"null",
     "function_mode":"start_praising",
-    "content_available": true,
     "priority": "high",
     "title": "Portugal vs. Denmark"
   }

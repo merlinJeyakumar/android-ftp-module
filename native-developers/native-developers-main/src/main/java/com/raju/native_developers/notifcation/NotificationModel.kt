@@ -1,10 +1,10 @@
 package com.raju.native_developers.notifcation
 
 class NotificationModel {
-    var functionMode: String = ""
     var notification: String = ""
-    var title: String = ""
     var body: String = ""
-    var imageUrl: String? = null
-    var linkUrl: String? = null
+    var link_url: String = ""
+    var image_url: String = ""
+    var function_mode: String = ""
+    var title: String = ""
 }
