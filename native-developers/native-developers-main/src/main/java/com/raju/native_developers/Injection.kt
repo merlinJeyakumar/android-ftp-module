@@ -9,7 +9,7 @@ object Injection {
         return AppSettingsRepository.getInstance(context, Gson())
     }
 
-    fun provideAnalyticsManager(context:Context): AnalyticsManager {
+    fun provideAnalyticsManager(context:Context): NativeDevelopersAuthenticationManager {
         return AnalyticsManager.getInstance(context, provideAppDataSource(context))
     }
 }

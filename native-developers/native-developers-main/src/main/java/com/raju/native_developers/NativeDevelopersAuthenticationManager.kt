@@ -10,7 +10,7 @@ import com.raju.native_developers.analytics.AnalyticsItemNames
 import com.raju.native_developers.analytics.AnalyticsItemTypes
 
 @SuppressLint("MissingPermission")
-class AnalyticsManager(
+class NativeDevelopersAuthenticationManager(
         private val context: Context,
         private val appSettingsRepository: AppSettingsRepository
 ) {
