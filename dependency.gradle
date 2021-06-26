@@ -37,7 +37,7 @@ ext.versions = [
         firebase_analytics    : "18.0.0",
         firebase_config       : "20.0.2",
         firebase_crashlytics  : "17.1.0",
-        firebase_database     : "19.6.0",
+        firebase_database     : "20.0.0",
         google_play_core      : "1.6.4",
         lifecycle             : "2.2.0",
         room                  : "2.3.0-alpha02",
@@ -62,7 +62,8 @@ ext.versions = [
         scale_image_view      : "3.10.0",
         timber                : "4.5.1",
         event_bus             : "3.2.0",
-        firebase_authentication: "21.0.1"
+        firebase_authentication: "21.0.1",
+        firebase_referral: "2.2"
 ]
 
 
@@ -116,7 +117,12 @@ ext.fireBaseDependencies = [
         firebase_analytics  : "com.google.firebase:firebase-analytics:$versions.firebase_analytics",
         firebase_config     : "com.google.firebase:firebase-config:$versions.firebase_config",
         firebase_crashlytics: "com.google.firebase:firebase-crashlytics:$versions.firebase_crashlytics",
-        firebase_auth       : "com.google.firebase:firebase-auth:$versions.firebase_authentication"
+        firebase_auth       : "com.google.firebase:firebase-auth:$versions.firebase_authentication",
+        firebase_referral   : "com.android.installreferrer:installreferrer:$versions.firebase_referral"
+]
+
+ext.cloudDataBase = [
+        firebase_database: "com.google.firebase:firebase-database:$versions.firebase_database"
 ]
 
 ext.roomDependencies = [

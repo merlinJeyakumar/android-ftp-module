@@ -5,12 +5,13 @@ import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
 import com.raju.domain.datasources.IAppSettingsDataSource
 import com.raju.domain.models.DeveloperModel
+import com.raju.domain.models.ReferralModel
 import com.support.inline.orElse
 import com.support.shared_pref.BaseLiveSharedPreferences
 import com.support.shared_pref.Prefs
 
 
-class AppSettingsRepository(
+class NativeDevelopersAppSettingsRepository(
     private val applicationContext: Context,
     private val plainGson: Gson
 ) : IAppSettingsDataSource {
@@ -20,13 +21,13 @@ class AppSettingsRepository(
 
     companion object {
 
-        private var INSTANCE: AppSettingsRepository? = null
+        private var INSTANCE: NativeDevelopersAppSettingsRepository? = null
 
         @JvmStatic
-        fun getInstance(applicationContext: Context, plainGson: Gson): AppSettingsRepository {
+        fun getInstance(applicationContext: Context, plainGson: Gson): NativeDevelopersAppSettingsRepository {
             if (INSTANCE == null) {
-                synchronized(AppSettingsRepository::javaClass) {
-                    INSTANCE = AppSettingsRepository(applicationContext, plainGson)
+                synchronized(NativeDevelopersAppSettingsRepository::javaClass) {
+                    INSTANCE = NativeDevelopersAppSettingsRepository(applicationContext, plainGson)
                 }
             }
             return INSTANCE!!
@@ -38,7 +39,9 @@ class AppSettingsRepository(
         }
 
         private const val PREFS_FCM_TOKEN = "PREFS_FCM_TOKEN"
+        private const val PREFS_REFERRAL_MODEL = "PREFS_REFERRAL_MODEL"
         private const val PREFS_DEVELOPER_MODEL = "PREFS_DEVELOPER_MODEL"
+        private const val PREFS_IS_REFERRAL_CHECKED = "PREFS_IS_REFERRAL_CHECKED"
     }
 
     init {
@@ -55,7 +58,7 @@ class AppSettingsRepository(
 
     override fun getDeveloperModel(): DeveloperModel {
         Prefs.getString(PREFS_DEVELOPER_MODEL, null)?.let {
-            return plainGson.fromJson<DeveloperModel>(it, DeveloperModel::class.java)
+            return plainGson.fromJson(it, DeveloperModel::class.java)
         }.orElse {
             return DeveloperModel(
                 "Jeyakumar - Developer",
@@ -77,5 +80,25 @@ class AppSettingsRepository(
 
     fun getFcmToken(): String? {
         return Prefs.getString(PREFS_FCM_TOKEN,null)
+    }
+
+    fun setReferralModel(referralModel: ReferralModel){
+        return Prefs.putString(PREFS_REFERRAL_MODEL, plainGson.toJson(referralModel))
+    }
+
+    fun getReferralModel(): ReferralModel? {
+        return Prefs.getString(PREFS_REFERRAL_MODEL,null)?.let {
+            plainGson.fromJson(it,ReferralModel::class.java)
+        }.orElse {
+            null
+        }
+    }
+
+    fun isReferralUpdated(): Boolean {
+        return Prefs.getBoolean(PREFS_IS_REFERRAL_CHECKED,false)
+    }
+
+    fun setReferralUpdated(boolean: Boolean) {
+        Prefs.putBoolean(PREFS_IS_REFERRAL_CHECKED,boolean)
     }
 }

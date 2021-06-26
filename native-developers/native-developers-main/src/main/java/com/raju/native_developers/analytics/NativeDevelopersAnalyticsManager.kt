@@ -1,18 +1,17 @@
-package com.raju.native_developers
+package com.raju.native_developers.analytics
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import androidx.annotation.VisibleForTesting
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.raju.data.repositories.AppSettingsRepository
-import com.raju.native_developers.analytics.AnalyticsItemNames
-import com.raju.native_developers.analytics.AnalyticsItemTypes
+import com.raju.data.repositories.NativeDevelopersAppSettingsRepository
+import com.raju.native_developers.authentication.NativeDevelopersAuthenticationManager
 
 @SuppressLint("MissingPermission")
-class AnalyticsManager(
+class NativeDevelopersAnalyticsManager(
         private val context: Context,
-        private val appSettingsRepository: AppSettingsRepository
+        private val appSettingsRepository: NativeDevelopersAppSettingsRepository
 ) {
     private val firebaseAnalyticsManager by lazy { FirebaseAnalytics.getInstance(context) }
     private val analyticsItemNames = AnalyticsItemNames()
@@ -21,13 +20,13 @@ class AnalyticsManager(
 
     companion object {
         val CONST_USER_ID = "USER_ID"
-        private var INSTANCE: NativeDevelopersAuthenticationManager? = null
+        private var INSTANCE: NativeDevelopersAnalyticsManager? = null
 
         @JvmStatic
-        fun getInstance(context: Context, appSettingsRepository: AppSettingsRepository): NativeDevelopersAuthenticationManager {
+        fun getInstance(context: Context, appSettingsRepository: NativeDevelopersAppSettingsRepository): NativeDevelopersAnalyticsManager {
             if (INSTANCE == null) {
                 synchronized(NativeDevelopersAuthenticationManager::javaClass) {
-                    INSTANCE = NativeDevelopersAuthenticationManager(context, appSettingsRepository)
+                    INSTANCE = NativeDevelopersAnalyticsManager(context, appSettingsRepository)
                 }
             }
             return INSTANCE!!
