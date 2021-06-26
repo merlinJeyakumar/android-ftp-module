@@ -48,14 +48,15 @@ class NativeDevelopersFirebaseDataRepository(
     }
 
     fun updateReferralStatus(
-        referredId: String
+        referredBy: String,
+        referralsId: String
     ): Task<Void>? {
         return appSettingsRepository.getReferralModel()?.let {
             return FirebaseDatabase.getInstance()
                 .getReference(
                     firebasePathRepository.getUserReferralsReferredPath(
-                        referredId,
-                        it.referrer
+                        referredBy,
+                        referralsId
                     )
                 )
                 .setValue(it)

@@ -44,7 +44,7 @@ class NativeDevelopersFirebasePathRepository(
         return "${getUserPath(currentUserId)}/referrals"
     }
 
-    fun getUserReferralsReferredPath(currentUserId: String,referralsId:String): String {
-        return "${getReferralsPath(currentUserId)}/$referralsId"
+    fun getUserReferralsReferredPath(referredBy: String, referralsId:String): String {
+        return "${getReferralsPath(referredBy)}/$referralsId"
     }
 }

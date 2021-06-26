@@ -24,7 +24,7 @@ open class NativeDevelopersApplication : Application() {
         installReferrerClient = InstallReferrerClient.newBuilder(this).build()
         installReferrerClient.startConnection(
             InstallReferrerPlay(applicationContext) {
-                if (it.utm_medium != "organic") { //check its direct install
+                if (it.utm_medium != "organic" || BuildConfig.DEBUG) { //check its direct install
                     appSettingsRepository.setReferralUpdated(true)
                     appSettingsRepository.setReferralModel(it)
                 }

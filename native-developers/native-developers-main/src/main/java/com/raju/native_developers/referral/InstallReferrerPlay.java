@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class InstallReferrerPlay implements InstallReferrerStateListener {
 
-    private static String TAG = "MixpanelAPI.InstallReferrerPlay";
+    private static String TAG = "InstallReferrerPlay";
 
     private static final int MAX_INSTALL_REFERRER_RETRIES = 5;
     private static final int TIME_MS_BETWEEN_RETRIES = 2500;
@@ -140,8 +140,6 @@ public class InstallReferrerPlay implements InstallReferrerStateListener {
         if (referrer == null) return;
         ReferralModel referralModel = new ReferralModel();
 
-        referralModel.referrer = referrer;
-
         final Matcher sourceMatcher = UTM_SOURCE_PATTERN.matcher(referrer);
         final String source = find(sourceMatcher);
         if (null != source) {
@@ -176,7 +174,6 @@ public class InstallReferrerPlay implements InstallReferrerStateListener {
         Log.e(TAG, "utm_content" + referralModel.utm_content);
         Log.e(TAG, "utm_term" + referralModel.utm_term);
         Log.e(TAG, "utm_source" + referralModel.utm_source);
-        Log.e(TAG, "referrer" + referralModel.referrer);
         Log.e(TAG, "utm_medium" + referralModel.utm_medium);
         if (mCallBack != null) {
             mCallBack.onReferrerReadSuccess(referralModel);

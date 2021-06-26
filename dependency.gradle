@@ -38,7 +38,7 @@ ext.versions = [
         firebase_config       : "20.0.2",
         firebase_crashlytics  : "17.1.0",
         firebase_database     : "20.0.0",
-        google_play_core      : "1.6.4",
+        google_play_core      : "1.7.2",
         lifecycle             : "2.2.0",
         room                  : "2.3.0-alpha02",
         joda_time             : "2.10",
