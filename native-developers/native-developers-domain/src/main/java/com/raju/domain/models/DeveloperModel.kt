@@ -4,6 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class DeveloperModel(
+    val organisationName:String,
     val developerName: String,
     val developerLink: String,
     val developerPhone: String,
@@ -15,11 +16,13 @@ data class DeveloperModel(
         parcel.readString()!!,
         parcel.readString()!!,
         parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readString()!!
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(organisationName)
         parcel.writeString(developerName)
         parcel.writeString(developerLink)
         parcel.writeString(developerPhone)
@@ -40,4 +43,5 @@ data class DeveloperModel(
             return arrayOfNulls(size)
         }
     }
+
 }

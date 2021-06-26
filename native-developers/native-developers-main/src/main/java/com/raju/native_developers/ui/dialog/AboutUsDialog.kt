@@ -9,7 +9,8 @@ import com.support.utills.openURL
 
 class AboutUsDialog(
     private val activity: FragmentActivity,
-    private val developerModel: com.raju.domain.models.DeveloperModel,
+    private val appName:String,
+    private val developerModel: DeveloperModel,
     private val contactUs: () -> Unit
 ) : MBaseDialog(activity) {
 
@@ -21,6 +22,11 @@ class AboutUsDialog(
     }
 
     override fun prepareUi(view: View) {
+        intiListener()
+        initUi()
+    }
+
+    private fun intiListener() {
         binding.profileFrameLayout.setOnClickListener {
             openURL(activity, developerModel.developerLink)
         }
@@ -30,6 +36,11 @@ class AboutUsDialog(
         binding.ivClose.setOnClickListener {
             dismiss()
         }
-        binding.developerAppCompatTextView.text = developerModel.developerName
+    }
+
+    private fun initUi() {
+        binding.developerNameAppCompatTextView.text = developerModel.developerName
+        binding.organisationNameAppCompatTextView.text = developerModel.organisationName
+        binding.appNameAppCompatTextView.text = appName
     }
 }

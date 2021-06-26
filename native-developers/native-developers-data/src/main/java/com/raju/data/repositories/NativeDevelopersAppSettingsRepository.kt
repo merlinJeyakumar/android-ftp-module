@@ -61,6 +61,7 @@ class NativeDevelopersAppSettingsRepository(
             return plainGson.fromJson(it, DeveloperModel::class.java)
         }.orElse {
             return DeveloperModel(
+                "Native Developers",
                 "Jeyakumar - Developer",
                 "https://in.linkedin.com/in/merlin-jeyakumar",
                 "+919042886538",
