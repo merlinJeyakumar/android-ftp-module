@@ -39,6 +39,12 @@ object Log {
     }
 
     @JvmStatic
+    fun e(TAG: String?,message: String?, throwable: Throwable?) {
+        FirebaseCrashlytics.getInstance().log("ERROR: ${TAG}, $message ${throwable?.localizedMessage}")
+        Log.e(TAG, "$message")
+    }
+
+    @JvmStatic
     fun v(TAG: String?, message: String?) {
         if (BuildConfig.DEBUG) {
             FirebaseCrashlytics.getInstance().log("VERBOSE: ${TAG}, $message")

@@ -1,17 +1,15 @@
 package com.raju.native_developers.referral;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.installreferrer.api.InstallReferrerClient;
 import com.android.installreferrer.api.InstallReferrerStateListener;
 import com.android.installreferrer.api.ReferrerDetails;
 import com.raju.domain.models.ReferralModel;
+import com.support.utills.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.regex.Matcher;
@@ -54,8 +52,14 @@ public class InstallReferrerPlay implements InstallReferrerStateListener {
                     ReferrerDetails details = mReferrerClient.getInstallReferrer();
                     String referrer = details.getInstallReferrer();
                     saveReferrerDetails(referrer);
+
+                    Log.e(TAG, "details.getGooglePlayInstantParam() " + details.getGooglePlayInstantParam());
+                    Log.e(TAG, "details.getInstallBeginTimestampSeconds() " + details.getInstallBeginTimestampSeconds());
+                    Log.e(TAG, "details.getInstallVersion() " + details.getInstallVersion());
+                    Log.e(TAG, "details.getReferrerClickTimestampSeconds() " + details.getReferrerClickTimestampSeconds());
+                    Log.e(TAG, "details.getReferrerClickTimestampServerSeconds() " + details.getReferrerClickTimestampServerSeconds());
                 } catch (Exception e) {
-                    Log.d(TAG, "There was an error fetching your referrer details.", e);
+                    Log.e(TAG, "There was an error fetching your referrer details.", e);
                     shouldRetry = true;
                 }
                 break;
@@ -136,7 +140,7 @@ public class InstallReferrerPlay implements InstallReferrerStateListener {
         if (referrer == null) return;
         ReferralModel referralModel = new ReferralModel();
 
-        referralModel.referrer   = referrer;
+        referralModel.referrer = referrer;
 
         final Matcher sourceMatcher = UTM_SOURCE_PATTERN.matcher(referrer);
         final String source = find(sourceMatcher);
@@ -168,6 +172,12 @@ public class InstallReferrerPlay implements InstallReferrerStateListener {
             referralModel.utm_term = term;
         }
 
+        Log.e(TAG, "utm_campaign" + referralModel.utm_campaign);
+        Log.e(TAG, "utm_content" + referralModel.utm_content);
+        Log.e(TAG, "utm_term" + referralModel.utm_term);
+        Log.e(TAG, "utm_source" + referralModel.utm_source);
+        Log.e(TAG, "referrer" + referralModel.referrer);
+        Log.e(TAG, "utm_medium" + referralModel.utm_medium);
         if (mCallBack != null) {
             mCallBack.onReferrerReadSuccess(referralModel);
         }
