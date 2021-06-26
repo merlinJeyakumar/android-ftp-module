@@ -37,7 +37,9 @@ abstract class MActionBarActivity<B : ViewDataBinding, VM : MBaseViewModel> :
         } else {
             toolbar.setNavigationOnClickListener { onBackPressed() }
         }
-        ablHeader?.elevation = 0f
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            ablHeader?.elevation = 0f
+        }
         supportActionBar?.elevation = 0f
         a_header_layout_content!!.layoutResource = getLayoutId()
         binding = DataBindingUtil.bind(a_header_layout_content!!.inflate())!!
