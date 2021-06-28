@@ -4,11 +4,11 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class DeveloperModel(
-    val organisationName:String,
     val developerName: String,
+    val developerEmail: String,
     val developerLink: String,
     val developerPhone: String,
-    val developerEmail: String,
+    val organisationName:String,
     val publisherLink: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(

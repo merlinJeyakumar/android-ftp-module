@@ -24,7 +24,10 @@ class NativeDevelopersAppSettingsRepository(
         private var INSTANCE: NativeDevelopersAppSettingsRepository? = null
 
         @JvmStatic
-        fun getInstance(applicationContext: Context, plainGson: Gson): NativeDevelopersAppSettingsRepository {
+        fun getInstance(
+            applicationContext: Context,
+            plainGson: Gson
+        ): NativeDevelopersAppSettingsRepository {
             if (INSTANCE == null) {
                 synchronized(NativeDevelopersAppSettingsRepository::javaClass) {
                     INSTANCE = NativeDevelopersAppSettingsRepository(applicationContext, plainGson)
@@ -42,6 +45,7 @@ class NativeDevelopersAppSettingsRepository(
         private const val PREFS_REFERRAL_MODEL = "PREFS_REFERRAL_MODEL"
         private const val PREFS_DEVELOPER_MODEL = "PREFS_DEVELOPER_MODEL"
         private const val PREFS_IS_REFERRAL_CHECKED = "PREFS_IS_REFERRAL_CHECKED"
+        private const val PREFS_DYNAMIC_URL = "PREFS_DYNAMIC_URL"
     }
 
     init {
@@ -53,7 +57,6 @@ class NativeDevelopersAppSettingsRepository(
 
         liveSharedPreferences = BaseLiveSharedPreferences(Prefs.getPreferences())
     }
-
 
 
     override fun getDeveloperModel(): DeveloperModel {
@@ -76,30 +79,38 @@ class NativeDevelopersAppSettingsRepository(
     }
 
     override fun setFcmToken(token: String) {
-        Prefs.putString(PREFS_FCM_TOKEN,token)
+        Prefs.putString(PREFS_FCM_TOKEN, token)
     }
 
     fun getFcmToken(): String? {
-        return Prefs.getString(PREFS_FCM_TOKEN,null)
+        return Prefs.getString(PREFS_FCM_TOKEN, null)
     }
 
-    fun setReferralModel(referralModel: ReferralModel){
+    fun setReferralModel(referralModel: ReferralModel) {
         return Prefs.putString(PREFS_REFERRAL_MODEL, plainGson.toJson(referralModel))
     }
 
     fun getReferralModel(): ReferralModel? {
-        return Prefs.getString(PREFS_REFERRAL_MODEL,null)?.let {
-            plainGson.fromJson(it,ReferralModel::class.java)
+        return Prefs.getString(PREFS_REFERRAL_MODEL, null)?.let {
+            plainGson.fromJson(it, ReferralModel::class.java)
         }.orElse {
             null
         }
     }
 
     fun isReferralUpdated(): Boolean {
-        return Prefs.getBoolean(PREFS_IS_REFERRAL_CHECKED,false)
+        return Prefs.getBoolean(PREFS_IS_REFERRAL_CHECKED, false)
     }
 
     fun setReferralUpdated(boolean: Boolean) {
-        Prefs.putBoolean(PREFS_IS_REFERRAL_CHECKED,boolean)
+        Prefs.putBoolean(PREFS_IS_REFERRAL_CHECKED, boolean)
+    }
+
+    fun setDynamicLink(dynamicUrl: String) {
+        Prefs.putString(PREFS_DYNAMIC_URL, dynamicUrl);
+    }
+
+    fun getDynamicLink(): String? {
+        return Prefs.getString(PREFS_DYNAMIC_URL, null);
     }
 }

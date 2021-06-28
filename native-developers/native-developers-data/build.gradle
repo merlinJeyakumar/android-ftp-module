@@ -68,4 +68,5 @@ dependencies {
     implementation project(path: ':native-developers-domain')
     implementation project(path: ':support')
     api cloudDataBase.firebase_database
+    api fireBaseDependencies.dynamic_links
 }

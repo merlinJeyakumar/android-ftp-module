@@ -9,7 +9,7 @@ import com.raju.data.repositories.remote.NativeDevelopersFirebasePathRepository
 import com.raju.native_developers.analytics.NativeDevelopersAnalyticsManager
 import com.raju.native_developers.authentication.NativeDevelopersAuthenticationManager
 
-object Injection {
+object NativeDevelopersInjection {
     fun provideAppDataSource(context:Context): NativeDevelopersAppSettingsRepository {
         return NativeDevelopersAppSettingsRepository.getInstance(context, Gson())
     }

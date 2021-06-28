@@ -1,7 +1,7 @@
 package com.raju.native_developers.ui.activity
 
 import android.os.Bundle
-import com.raju.native_developers.Injection
+import com.raju.native_developers.NativeDevelopersInjection
 import com.raju.native_developers.notifcation.NativeDevelopersFCMService
 import com.raju.native_developers.notifcation.NativeDevelopersFCMService.Companion.CONST_NOTIFICATION_TYPE
 import com.support.supportBaseClass.BaseActivity
@@ -12,7 +12,7 @@ import com.support.utills.shareLink
 class NotificationActivity : BaseActivity() {
     private val TAG = NotificationActivity::class.java.simpleName
 
-    private val analyticsManager by lazy { Injection.provideAnalyticsManager(this@NotificationActivity) }
+    private val analyticsManager by lazy { NativeDevelopersInjection.provideAnalyticsManager(this@NotificationActivity) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
