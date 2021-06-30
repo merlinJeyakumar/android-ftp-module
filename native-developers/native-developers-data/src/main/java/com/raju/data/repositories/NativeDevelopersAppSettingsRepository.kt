@@ -46,6 +46,8 @@ class NativeDevelopersAppSettingsRepository(
         private const val PREFS_DEVELOPER_MODEL = "PREFS_DEVELOPER_MODEL"
         private const val PREFS_IS_REFERRAL_CHECKED = "PREFS_IS_REFERRAL_CHECKED"
         private const val PREFS_DYNAMIC_URL = "PREFS_DYNAMIC_URL"
+        private const val PREFS_MINIMUM_REFERRALS_COUNT = "PREFS_MINIMUM_REFERRALS_COUNT"
+        private const val PREFS_REFERRALS_COUNT = "PREFS_REFERRALS_COUNT"
     }
 
     init {
@@ -112,5 +114,13 @@ class NativeDevelopersAppSettingsRepository(
 
     fun getDynamicLink(): String? {
         return Prefs.getString(PREFS_DYNAMIC_URL, null);
+    }
+
+    fun setMinimumReferralsCount(minReferralsCount: Long) {
+        Prefs.putLong(PREFS_MINIMUM_REFERRALS_COUNT,minReferralsCount)
+    }
+
+    fun getMinimumReferralsCount():Long{
+        return Prefs.getLong(PREFS_MINIMUM_REFERRALS_COUNT,3)
     }
 }

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import com.google.android.material.appbar.AppBarLayout
 import com.support.R
 import kotlinx.android.synthetic.main.ma_header.*
 
@@ -57,7 +58,11 @@ abstract class MActionBarActivity<B : ViewDataBinding, VM : MBaseViewModel> :
         supportActionBar?.title = headerTitle
     }
 
-    fun getToolbar(): Toolbar? {
+    fun getAppBar(): AppBarLayout {
+        return ablHeader
+    }
+
+    fun getToolbar(): Toolbar {
         return toolbar
     }
 
