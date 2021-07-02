@@ -91,7 +91,16 @@ fun Context.getMimeType(uri: Uri): String? {
 }
 
 fun Context.getShareText(): String {
-    return "Excited to share it from *${this.resources.getString(
-        R.string.app_name
-    )}* App,\nDownload an app from PlayStore https://play.google.com/store/apps/details?id=${this.applicationContext.packageName}&hl=en_IN"
+    return "Excited to share it from *${
+        this.resources.getString(
+            R.string.app_name
+        )
+    }* App,\nDownload an app from PlayStore https://play.google.com/store/apps/details?id=${this.applicationContext.packageName}&hl=en_IN"
+}
+
+fun getAvailableMemory(): Long {
+    val runTime = Runtime.getRuntime()
+    val usedMemInMB = (runTime.totalMemory() - runTime.freeMemory()) / 1048576L;
+    val maxHeapSizeInMB = runTime.maxMemory() / 1048576L;
+    return maxHeapSizeInMB - usedMemInMB;
 }
