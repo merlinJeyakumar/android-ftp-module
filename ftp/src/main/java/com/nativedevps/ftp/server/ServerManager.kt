@@ -100,7 +100,7 @@ class ServerManager private constructor(val context: Context) :
 
     private fun getUser(transferServerConnectionProperties: FileTransferServerConnectionProperties): BaseUser {
         return if (transferServerConnectionProperties.userName != null && transferServerConnectionProperties.password != null) {
-            getAuthenticatedUser()
+            getAuthenticatedUser(transferServerConnectionProperties.userName!!,transferServerConnectionProperties.password!!)
         } else {
             getAnonymousUser()
         }
@@ -160,8 +160,8 @@ class ServerManager private constructor(val context: Context) :
         pass: String = "pass"
     ): BaseUser {
         val user = BaseUser()
-        user.name = username
-        user.password = pass
+        user.name = username.trim()
+        user.password = pass.trim()
         user.homeDirectory = Environment.getExternalStorageDirectory().path + "/"
         val auths: MutableList<Authority> = ArrayList()
         val auth: Authority = WritePermission()
@@ -265,7 +265,7 @@ class ServerManager private constructor(val context: Context) :
         startServer()
     }
 
-    fun getUser(): BaseUser {
+    fun getUser(): BaseUser { //TODO: REMOVE
         val user = BaseUser()
         user.name = "merlin"
         user.password = "pass"
@@ -279,7 +279,7 @@ class ServerManager private constructor(val context: Context) :
     }
 
     @Throws(FileNotFoundException::class)
-    private fun setupStart(username: String, password: String, subLoc: String) {
+    private fun setupStart(username: String, password: String, subLoc: String) { //TODO: REMOVE
         listenerFactory.port = 2121
         ftpServerFactory.addListener("default", listenerFactory.createListener())
         val files = File(Environment.getExternalStorageDirectory().path + "/users.properties")
