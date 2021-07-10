@@ -3,6 +3,7 @@ package com.raju.data.repositories
 import android.content.Context
 import androidx.annotation.VisibleForTesting
 import com.google.gson.Gson
+import com.raju.data.BuildConfig
 import com.raju.domain.datasources.IAppSettingsDataSource
 import com.raju.domain.models.DeveloperModel
 import com.raju.domain.models.ReferralModel
@@ -122,5 +123,13 @@ class NativeDevelopersAppSettingsRepository(
 
     fun getMinimumReferralsCount():Long{
         return Prefs.getLong(PREFS_MINIMUM_REFERRALS_COUNT,3)
+    }
+
+    fun getReferralsCount():Long{
+        return Prefs.getLong(PREFS_REFERRALS_COUNT,0)
+    }
+
+    fun setReferralsCount(referralCount: Long) {
+        Prefs.putLong(PREFS_REFERRALS_COUNT, referralCount)
     }
 }

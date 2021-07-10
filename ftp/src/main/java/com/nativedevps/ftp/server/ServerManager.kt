@@ -5,30 +5,22 @@ import android.net.wifi.WifiManager
 import android.os.Environment
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.nativedevps.ftp.server.*
+import androidx.core.content.ContextCompat
 import com.support.device.connection.WiFiReceiverManager
 import org.apache.ftpserver.ConnectionConfigFactory
-import org.apache.ftpserver.DataConnectionConfiguration
 import org.apache.ftpserver.FtpServer
 import org.apache.ftpserver.FtpServerFactory
 import org.apache.ftpserver.ftplet.*
-import org.apache.ftpserver.impl.FtpIoSession
-import org.apache.ftpserver.impl.FtpServerContext
-import org.apache.ftpserver.ipfilter.SessionFilter
-import org.apache.ftpserver.listener.Listener
 import org.apache.ftpserver.listener.ListenerFactory
-import org.apache.ftpserver.ssl.SslConfiguration
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory
 import org.apache.ftpserver.usermanager.SaltedPasswordEncryptor
 import org.apache.ftpserver.usermanager.impl.BaseUser
 import org.apache.ftpserver.usermanager.impl.WritePermission
-import org.apache.mina.filter.firewall.Subnet
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
-import java.net.InetAddress
 import java.util.*
 
 
@@ -45,6 +37,7 @@ class ServerManager private constructor(val context: Context) :
     private var ftpServer: FtpServer? = null
     private var listenerFactory = ListenerFactory()
     private val listeners = mutableListOf<FileTransferServerConnectionListener>()
+    private var isBoosting: Boolean = false
 
     companion object {
         @JvmStatic
@@ -253,7 +246,7 @@ class ServerManager private constructor(val context: Context) :
     ) {
         listenerFactory.port = port
         ftpServerFactory.addListener("default", listenerFactory.createListener())
-        val files = File(Environment.getExternalStorageDirectory().path + "/users.properties")
+        val files = File(ContextCompat.getExternalFilesDirs(context, null)[0].path + "/users.properties")
         if (!files.exists()) {
             try {
                 files.createNewFile()
@@ -399,7 +392,7 @@ class ServerManager private constructor(val context: Context) :
     }
 
     override fun getPropsFile(): File {
-        val files = File(Environment.getExternalStorageDirectory().path + "/users.properties")
+        val files = File(ContextCompat.getExternalFilesDirs(context, null)[0].path + "/users.properties")
         if (!files.exists()) {
             try {
                 files.createNewFile()
@@ -430,5 +423,13 @@ class ServerManager private constructor(val context: Context) :
                 )
             )
         }
+    }
+
+    override fun setBoosted(isBoosting:Boolean){
+        this.isBoosting = isBoosting
+    }
+
+    override fun isBoosted(): Boolean {
+        return isBoosting
     }
 }

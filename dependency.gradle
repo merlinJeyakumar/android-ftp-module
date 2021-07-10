@@ -40,7 +40,7 @@ ext.versions = [
         firebase_database      : "20.0.0",
         google_play_core       : "1.7.2",
         lifecycle              : "2.2.0",
-        room                   : "2.3.0-alpha02",
+        room                   : "2.3.0",
         joda_time              : "2.10",
         joda_convert           : "2.1.1",
         paging_runtime         : "2.1.0",
@@ -200,10 +200,13 @@ ext.testDependencies = [
 
 ext.kaptProcessorDep = [
         glide_compiler  : "com.github.bumptech.glide:compiler:$versions.glide",
+        room_compiler   : "androidx.room:room-compiler:$versions.room"
+]
+
+ext.kaptDagger = [
+        databinding     : "com.android.databinding:compiler:$versions.databinding",
         dagger_compiler : "com.google.dagger:dagger-compiler:$versions.daggerVersion",
-        dagger_processor: "com.google.dagger:dagger-android-processor:$versions.daggerVersion",
-        room_compiler   : "androidx.room:room-compiler:$versions.room",
-        databinding     : "com.android.databinding:compiler:$versions.databinding"
+        dagger_processor: "com.google.dagger:dagger-android-processor:$versions.daggerVersion"
 ]
 
 ext.ftpServer = [

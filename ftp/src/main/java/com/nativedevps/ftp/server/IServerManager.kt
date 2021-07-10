@@ -25,4 +25,6 @@ interface IServerManager {
     fun clearListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener)
     fun getPropsFile(): File
     fun getConnectionStatus(): FileTransferConnection?
+    fun setBoosted(isBoosting: Boolean)
+    fun isBoosted(): Boolean
 }
