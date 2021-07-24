@@ -7,4 +7,6 @@ interface IAppSettingsDataSource {
     fun getDeveloperModel(): DeveloperModel
     fun putDeveloperModel(developerModel: DeveloperModel)
     fun setFcmToken(token: String)
+    fun isPremium(): Boolean
+    fun setPremium(boolean: Boolean)
 }

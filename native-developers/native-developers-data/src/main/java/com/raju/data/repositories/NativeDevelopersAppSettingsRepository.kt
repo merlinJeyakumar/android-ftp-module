@@ -49,6 +49,7 @@ class NativeDevelopersAppSettingsRepository(
         private const val PREFS_DYNAMIC_URL = "PREFS_DYNAMIC_URL"
         private const val PREFS_MINIMUM_REFERRALS_COUNT = "PREFS_MINIMUM_REFERRALS_COUNT"
         private const val PREFS_REFERRALS_COUNT = "PREFS_REFERRALS_COUNT"
+        private const val PREFS_IS_PREMIUM = "PREFS_IS_PREMIUM"
     }
 
     init {
@@ -83,6 +84,14 @@ class NativeDevelopersAppSettingsRepository(
 
     override fun setFcmToken(token: String) {
         Prefs.putString(PREFS_FCM_TOKEN, token)
+    }
+
+    override fun isPremium(): Boolean {
+        return Prefs.getBoolean(PREFS_IS_PREMIUM,false)
+    }
+
+    override fun setPremium(boolean: Boolean) {
+        return Prefs.putBoolean(PREFS_IS_PREMIUM,boolean)
     }
 
     fun getFcmToken(): String? {
