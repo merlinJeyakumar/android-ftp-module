@@ -171,50 +171,9 @@ fun Activity.getInputDialog(
     isCancellable: Boolean = true
 ): Single<InputDialogModel> {
     return Single.create { singleEmitter ->
-        val inflateLayout = ViewUtils.getViewFromLayout(this, R.layout.d_input_dialog)
-        val editText = inflateLayout.findViewById<AppCompatEditText>(R.id.editText)
-        editText.inputType = inputType
-        val materialAlertDialogBuilder = MaterialAlertDialogBuilder(this)
-        materialAlertDialogBuilder.setView(inflateLayout)
-        materialAlertDialogBuilder.create().window?.setBackgroundDrawable(
-            ColorDrawable(
-                Color.TRANSPARENT
-            )
-        )
-        materialAlertDialogBuilder.setTitle(title)
-        materialAlertDialogBuilder.setCancelable(isCancellable)
-        editText.setText(defaultText)
-
-        if (isCancellable) {
-            materialAlertDialogBuilder.setNegativeButton(
-                negativeButton
-            ) { dialog, which ->
-                singleEmitter.onSuccess(
-                    InputDialogModel(
-                        materialAlertDialogBuilder,
-                        inflateLayout,
-                        false,
-                        ""
-                    )
-                )
-                dialog.dismiss()
-            }
+        getInputDialog(title,message,defaultText,positiveButton,negativeButton,inputType,isCancellable) {
+            singleEmitter.onSuccess(it)
         }
-        materialAlertDialogBuilder.setPositiveButton(
-            positiveButton
-        ) { dialog, which ->
-            singleEmitter.onSuccess(
-                InputDialogModel(
-                    materialAlertDialogBuilder,
-                    inflateLayout,
-                    true,
-                    editText.text.toString()
-                )
-            )
-            dialog.dismiss()
-        }
-        val alertDialog = materialAlertDialogBuilder.create()
-        alertDialog.show()
     }
 }
 
