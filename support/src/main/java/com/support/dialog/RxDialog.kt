@@ -269,3 +269,61 @@ fun Activity.getListDialog(
         alertDialog.show()
     }
 }
+
+
+fun Activity.getInputDialog(
+    title: String = this.getString(R.string.app_name),
+    message: String = "",
+    defaultText: String = "",
+    positiveButton: String = "Ok",
+    negativeButton: String = "Cancel",
+    inputType: Int = InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS,
+    isCancellable: Boolean = true,
+    block: (inputDialogModel: InputDialogModel) -> Unit
+) {
+    val inflateLayout = ViewUtils.getViewFromLayout(this, R.layout.d_input_dialog)
+    val editText = inflateLayout.findViewById<AppCompatEditText>(R.id.editText)
+    editText.inputType = inputType
+    val materialAlertDialogBuilder = MaterialAlertDialogBuilder(this)
+    materialAlertDialogBuilder.setView(inflateLayout)
+    materialAlertDialogBuilder.create().window?.setBackgroundDrawable(
+        ColorDrawable(
+            Color.TRANSPARENT
+        )
+    )
+    materialAlertDialogBuilder.setTitle(title)
+    materialAlertDialogBuilder.setCancelable(isCancellable)
+    editText.setText(defaultText)
+
+    if (isCancellable) {
+        materialAlertDialogBuilder.setNegativeButton(
+            negativeButton
+        ) { dialog, which ->
+            block(
+                InputDialogModel(
+                    materialAlertDialogBuilder,
+                    inflateLayout,
+                    false,
+                    ""
+                )
+            )
+            dialog.dismiss()
+        }
+    }
+    materialAlertDialogBuilder.setPositiveButton(
+        positiveButton
+    ) { dialog, which ->
+        block(
+            InputDialogModel(
+                materialAlertDialogBuilder,
+                inflateLayout,
+                true,
+                editText.text.toString()
+            )
+        )
+        dialog.dismiss()
+    }
+    val alertDialog = materialAlertDialogBuilder.create()
+    alertDialog.show()
+}
+
