@@ -1,6 +1,8 @@
 package com.support.room
 
 import androidx.room.*
+import com.support.utills.DateConverter
+import org.joda.time.DateTime
 
 
 open class BaseEntity {
@@ -19,19 +21,12 @@ open class BaseEntity {
     @ColumnInfo(name = Fields.IS_DELETED)
     var isDeleted: Boolean = false
 
+    @TypeConverters(DateConverter::class)
     @ColumnInfo(name = Fields.CREATED_AT)
-    var createdAt: Long = 0L
-
-    @ColumnInfo(name = Fields.UPDATED_AT)
-    var updatedAt: Long = 0L
-
-    /*@TypeConverters(DateConverter::class)
-    @ColumnInfo(name = Fields.CREATE_AT)
-    var createAt: Date? = null
+    var createdAt: DateTime? = null
 
     @TypeConverters(DateConverter::class)
-    @ColumnInfo(name = Fields.UPDATE_AT)
-    var updateAt: Date? = null*/
-
+    @ColumnInfo(name = Fields.UPDATED_AT)
+    var updatedAt: DateTime? = null
 
 }
