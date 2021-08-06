@@ -35,4 +35,8 @@ abstract class BaseViewHolder<M>(
     fun isSelected(text: String): Boolean {
         return getSelectionList().contains(text)
     }
+
+    fun isSelectionMode():Boolean{
+        return getSelectionList().isNotEmpty()
+    }
 }

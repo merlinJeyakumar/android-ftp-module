@@ -171,7 +171,15 @@ fun Activity.getInputDialog(
     isCancellable: Boolean = true
 ): Single<InputDialogModel> {
     return Single.create { singleEmitter ->
-        getInputDialog(title,message,defaultText,positiveButton,negativeButton,inputType,isCancellable) {
+        getInputDialog(
+            title,
+            message,
+            defaultText,
+            positiveButton,
+            negativeButton,
+            inputType,
+            isCancellable
+        ) {
             singleEmitter.onSuccess(it)
         }
     }
@@ -227,6 +235,59 @@ fun Activity.getListDialog(
             }
         alertDialog.show()
     }
+}
+
+
+fun Activity.getListDialog(
+    title: String = this.getString(R.string.app_name),
+    negativeText: String = this.getString(R.string.label_cancel),
+    isCancellable: Boolean = true,
+    listString: List<String>,
+    block: (listDialogModel: ListDialogModel) -> Unit
+): AlertDialog {
+    val inflateLayout = ViewUtils.getViewFromLayout(this, R.layout.d_list_view)
+    val listView = inflateLayout.findViewById<ListView>(R.id.listView)
+    listView.adapter = ArrayAdapter(
+        this,
+        android.R.layout.simple_list_item_1, android.R.id.text1, listString
+    )
+    val materialAlertDialogBuilder = MaterialAlertDialogBuilder(this)
+    materialAlertDialogBuilder.setView(inflateLayout)
+    materialAlertDialogBuilder.create().window?.setBackgroundDrawable(
+        ColorDrawable(
+            Color.TRANSPARENT
+        )
+    )
+    materialAlertDialogBuilder.setTitle(title)
+    materialAlertDialogBuilder.setCancelable(isCancellable)
+    if (isCancellable) {
+        materialAlertDialogBuilder.setNegativeButton(
+            negativeText
+        ) { dialog, which ->
+            block(
+                ListDialogModel(
+                    materialAlertDialogBuilder,
+                    inflateLayout,
+                    boolean = false
+                )
+            )
+        }
+    }
+    val alertDialog = materialAlertDialogBuilder.create()
+    listView.onItemClickListener =
+        AdapterView.OnItemClickListener { parent: AdapterView<*>?, view1: View?, position: Int, id: Long ->
+            block(
+                ListDialogModel(
+                    materialAlertDialogBuilder,
+                    inflateLayout,
+                    listString[position],
+                    true
+                )
+            )
+            alertDialog.dismiss()
+        }
+    alertDialog.show()
+    return alertDialog
 }
 
 
