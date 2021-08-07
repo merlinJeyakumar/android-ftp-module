@@ -64,7 +64,8 @@ ext.versions = [
         event_bus              : "3.2.0",
         firebase_authentication: "21.0.1",
         firebase_referral      : "2.2",
-        dynamic_links          : "20.1.0"
+        dynamic_links          : "20.1.0",
+        expandablelayout       : "1.0.7"
 ]
 
 
@@ -199,8 +200,8 @@ ext.testDependencies = [
 ]
 
 ext.kaptProcessorDep = [
-        glide_compiler  : "com.github.bumptech.glide:compiler:$versions.glide",
-        room_compiler   : "androidx.room:room-compiler:$versions.room"
+        glide_compiler: "com.github.bumptech.glide:compiler:$versions.glide",
+        room_compiler : "androidx.room:room-compiler:$versions.room"
 ]
 
 ext.kaptDagger = [
@@ -219,4 +220,8 @@ ext.ftpServer = [
 
 ext.notification = [
         notify: "io.karn:notify:1.3.0"
+]
+
+ext.ui = [
+        expandablelayout: "com.github.skydoves:expandablelayout:$versions.expandablelayout"
 ]
