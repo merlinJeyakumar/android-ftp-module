@@ -1,9 +1,7 @@
 package com.support.utills
 
 import android.app.Activity
-import android.content.ContentResolver
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.webkit.MimeTypeMap
@@ -114,7 +112,15 @@ fun Context.openLinkInternally(text: String) {
     startActivity(this, defaultBrowser, null)
 }
 
-fun Context.openLinkExternally(text:String){
+fun Context.openLinkExternally(text: String) {
     val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(text))
-    ContextCompat.startActivity(this,browserIntent,null)
+    ContextCompat.startActivity(this, browserIntent, null)
+}
+
+fun Context.pasteClipboardText(): String? {
+    val clipboard: ClipboardManager =
+        getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip: ClipData = clipboard.primaryClip ?: return null
+    val item = clip.getItemAt(0) ?: return null
+    return item.text.toString() ?: return null
 }

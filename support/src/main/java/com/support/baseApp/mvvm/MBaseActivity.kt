@@ -192,7 +192,7 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
     }
 
 
-    fun replaceFragment(fragment: Fragment,containerId:Int) {
+    fun replaceFragment(fragment: Fragment, containerId: Int) {
         val tag = fragment.javaClass.name
         val fragmentManager = supportFragmentManager
         val transaction = fragmentManager.beginTransaction()
@@ -426,6 +426,11 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
         isCancelable: Boolean = false,
         disposable: Disposable? = null
     ) {
+        if (progressDialog != null && progressDialog?.isShowing!!) {
+            progressDialog?.setMessage(message)
+            progressDialog?.setCancelable(isCancelable)
+            return
+        }
         progressDialog = getLoaderDialog(
             message = message,
             isCancellable = isCancelable
