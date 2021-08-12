@@ -71,6 +71,8 @@ abstract class BaseAdapter<ITEM_TYPE>() :
         return selectionList
     }
 
+    abstract fun getList():List<ITEM_TYPE>
+
     open fun getIndex(itemKey: String): Int {
         return -1
     }

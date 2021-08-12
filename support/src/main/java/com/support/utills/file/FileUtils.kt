@@ -1,5 +1,6 @@
 package com.support.utills.file
 
+import android.R.attr
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
@@ -40,6 +41,9 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
+import android.R.attr.data
+import java.lang.StringBuilder
+
 
 @JvmField
 var EXPORT_IMAGE_FORMAT: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
@@ -889,4 +893,15 @@ fun isImageFileExt(file: File): Boolean {
         }
     }
     return false
+}
+
+fun Context.readTextFile(uri:Uri): String {
+    val inputStreamReader = InputStreamReader(contentResolver.openInputStream(uri))
+    val bufferedReader = BufferedReader(inputStreamReader)
+    val sb = StringBuilder()
+    var s: String?
+    while (bufferedReader.readLine().also { s = it } != null) {
+        sb.append(s)
+    }
+    return sb.toString()
 }
