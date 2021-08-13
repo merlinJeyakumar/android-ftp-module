@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.support.inline.orElse
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 abstract class MBaseViewModel constructor(application: Application) :
     AndroidViewModel(application) {
@@ -44,7 +46,7 @@ abstract class MBaseViewModel constructor(application: Application) :
         }
     }
 
-    fun showInformationDialog(title: String="Alert", message: String) {
+    fun showInformationDialog(title: String = "Alert", message: String) {
         showInformationDialog.value = Pair(title, message)
     }
 
@@ -55,5 +57,11 @@ abstract class MBaseViewModel constructor(application: Application) :
     abstract fun subscribe()
     open fun unsubscribe() {
         clearAllCalls()
+    }
+
+    suspend fun runOnUiThread(callback: () -> Unit) {
+        withContext(Dispatchers.Main) {
+            callback()
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.support.utills.file
 
+import android.R.attr
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
@@ -40,12 +41,16 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
+import android.R.attr.data
+import java.lang.StringBuilder
+
 
 @JvmField
 var EXPORT_IMAGE_FORMAT: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 
 const val MIME_TYPE_AUDIO = "audio/*"
 const val MIME_TYPE_TEXT = "text/*"
+const val MIME_TYPE_TEXT_PLAIN = "text/plain"
 const val MIME_TYPE_IMAGE = "image/*"
 const val MIME_TYPE_VIDEO = "video/*"
 const val MIME_TYPE_APP = "application/*"
@@ -56,6 +61,13 @@ private val format = DecimalFormat("#.##")
 private const val MiB = (1024 * 1024).toLong()
 private const val KiB: Long = 1024
 private const val TAG = "FileUtils"
+
+private val okFileExtensions = arrayOf(
+    "jpg",
+    "png",
+    "gif",
+    "jpeg"
+)
 
 @Throws(IOException::class)
 fun Context.readJsonAsset(fileName: String): String {
@@ -871,5 +883,21 @@ fun Context.grandUriPermission(
     for (resolveInfo in resInfoList) {
         val packageName = resolveInfo.activityInfo.packageName
         grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+}
+
+fun isImageFileExt(file: File): Boolean {
+    for (extension in okFileExtensions) {
+        if (file.name.toLowerCase().endsWith(extension)) {
+            return true
+        }
+    }
+    return false
+}
+
+fun Context.readTextFile(uri:Uri): String {
+    val inputStreamReader = InputStreamReader(contentResolver.openInputStream(uri))
+    return inputStreamReader.buffered().use {
+        it.readText()
     }
 }

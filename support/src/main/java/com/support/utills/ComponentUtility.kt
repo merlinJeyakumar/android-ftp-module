@@ -9,7 +9,7 @@ import android.net.Uri
 import com.support.R
 
 
-fun Activity.isServiceRunning(serviceClass: Class<*>): Boolean {
+fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
     val manager: ActivityManager =
         getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
     for (service in manager.getRunningServices(Int.MAX_VALUE)) {
