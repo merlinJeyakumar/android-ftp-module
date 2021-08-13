@@ -6,7 +6,7 @@ import com.raju.data.repositories.BaseRepository
 import com.raju.domain.datasources.remote.IFirebasePathDataSource
 
 
-class NativeDevelopersFirebasePathRepository(
+class NativeDevelopersFirebasePathRepository (
     private val context: Context
 ) : BaseRepository(), IFirebasePathDataSource {
 
@@ -32,19 +32,19 @@ class NativeDevelopersFirebasePathRepository(
         }
     }
 
-    fun getAccountsPath(): String {
+    override fun getAccountsPath(): String {
         return "/ACCOUNTS"
     }
 
-    fun getUserPath(currentUserId:String): String {
+    override fun getUserPath(currentUserId: String): String {
         return "${getAccountsPath()}/USERS/$currentUserId"
     }
 
-    fun getReferralsPath(currentUserId: String): String {
+    override fun getReferralsPath(currentUserId: String): String {
         return "${getUserPath(currentUserId)}/referrals"
     }
 
-    fun getUserReferralsReferredPath(referredBy: String, referralsId:String): String {
+    override fun getUserReferralsReferredPath(referredBy: String, referralsId: String): String {
         return "${getReferralsPath(referredBy)}/$referralsId"
     }
 }
