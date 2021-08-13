@@ -897,11 +897,7 @@ fun isImageFileExt(file: File): Boolean {
 
 fun Context.readTextFile(uri:Uri): String {
     val inputStreamReader = InputStreamReader(contentResolver.openInputStream(uri))
-    val bufferedReader = BufferedReader(inputStreamReader)
-    val sb = StringBuilder()
-    var s: String?
-    while (bufferedReader.readLine().also { s = it } != null) {
-        sb.append(s)
+    return inputStreamReader.buffered().use {
+        it.readText()
     }
-    return sb.toString()
 }
