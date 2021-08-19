@@ -29,6 +29,9 @@ import com.support.utills.text.TextUtills.trimBeginEndDoubleQuotes
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.reflect.KClass
+import android.net.wifi.WifiInfo
+import java.net.Inet4Address
+import java.net.NetworkInterface
 
 
 /*
@@ -117,7 +120,7 @@ open class WiFiReceiverManager(
             return WiFiConnectionModel(
                 isConnected = networkInfo.isConnected,
                 ssid = ssid?.trimBeginEndDoubleQuotes()!!,
-                ipAddress = wifiAddress4(context)!!,
+                ipAddress = getLocalIpAddress(),
                 networkId = connectionInfo.networkId,
                 state = if (networkInfo.isConnected) WiFiConnectionModel.CONNECTED else WiFiConnectionModel.DISCONNECTED
             )
@@ -168,6 +171,37 @@ open class WiFiReceiverManager(
         if (callBackList.containsKey(clazz)) {
             callBackList.remove(clazz)
         }
+    }
+
+    open fun getLocalIpAddress(context: Context = this.context): String {
+        val wifiMgr = context.applicationContext
+            .getSystemService(Context.WIFI_SERVICE) as WifiManager
+        if (wifiMgr.isWifiEnabled) {
+            val wifiInfo = wifiMgr.connectionInfo
+            val ip = wifiInfo.ipAddress
+            return String.format(
+                "%d.%d.%d.%d",
+                ip and 0xff,
+                ip shr 8 and 0xff,
+                ip shr 16 and 0xff,
+                ip shr 24 and 0xff
+            )
+        }
+        val en = NetworkInterface.getNetworkInterfaces()
+        while (en.hasMoreElements()) {
+            val intf = en.nextElement()
+            val enumIpAddr = intf.inetAddresses
+            while (enumIpAddr.hasMoreElements()) {
+                val inetAddress = enumIpAddr.nextElement()
+                Log.i("", "111 inetAddress.getHostAddress(): " + inetAddress.hostAddress)
+                //the condition after && is missing in your snippet, checking instance of inetAddress
+                if (!inetAddress.isLoopbackAddress && inetAddress is Inet4Address) {
+                    Log.i("", "111 return inetAddress.getHostAddress(): " + inetAddress.hostAddress)
+                    return inetAddress.hostAddress
+                }
+            }
+        }
+        return "0.0.0.0"
     }
 }
 

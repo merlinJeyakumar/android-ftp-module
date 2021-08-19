@@ -265,7 +265,6 @@ class ServerManager private constructor(val context: Context) :
         startServer()
     }
 
-
     @Throws(InvocationTargetException::class, IllegalAccessException::class)
     private fun wifiHotspotEnabled(context: Context): Boolean {
         val manager =
@@ -296,7 +295,7 @@ class ServerManager private constructor(val context: Context) :
     }
 
     override fun getWiFiIpAddress(): String {
-        return WiFiReceiverManager.getInstance(context).wifiAddress4()
+        return WiFiReceiverManager.getInstance(context).getLocalIpAddress()
     }
 
     override fun addServerConnectionListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener) {
