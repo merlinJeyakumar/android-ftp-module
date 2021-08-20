@@ -10,6 +10,8 @@ import android.view.Window
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.PopupWindow
+import android.widget.TextView
+import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import com.google.android.material.internal.CheckableImageButton
 import com.google.android.material.textfield.TextInputLayout
@@ -77,9 +79,27 @@ object ViewUtils {
     }
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    fun setStatusBarColor(activity: Activity,color: Int){
+    fun setStatusBarColor(activity: Activity, color: Int) {
         val window: Window = activity.window
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         window.setStatusBarColor(color)
     }
+
+    fun TextView.setLeftDrawable(@DrawableRes drawable: Int) {
+        setCompoundDrawablesWithIntrinsicBounds(drawable, 0, 0, 0);
+    }
+
+    fun TextView.setTopDrawable(@DrawableRes drawable: Int) {
+        setCompoundDrawablesWithIntrinsicBounds(0, drawable, 0, 0);
+    }
+
+    fun TextView.setRightDrawable(@DrawableRes drawable: Int) {
+        setCompoundDrawablesWithIntrinsicBounds(0, 0, drawable, 0);
+    }
+
+    fun TextView.setBottomDrawable(@DrawableRes drawable: Int) {
+        setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, drawable);
+    }
+
+
 }
