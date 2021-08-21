@@ -124,3 +124,7 @@ fun Context.pasteClipboardText(): String? {
     val item = clip.getItemAt(0) ?: return null
     return item.text.toString() ?: return null
 }
+
+fun Context.getPlayStoreUrl(): String {
+    return "https://play.google.com/store/apps/details?id=" + applicationContext.packageName
+}

@@ -4,10 +4,8 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
+import android.os.SystemClock
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.PopupWindow
 import android.widget.TextView
@@ -16,6 +14,8 @@ import androidx.annotation.RequiresApi
 import com.google.android.material.internal.CheckableImageButton
 import com.google.android.material.textfield.TextInputLayout
 import com.support.R
+import android.view.MotionEvent
+
 
 object ViewUtils {
     private const val TAG = "ViewUtils"
@@ -101,5 +101,29 @@ object ViewUtils {
         setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, drawable);
     }
 
+    fun View.setClickListener(onClickEvent: (view: View) -> Unit) {
+        this.setOnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                onClickEvent(v)
+            }
+            return@setOnTouchListener true
+        }
+    }
 
+    fun View.click() {
+        val downTime: Long = SystemClock.uptimeMillis()
+        val eventTime: Long = SystemClock.uptimeMillis() + 100
+        val x = 0.0f
+        val y = 0.0f
+        val metaState = 0
+        val motionEvent = MotionEvent.obtain(
+            downTime,
+            eventTime,
+            MotionEvent.ACTION_DOWN,
+            x,
+            y,
+            metaState
+        )
+        dispatchTouchEvent(motionEvent)
+    }
 }

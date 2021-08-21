@@ -22,14 +22,12 @@ fun Context.isServiceRunning(serviceClass: Class<*>): Boolean {
 
 fun Context.isAppInstalled(packageName: String): Boolean {
     val pm: PackageManager = packageManager
-    val appInstalled: Boolean
-    appInstalled = try {
+    return try {
         pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
         true
     } catch (e: PackageManager.NameNotFoundException) {
         false
     }
-    return appInstalled
 }
 
 fun openURL(context: Context, url: String) {
@@ -40,13 +38,17 @@ fun openURL(context: Context, url: String) {
     context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
 }
 
-fun shareLink(activity: Activity,title:String, body:String,urlTitle:String) {
+fun shareLink(
+    activity: Activity,
+    title: String,
+    body: String,
+    urlTitle: String
+) {
     try {
-        val localPackageName = activity.application.packageName
         val i = Intent(Intent.ACTION_SEND)
         i.type = "text/plain"
         i.putExtra(Intent.EXTRA_SUBJECT, activity.resources.getString(R.string.app_name))
-        i.putExtra(Intent.EXTRA_TEXT, "$title\n$body\n$urlTitle:\nhttps://play.google.com/store/apps/details?id=$localPackageName")
+        i.putExtra(Intent.EXTRA_TEXT, "$title\n$body\n$urlTitle:\n${activity.getPlayStoreUrl()}")
         activity.startActivity(Intent.createChooser(i, "Choose sharing"))
     } catch (e: Exception) {
         e.printStackTrace()
