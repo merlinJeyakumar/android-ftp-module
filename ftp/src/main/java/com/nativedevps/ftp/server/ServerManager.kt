@@ -3,7 +3,7 @@ package com.nativedevps.ftp.server
 import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Environment
-import android.util.Log
+import com.support.utills.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.support.device.connection.WiFiReceiverManager
