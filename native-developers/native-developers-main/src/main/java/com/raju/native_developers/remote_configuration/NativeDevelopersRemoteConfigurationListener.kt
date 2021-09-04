@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.gson.Gson
 import com.raju.data.repositories.NativeDevelopersAppSettingsRepository
 import com.raju.domain.models.DeveloperModel
 import com.raju.native_developers.R
@@ -31,26 +32,10 @@ abstract class NativeDevelopersRemoteConfigurationListener(
     }
 
     private fun handleStationConfiguration() {
-        val developerName =
-            firebaseRemoteConfig.getString(context.getString(R.string.remote_dev_developer_name))
-        val developerEmail =
-            firebaseRemoteConfig.getString(context.getString(R.string.remote_dev_email_address))
-        val developerLink =
-            firebaseRemoteConfig.getString(context.getString(R.string.remote_dev_profile_link))
-        val developerPhone =
-            firebaseRemoteConfig.getString(context.getString(R.string.remote_dev_mobile_number))
-        val organisationName =
-            firebaseRemoteConfig.getString(context.getString(R.string.remote_dev_organisation_name))
-        val publisherLink =
-            firebaseRemoteConfig.getString(context.getString(R.string.remote_dev_publisher_link))
-        val developerModel = DeveloperModel(
-            developerName = developerName,
-            developerEmail = developerEmail,
-            developerLink = developerLink,
-            developerPhone = developerPhone,
-            organisationName = organisationName,
-            publisherLink = publisherLink
-        )
+        val developerDetail =
+            firebaseRemoteConfig.getString(context.getString(R.string.remote_developer_detail))
+
+        val developerModel = Gson().fromJson(developerDetail, DeveloperModel::class.java)
 
         saveConfiguration()
         onConfigurationReceived(

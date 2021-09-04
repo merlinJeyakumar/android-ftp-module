@@ -12,7 +12,6 @@ import com.support.R
 import com.support.databinding.FRequestBinding
 import com.support.device.utility.DeviceUtility
 import com.support.device.utility.Utility.sendEmail
-import com.raju.domain.models.DeveloperModel
 import com.support.utills.ValidationUtility
 import com.support.utills.parseDateFromMilliseconds
 
@@ -138,11 +137,11 @@ class RequestFragment : Fragment() {
     }
 
     private fun getDeveloperEmail(): String {
-        return argRequestModel.developerModel.developerEmail
+        return argRequestModel.developerModel.remote_dev_email_address
     }
 
     private fun getDeveloperPhone(): String {
-        return argRequestModel.developerModel.developerPhone
+        return argRequestModel.developerModel.remote_dev_mobile_number
     }
 
     private fun isSendingInformation(): Boolean {

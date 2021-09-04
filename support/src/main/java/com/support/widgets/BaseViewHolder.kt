@@ -1,5 +1,6 @@
 package com.support.widgets
 
+import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.support.utills.Log
@@ -10,6 +11,8 @@ abstract class BaseViewHolder<M>(
     private val selectedList: List<String>,
     itemView: View
 ) : RecyclerView.ViewHolder(itemView) {
+
+    val context: Context get() = itemView.context
 
     fun toast(resId: Int) {
         itemView.context.toast(resId)
@@ -36,7 +39,7 @@ abstract class BaseViewHolder<M>(
         return getSelectionList().contains(text)
     }
 
-    fun isSelectionMode():Boolean{
+    fun isSelectionMode(): Boolean {
         return getSelectionList().isNotEmpty()
     }
 }

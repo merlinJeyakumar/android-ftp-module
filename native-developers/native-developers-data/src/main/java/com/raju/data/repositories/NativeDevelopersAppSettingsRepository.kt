@@ -10,6 +10,8 @@ import com.raju.domain.models.ReferralModel
 import com.support.inline.orElse
 import com.support.shared_pref.BaseLiveSharedPreferences
 import com.support.shared_pref.Prefs
+import com.google.gson.reflect.TypeToken
+import java.lang.reflect.Type
 
 
 class NativeDevelopersAppSettingsRepository(
@@ -87,11 +89,11 @@ class NativeDevelopersAppSettingsRepository(
     }
 
     override fun isPremium(): Boolean {
-        return Prefs.getBoolean(PREFS_IS_PREMIUM,false)
+        return Prefs.getBoolean(PREFS_IS_PREMIUM, false)
     }
 
     override fun setPremium(boolean: Boolean) {
-        return Prefs.putBoolean(PREFS_IS_PREMIUM,boolean)
+        return Prefs.putBoolean(PREFS_IS_PREMIUM, boolean)
     }
 
     fun getFcmToken(): String? {
@@ -127,15 +129,15 @@ class NativeDevelopersAppSettingsRepository(
     }
 
     fun setMinimumReferralsCount(minReferralsCount: Long) {
-        Prefs.putLong(PREFS_MINIMUM_REFERRALS_COUNT,minReferralsCount)
+        Prefs.putLong(PREFS_MINIMUM_REFERRALS_COUNT, minReferralsCount)
     }
 
-    fun getMinimumReferralsCount():Long{
-        return Prefs.getLong(PREFS_MINIMUM_REFERRALS_COUNT,3)
+    fun getMinimumReferralsCount(): Long {
+        return Prefs.getLong(PREFS_MINIMUM_REFERRALS_COUNT, 3)
     }
 
-    fun getReferralsCount():Long{
-        return Prefs.getLong(PREFS_REFERRALS_COUNT,0)
+    fun getReferralsCount(): Long {
+        return Prefs.getLong(PREFS_REFERRALS_COUNT, 0)
     }
 
     fun setReferralsCount(referralCount: Long) {

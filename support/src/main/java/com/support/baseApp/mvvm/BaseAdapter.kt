@@ -40,14 +40,18 @@ abstract class BaseAdapter<ITEM_TYPE>() :
         )
     }
 
-    fun clearSelection() {
-        for (topicId in selectionList) {
-            val itemId = getIndex(topicId)
-            if (itemId != -1) {
-                notifyItemChanged(itemId, PAYLOAD_SELECTION_MODE)
-            } else {
-                Log.e(TAG, "error: item not found $topicId")
+    fun clearSelection(updateAll: Boolean = false) {
+        if (updateAll) {
+            for (topicId in selectionList) {
+                val itemId = getIndex(topicId)
+                if (itemId != -1) {
+                    notifyItemChanged(itemId, PAYLOAD_SELECTION_MODE)
+                } else {
+                    Log.e(TAG, "error: item not found $topicId")
+                }
             }
+        }else{
+            notifyDataSetChanged()
         }
         selectionList.clear()
     }
