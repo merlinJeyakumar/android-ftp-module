@@ -51,14 +51,16 @@ open class NativeDevelopersApplication : Application() {
         installReferrerClient.startConnection(
             InstallReferrerPlay(applicationContext) {
                 if (it.utm_medium != "organic") { //check its direct install
-                    nativeDevelopersAppSettingsRepository.setReferralUpdated(false)
-                    nativeDevelopersAppSettingsRepository.setReferralModel(it)
-                    uid?.let {
-                        checkAndUpdateReferrals(
-                            applicationContext,
-                            it
-                        )
-                    }
+
+                }
+
+                nativeDevelopersAppSettingsRepository.setReferralUpdated(false)
+                nativeDevelopersAppSettingsRepository.setReferralModel(it)
+                uid?.let {
+                    checkAndUpdateReferrals(
+                        applicationContext,
+                        it
+                    )
                 }
             }
         )

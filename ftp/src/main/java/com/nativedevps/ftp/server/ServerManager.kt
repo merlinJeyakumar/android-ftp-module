@@ -3,7 +3,7 @@ package com.nativedevps.ftp.server
 import android.content.Context
 import android.net.wifi.WifiManager
 import android.os.Environment
-import android.util.Log
+import com.support.utills.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.support.device.connection.WiFiReceiverManager
@@ -265,7 +265,6 @@ class ServerManager private constructor(val context: Context) :
         startServer()
     }
 
-
     @Throws(InvocationTargetException::class, IllegalAccessException::class)
     private fun wifiHotspotEnabled(context: Context): Boolean {
         val manager =
@@ -296,7 +295,7 @@ class ServerManager private constructor(val context: Context) :
     }
 
     override fun getWiFiIpAddress(): String {
-        return WiFiReceiverManager.getInstance(context).wifiAddress4()
+        return WiFiReceiverManager.getInstance(context).getLocalIpAddress()
     }
 
     override fun addServerConnectionListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener) {

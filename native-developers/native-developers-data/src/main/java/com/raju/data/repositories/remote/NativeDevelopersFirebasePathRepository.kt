@@ -6,7 +6,7 @@ import com.raju.data.repositories.BaseRepository
 import com.raju.domain.datasources.remote.IFirebasePathDataSource
 
 
-class NativeDevelopersFirebasePathRepository(
+class NativeDevelopersFirebasePathRepository (
     private val context: Context
 ) : BaseRepository(), IFirebasePathDataSource {
 
