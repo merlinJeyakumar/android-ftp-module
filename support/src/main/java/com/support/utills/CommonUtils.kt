@@ -5,6 +5,7 @@ import android.content.*
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.webkit.MimeTypeMap
+import androidx.core.app.ShareCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
@@ -12,6 +13,13 @@ import com.google.gson.Gson
 import com.support.R
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
+import android.content.Intent
+
+import androidx.core.content.ContextCompat.startActivity
+
+
+
 
 
 fun getProgress(progressed: Long, totalCount: Long) {
@@ -30,6 +38,32 @@ fun Any.toJson(): String? {
         e.printStackTrace()
     }
     return null
+}
+
+
+fun Activity.shareText(description:String){
+    val sharebody = description
+
+    // The value which we will sending through data via
+    // other applications is defined
+    // via the Intent.ACTION_SEND
+
+    // The value which we will sending through data via
+    // other applications is defined
+    // via the Intent.ACTION_SEND
+    val intentt = Intent(Intent.ACTION_SEND)
+
+    // setting type of data shared as text
+
+    // setting type of data shared as text
+    intentt.type = "text/plain"
+    intentt.putExtra(Intent.EXTRA_SUBJECT, "Subject Here")
+
+    // Adding the text to share using putExtra
+
+    // Adding the text to share using putExtra
+    intentt.putExtra(Intent.EXTRA_TEXT, sharebody)
+    startActivity(this, Intent.createChooser(intentt, "Share Via"), null)
 }
 
 fun Context.shareFileText(
@@ -70,7 +104,7 @@ fun Context.shareFileText(
         Intent.EXTRA_TEXT, description
     );
     startActivity(
-        Intent.createChooser(intentShareFile, "Share").setFlags(FLAG_ACTIVITY_NEW_TASK)
+        Intent.createChooser(intentShareFile, null).setFlags(FLAG_ACTIVITY_NEW_TASK)
     )
 }
 
@@ -114,7 +148,7 @@ fun Context.openLinkInternally(text: String) {
 
 fun Context.openLinkExternally(text: String) {
     val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(text))
-    ContextCompat.startActivity(this, browserIntent, null)
+    startActivity(this, browserIntent, null)
 }
 
 fun Context.pasteClipboardText(): String? {
@@ -127,4 +161,8 @@ fun Context.pasteClipboardText(): String? {
 
 fun Context.getPlayStoreUrl(): String {
     return "https://play.google.com/store/apps/details?id=" + applicationContext.packageName
+}
+
+fun Activity.sharePlayStoreUrl(){
+    shareFileText(description = "${resources.getString(R.string.app_name)}\n\nHope you like this application!\n\n${getPlayStoreUrl()}")
 }

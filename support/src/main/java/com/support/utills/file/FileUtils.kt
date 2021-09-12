@@ -42,6 +42,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
 import android.R.attr.data
+import com.support.inline.orElse
 import java.lang.StringBuilder
 
 
@@ -139,20 +140,20 @@ fun File.getVideoWidthHeight(): MutableList<Int> {
 
 fun Context.scanMediaPath(file: File) {
     sendBroadcast(
-            Intent(
-                    Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
-                    Uri.parse("file://" + file.absolutePath)
-            )
+        Intent(
+            Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+            Uri.parse("file://" + file.absolutePath)
+        )
     )
 }
 
 fun getUriForDrawable(mActivity: Activity, localCurrentImage: Int): Uri {
     return Uri.Builder()
-            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-            .authority(mActivity.resources.getResourcePackageName(localCurrentImage))
-            .appendPath(mActivity.resources.getResourceTypeName(localCurrentImage))
-            .appendPath(mActivity.resources.getResourceEntryName(localCurrentImage))
-            .build()
+        .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+        .authority(mActivity.resources.getResourcePackageName(localCurrentImage))
+        .appendPath(mActivity.resources.getResourceTypeName(localCurrentImage))
+        .appendPath(mActivity.resources.getResourceEntryName(localCurrentImage))
+        .build()
 }
 
 fun copyAssets(context: Context, assetFolderName: String, targetPath: String?) {
@@ -206,7 +207,8 @@ private fun copy(input: InputStream, output: OutputStream): Long {
 
 fun unzip(zipFile: File?, targetDirectory: File?) {
     val zis = ZipInputStream(
-            BufferedInputStream(FileInputStream(zipFile)))
+        BufferedInputStream(FileInputStream(zipFile))
+    )
     try {
         var ze: ZipEntry
         var count: Int
@@ -214,8 +216,10 @@ fun unzip(zipFile: File?, targetDirectory: File?) {
         while (zis.nextEntry.also { ze = it } != null) {
             val file = File(targetDirectory, ze.name)
             val dir = if (ze.isDirectory) file else file.parentFile
-            if (!dir.isDirectory && !dir.mkdirs()) throw FileNotFoundException("Failed to ensure directory: " +
-                    dir.absolutePath)
+            if (!dir.isDirectory && !dir.mkdirs()) throw FileNotFoundException(
+                "Failed to ensure directory: " +
+                        dir.absolutePath
+            )
             if (ze.isDirectory) continue
             val fout = FileOutputStream(file)
             try {
@@ -378,8 +382,10 @@ fun getPathWithoutFilename(file: File?): File? {
             val filepath = file.absolutePath
 
             // Construct path without file name.
-            var pathwithoutname = filepath.substring(0,
-                    filepath.length - filename.length)
+            var pathwithoutname = filepath.substring(
+                0,
+                filepath.length - filename.length
+            )
             if (pathwithoutname.endsWith("/")) {
                 pathwithoutname = pathwithoutname.substring(0, pathwithoutname.length - 1)
             }
@@ -394,7 +400,8 @@ fun getPathWithoutFilename(file: File?): File? {
  */
 fun getMimeType(file: File): String? {
     val extension = getExtension(file.name)
-    return if (extension!!.length > 0) MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.substring(1)) else "application/octet-stream"
+    return if (extension!!.length > 0) MimeTypeMap.getSingleton()
+        .getMimeTypeFromExtension(extension.substring(1)) else "application/octet-stream"
 }
 
 /**
@@ -460,17 +467,19 @@ fun isGooglePhotosUri(uri: Uri): Boolean {
  * @author paulburke
  */
 fun getDataColumn(
-        context: Context, uri: Uri?, selection: String?,
-        selectionArgs: Array<String>?
+    context: Context, uri: Uri?, selection: String?,
+    selectionArgs: Array<String>?
 ): String? {
     var cursor: Cursor? = null
     val column = "_data"
     val projection = arrayOf(
-            column
+        column
     )
     try {
-        cursor = context.contentResolver.query(uri!!, projection, selection, selectionArgs,
-                null)
+        cursor = context.contentResolver.query(
+            uri!!, projection, selection, selectionArgs,
+            null
+        )
         if (cursor != null && cursor.moveToFirst()) {
             if (BuildConfig.DEBUG) DatabaseUtils.dumpCursor(cursor)
             val column_index = cursor.getColumnIndexOrThrow(column)
@@ -498,14 +507,14 @@ fun getDataColumn(
  */
 fun getPath(context: Context, uri: Uri): String? {
     if (BuildConfig.DEBUG) Log.d(
-            TAG + " File -",
-            "Authority: " + uri.authority +
-                    ", Fragment: " + uri.fragment +
-                    ", Port: " + uri.port +
-                    ", Query: " + uri.query +
-                    ", Scheme: " + uri.scheme +
-                    ", Host: " + uri.host +
-                    ", Segments: " + uri.pathSegments.toString()
+        TAG + " File -",
+        "Authority: " + uri.authority +
+                ", Fragment: " + uri.fragment +
+                ", Port: " + uri.port +
+                ", Query: " + uri.query +
+                ", Scheme: " + uri.scheme +
+                ", Host: " + uri.host +
+                ", Segments: " + uri.pathSegments.toString()
     )
     val isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT
 
@@ -527,7 +536,8 @@ fun getPath(context: Context, uri: Uri): String? {
         } else if (isDownloadsDocument(uri)) {
             val id = DocumentsContract.getDocumentId(uri)
             val contentUri = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id))
+                Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
+            )
             return getDataColumn(context, contentUri, null, null)
         } else if (isMediaDocument(uri)) {
             val docId = DocumentsContract.getDocumentId(uri)
@@ -543,14 +553,19 @@ fun getPath(context: Context, uri: Uri): String? {
             }
             val selection = "_id=?"
             val selectionArgs = arrayOf(
-                    split[1]
+                split[1]
             )
             return getDataColumn(context, contentUri, selection, selectionArgs)
         }
     } else if ("content".equals(uri.scheme, ignoreCase = true)) {
 
         // Return the remote address
-        return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(context, uri, null, null)
+        return if (isGooglePhotosUri(uri)) uri.lastPathSegment else getDataColumn(
+            context,
+            uri,
+            null,
+            null
+        )
     } else if ("file".equals(uri.scheme, ignoreCase = true)) {
         return uri.path
     }
@@ -658,16 +673,18 @@ fun getThumbnail(context: Context, uri: Uri?, mimeType: String?): Bitmap? {
                 if (BuildConfig.DEBUG) Log.d(TAG, "Got thumb ID: $id")
                 if (mimeType!!.contains("video")) {
                     bm = MediaStore.Video.Thumbnails.getThumbnail(
-                            resolver,
-                            id.toLong(),
-                            MediaStore.Video.Thumbnails.MINI_KIND,
-                            null)
+                        resolver,
+                        id.toLong(),
+                        MediaStore.Video.Thumbnails.MINI_KIND,
+                        null
+                    )
                 } else if (mimeType.contains(MIME_TYPE_IMAGE)) {
                     bm = MediaStore.Images.Thumbnails.getThumbnail(
-                            resolver,
-                            id.toLong(),
-                            MediaStore.Images.Thumbnails.MINI_KIND,
-                            null)
+                        resolver,
+                        id.toLong(),
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        null
+                    )
                 }
             }
         } catch (e: java.lang.Exception) {
@@ -714,12 +731,22 @@ fun getFileSize(length: Double): String? {
     } else format.format(length) + "B"
 }
 
-fun resImageToFile(mActivity: Activity, mFileDirectory: File?, mFileName: String, mImage: Int): File? {
+fun resImageToFile(
+    mActivity: Activity,
+    mFileDirectory: File?,
+    mFileName: String,
+    mImage: Int
+): File? {
     val mResId = mActivity.resources
-            .getIdentifier("god_$mImage", "drawable", mActivity.packageName)
+        .getIdentifier("god_$mImage", "drawable", mActivity.packageName)
     val imageUri: Uri = getUriForDrawable(mActivity, mResId)
     try {
-        val mFile: File = mSaveInputStreamToFile(mActivity, mFileDirectory, mFileName, mActivity.contentResolver.openInputStream(imageUri)!!)!!
+        val mFile: File = mSaveInputStreamToFile(
+            mActivity,
+            mFileDirectory,
+            mFileName,
+            mActivity.contentResolver.openInputStream(imageUri)!!
+        )!!
         Log.i(TAG, "mThroughImage: mFile " + mFile.absolutePath)
         return mFile
     } catch (e: java.lang.Exception) {
@@ -728,7 +755,12 @@ fun resImageToFile(mActivity: Activity, mFileDirectory: File?, mFileName: String
     }
 }
 
-fun mSaveInputStreamToFile(mContext: Context?, mFileDirectory: File?, mFileName: String?, input: InputStream): File? {
+fun mSaveInputStreamToFile(
+    mContext: Context?,
+    mFileDirectory: File?,
+    mFileName: String?,
+    input: InputStream
+): File? {
     return try {
         val file = File(mFileDirectory, mFileName)
         file.mkdirs()
@@ -840,8 +872,8 @@ fun okioFileDownload(url: String, destFile: File): @NonNull Flowable<Pair<Boolea
 
 @Throws(IOException::class)
 fun download(
-        url: @NonNull String,
-        destFile: @NonNull File
+    url: @NonNull String,
+    destFile: @NonNull File
 ): @NonNull Flowable<Triple<Boolean, Long, File>> {
     return Flowable.create<Triple<Boolean, Long, File>>({ emitter ->
         var source: BufferedSource? = null
@@ -876,13 +908,18 @@ fun download(
 }
 
 fun Context.grandUriPermission(
-        intent: Intent,
-        uri: Uri
+    intent: Intent,
+    uri: Uri
 ) {
-    val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    val resInfoList =
+        packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
     for (resolveInfo in resInfoList) {
         val packageName = resolveInfo.activityInfo.packageName
-        grantUriPermission(packageName, uri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        grantUriPermission(
+            packageName,
+            uri,
+            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+        )
     }
 }
 
@@ -895,9 +932,66 @@ fun isImageFileExt(file: File): Boolean {
     return false
 }
 
-fun Context.readTextFile(uri:Uri): String {
+fun Context.readTextFile(uri: Uri): String {
     val inputStreamReader = InputStreamReader(contentResolver.openInputStream(uri))
     return inputStreamReader.buffered().use {
         it.readText()
     }
+}
+
+fun saveTextFile(
+    dirName: String,
+    fileNameExt: String,
+    text: String,
+    callback: (file: File?) -> Unit
+) {
+    callback(commonDocumentDirPath(dirName)?.let {
+        File(it, fileNameExt).writeText(text)
+        it
+    }.orElse {
+        null
+    })
+}
+
+fun Context.saveTextFileInternalCache(
+    text: String,
+    fileName: String = "file_${System.currentTimeMillis()}.txt",
+    callback: (file: File?) -> Unit
+) {
+    externalCacheDir?.let {
+        val shareFile = File("$it${File.separator}share", fileName)
+        shareFile.apply {
+            if (this.parentFile.exists() || this.parentFile.mkdirs()) {
+                shareFile.createNewFile()
+                shareFile.writeText(text)
+                callback(shareFile)
+            } else {
+                callback(null)
+            }
+        }
+    }.orElse {
+        callback(null)
+    }
+}
+
+fun commonDocumentDirPath(FolderName: String): File? {
+    var dir: File?
+    dir = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        File(
+            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+                .toString() + "/" + FolderName
+        )
+    } else {
+        File(Environment.getExternalStorageDirectory().toString() + "/" + FolderName)
+    }
+
+    // Make sure the path directory exists.
+    if (!dir.exists()) {
+        // Make it, if it doesn't exit
+        val success = dir.mkdirs()
+        if (!success) {
+            dir = null
+        }
+    }
+    return dir
 }

@@ -191,7 +191,6 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
             .addToBackStack(tag).commit()
     }
 
-
     fun replaceFragment(fragment: Fragment, containerId: Int) {
         val tag = fragment.javaClass.name
         val fragmentManager = supportFragmentManager
