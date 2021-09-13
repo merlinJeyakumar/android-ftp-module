@@ -16,7 +16,7 @@ object GeneralUtils {
         return ts + rand
     }
 
-    fun getAlphaNumericString(n: Int): String? { // chose a Character random from this String
+    fun getAlphaNumericString(n: Int = 12): String { // chose a Character random from this String
         val AlphaNumericString = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 + "0123456789"
                 + "abcdefghijklmnopqrstuvxyz")

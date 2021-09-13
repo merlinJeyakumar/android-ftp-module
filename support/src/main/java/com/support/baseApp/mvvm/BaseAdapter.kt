@@ -5,16 +5,16 @@ import com.support.utills.Log
 import com.support.widgets.BaseViewHolder
 import java.util.ArrayList
 
-abstract class BaseAdapter<ITEM_TYPE>() :
-    RecyclerView.Adapter<BaseViewHolder<ITEM_TYPE>>() {
+abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
+    RecyclerView.Adapter<BaseViewHolder<ITEM_TYPE,SELECTION_TYPE>>() {
     private val TAG: String = "BaseAdapter"
-    private val selectionList: MutableList<String> = ArrayList()
+    private val selectionList: MutableList<SELECTION_TYPE> = ArrayList()
 
     companion object {
         const val PAYLOAD_SELECTION_MODE: String = "is_selection_mode"
     }
 
-    fun setSelected(key: String) {
+    fun setSelected(key: SELECTION_TYPE) {
         if (isSelectable(key)) {
             if (selectionList.contains(key)) {
                 Log.e(TAG, "error: item already selected")
@@ -28,7 +28,7 @@ abstract class BaseAdapter<ITEM_TYPE>() :
         }
     }
 
-    fun clearSelection(topic: String) {
+    fun clearSelection(topic: SELECTION_TYPE) {
         if (!selectionList.contains(topic)) {
             Log.e(TAG, "error: item already cleared")
             return
@@ -63,7 +63,7 @@ abstract class BaseAdapter<ITEM_TYPE>() :
         notifyItemRangeChanged(0, allKeys.size, PAYLOAD_SELECTION_MODE)
     }
 
-    fun isSelected(topic: String): Boolean {
+    fun isSelected(topic: SELECTION_TYPE): Boolean {
         return selectionList.contains(topic)
     }
 
@@ -71,21 +71,21 @@ abstract class BaseAdapter<ITEM_TYPE>() :
         return selectionList.isNotEmpty()
     }
 
-    fun getSelections(): MutableList<String> {
+    fun getSelections(): MutableList<SELECTION_TYPE> {
         return selectionList
     }
 
     abstract fun getList():List<ITEM_TYPE>
 
-    open fun getIndex(itemKey: String): Int {
+    open fun getIndex(itemKey: SELECTION_TYPE): Int {
         return -1
     }
 
-    open fun getAllKeys(): List<String> {
+    open fun getAllKeys(): List<SELECTION_TYPE> {
         return listOf()
     }
 
-    open fun isSelectable(key: String): Boolean {
+    open fun isSelectable(key: SELECTION_TYPE): Boolean {
         return true
     }
 }

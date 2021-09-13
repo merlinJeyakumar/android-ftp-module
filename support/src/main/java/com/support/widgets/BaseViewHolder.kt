@@ -7,8 +7,8 @@ import com.support.utills.Log
 import org.jetbrains.anko.toast
 import java.io.File
 
-abstract class BaseViewHolder<M>(
-    private val selectedList: List<String>,
+abstract class BaseViewHolder<M,SELECTION_TYPE>(
+    private val selectedList: List<SELECTION_TYPE>,
     itemView: View
 ) : RecyclerView.ViewHolder(itemView) {
 
@@ -31,11 +31,11 @@ abstract class BaseViewHolder<M>(
     ) {
     }
 
-    fun getSelectionList(): List<String> {
+    fun getSelectionList(): List<SELECTION_TYPE> {
         return selectedList
     }
 
-    fun isSelected(text: String): Boolean {
+    fun isSelected(text: SELECTION_TYPE): Boolean {
         return getSelectionList().contains(text)
     }
 
