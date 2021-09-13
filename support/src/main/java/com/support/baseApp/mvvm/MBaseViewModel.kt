@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import com.support.inline.orElse
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -59,7 +60,7 @@ abstract class MBaseViewModel constructor(application: Application) :
         clearAllCalls()
     }
 
-    suspend fun runOnUiThread(callback: () -> Unit) {
+    suspend fun runOnUiThread(callback: suspend CoroutineScope.() -> Unit) {
         withContext(Dispatchers.Main) {
             callback()
         }
