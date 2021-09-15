@@ -14,7 +14,7 @@ abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
         const val PAYLOAD_SELECTION_MODE: String = "is_selection_mode"
     }
 
-    fun setSelected(key: SELECTION_TYPE) {
+    fun setSelected(key: SELECTION_TYPE) { //todo: selecting heppen for unselectable topic
         if (isSelectable(key)) {
             if (selectionList.contains(key)) {
                 Log.e(TAG, "error: item already selected")
@@ -40,8 +40,8 @@ abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
         )
     }
 
-    fun clearSelection(updateAll: Boolean = false) {
-        if (updateAll) {
+    fun clearSelection(notifyAll: Boolean = false) {
+        if (notifyAll) {
             for (topicId in selectionList) {
                 val itemId = getIndex(topicId)
                 if (itemId != -1) {
@@ -56,11 +56,26 @@ abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
         selectionList.clear()
     }
 
-    fun selectAll() {
-        val allKeys = getAllKeys()
+    fun selectAll(notifyAll: Boolean = true) {
+        val selectableKeys = mutableListOf<SELECTION_TYPE>()
+        for (key in getAllKeys()) {
+            if (isSelectable(key)) {
+                selectableKeys.add(key)
+            }
+        }
         selectionList.clear()
-        selectionList.addAll(allKeys)
-        notifyItemRangeChanged(0, allKeys.size, PAYLOAD_SELECTION_MODE)
+        selectionList.addAll(selectableKeys)
+        if (notifyAll) {
+            notifyDataSetChanged()
+        } else {
+            for (selectableKey in selectableKeys) {
+                val itemId = getIndex(selectableKey)
+                if (itemId != -1) {
+                    notifyItemChanged(itemId, PAYLOAD_SELECTION_MODE)
+                }
+            }
+        }
+
     }
 
     fun isSelected(topic: SELECTION_TYPE): Boolean {
