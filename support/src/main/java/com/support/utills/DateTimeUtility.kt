@@ -38,13 +38,13 @@ fun getTimeDifference(
     //1 = Minutes
     //2 = Hours
     //3 = Days
-    val localCreatedDate = SimpleDateFormat("dd-M-yyyy HH:mm:ss aa",Locale.getDefault())
+    val localCreatedDate = SimpleDateFormat("dd-M-yyyy HH:mm:ss aa", Locale.getDefault())
         .format(Date(toMilliSecond.toLong()))
-    val localExpireDate = SimpleDateFormat("dd-M-yyyy HH:mm:ss aa",Locale.getDefault())
+    val localExpireDate = SimpleDateFormat("dd-M-yyyy HH:mm:ss aa", Locale.getDefault())
         .format(Date(fromMilliSecond.toLong()))
     //Log.i(TAG, "get_time_difference: localCreatedDate " + localCreatedDate);
     //Log.i(TAG, "get_time_difference: localExpireDate " + localExpireDate);
-    val dateFormat = SimpleDateFormat("dd-M-yyyy HH:mm:ss aa",Locale.getDefault())
+    val dateFormat = SimpleDateFormat("dd-M-yyyy HH:mm:ss aa", Locale.getDefault())
     var Created_convertedDate: Date? = null
     var Expire_CovertedDate: Date? = null
     var todayWithZeroTime: Date? = null
@@ -106,7 +106,7 @@ fun parseStringDateToCalendar(
     // EEE MMM dd HH:mm:ss z yyyy
     // Mon Mar 14 16:02:37 GMT 2011
     val calendar = Calendar.getInstance()
-    val simpleDateFormat = SimpleDateFormat(formatPattern,Locale.getDefault())
+    val simpleDateFormat = SimpleDateFormat(formatPattern, Locale.getDefault())
     try {
         calendar.time = simpleDateFormat.parse(inputString) // all done
     } catch (e: ParseException) {
@@ -117,7 +117,7 @@ fun parseStringDateToCalendar(
 
 fun parseDateFromMilliseconds(
     milliSecond: Long,
-    formatPattern: String?
+    formatPattern: String = DateTimePattern
 ): String? {
     //dd-M-yyyy hh:mm:ss
     return SimpleDateFormat(formatPattern, Locale.getDefault())
@@ -126,7 +126,7 @@ fun parseDateFromMilliseconds(
 
 fun parseMillisFromString(formatPattern: String?): Long {
     //String date_ = date;
-    val sdf = SimpleDateFormat("dd-M-yyyy HH:mm:ss",Locale.getDefault())
+    val sdf = SimpleDateFormat("dd-M-yyyy HH:mm:ss", Locale.getDefault())
     return try {
         val mDate = sdf.parse(formatPattern)
         val timeInMilliseconds = mDate.time
@@ -165,7 +165,7 @@ fun getCalendarDifference(
     return 0
 }
 
-fun getParsedTodayDateTime(pattern: String?): String? {
+fun getParsedTodayDateTime(pattern: String = DateTimePattern): String? {
     return parseDateFromMilliseconds(System.currentTimeMillis(), pattern)
 }
 
