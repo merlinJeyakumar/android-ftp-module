@@ -40,7 +40,7 @@ ext.versions = [
         firebase_database      : "20.0.0",
         google_play_core       : "1.7.2",
         lifecycle              : "2.2.0",
-        room                   : "2.3.0",
+        room                   : "2.4.0-alpha04",
         joda_time              : "2.10",
         joda_convert           : "2.1.1",
         paging_runtime         : "2.1.0",
