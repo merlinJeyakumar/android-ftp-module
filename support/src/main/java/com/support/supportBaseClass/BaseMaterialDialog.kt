@@ -45,5 +45,10 @@ abstract class BaseMaterialDialog<B : ViewBinding>(
         return alertDialog?.isShowing.orElse { false }
     }
 
+    fun setCancellable(boolean: Boolean): AlertDialog {
+        super.setCancelable(boolean)
+        return this.alertDialog!!
+    }
+
     abstract fun onCreate(binding: B)
 }
