@@ -22,8 +22,8 @@ import androidx.core.content.ContextCompat.startActivity
 
 
 
-fun getProgress(progressed: Long, totalCount: Long) {
-    ((progressed * 100f) / totalCount)
+fun getProgress(progressed: Long, totalCount: Long): Float {
+    return ((progressed * 100f) / totalCount)
 }
 
 fun Activity.startCall(phoneNumber: String) {

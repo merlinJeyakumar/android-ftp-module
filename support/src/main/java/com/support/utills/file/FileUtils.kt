@@ -1,6 +1,5 @@
 package com.support.utills.file
 
-import android.R.attr
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
@@ -22,6 +21,7 @@ import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.support.BuildConfig
+import com.support.inline.orElse
 import io.reactivex.rxjava3.annotations.NonNull
 import io.reactivex.rxjava3.core.*
 import okhttp3.OkHttpClient
@@ -41,9 +41,6 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 import java.util.zip.ZipInputStream
-import android.R.attr.data
-import com.support.inline.orElse
-import java.lang.StringBuilder
 
 
 @JvmField
