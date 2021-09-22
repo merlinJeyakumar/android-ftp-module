@@ -7,7 +7,7 @@ import com.support.utills.Log
 import org.jetbrains.anko.toast
 import java.io.File
 
-abstract class BaseViewHolder<M,SELECTION_TYPE>(
+abstract class BaseViewHolder<M, SELECTION_TYPE>(
     private val selectedList: List<SELECTION_TYPE>,
     itemView: View
 ) : RecyclerView.ViewHolder(itemView) {
@@ -28,6 +28,13 @@ abstract class BaseViewHolder<M,SELECTION_TYPE>(
         position: Int,
         item: M,
         payload: List<Any>
+    ) {
+    }
+
+    open fun setOptions(
+        position: Int,
+        item: M,
+        option: Map<String,Any>
     ) {
     }
 
