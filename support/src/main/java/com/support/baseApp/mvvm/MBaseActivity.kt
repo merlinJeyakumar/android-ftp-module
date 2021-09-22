@@ -31,6 +31,9 @@ import com.support.dialog.getInformationDialog
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.ma_base_layout.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppCompatActivity(),
@@ -110,7 +113,7 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
             })
 
         viewModel.showInformationDialog.observe(this@MBaseActivity, Observer {
-            alertDialog = getInformationDialog(title = it.first, message = it.second)
+            showInformationDialog(it.first, it.second)
         })
 
         viewModel.showLoaderDialog.observe(this@MBaseActivity, Observer {
@@ -319,6 +322,13 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
 
     val activity: Activity = this
 
+    fun showInformationDialog(
+        title: String = resources.getString(R.string.app_name),
+        message: String
+    ) {
+        alertDialog = getInformationDialog(title = title, message = message)
+    }
+
     fun showMessage(@StringRes resId: Int) {
         showMessage(true, getString(resId))
     }
@@ -439,5 +449,11 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
 
     fun hideLoader() {
         progressDialog?.dismiss()
+    }
+
+    suspend fun runOnUiThread(callback: suspend CoroutineScope.() -> Unit) {
+        withContext(Dispatchers.Main) {
+            callback()
+        }
     }
 }

@@ -943,8 +943,7 @@ fun saveTextFile(
     callback: (file: File?) -> Unit
 ) {
     callback(commonDocumentDirPath(dirName)?.let {
-        File(it, fileNameExt).writeText(text)
-        it
+        return@let File(it, fileNameExt).apply { writeText(text) }
     }.orElse {
         null
     })
