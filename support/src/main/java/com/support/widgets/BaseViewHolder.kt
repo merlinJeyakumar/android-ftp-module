@@ -3,9 +3,7 @@ package com.support.widgets
 import android.content.Context
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.support.utills.Log
 import org.jetbrains.anko.toast
-import java.io.File
 
 abstract class BaseViewHolder<M, SELECTION_TYPE>(
     private val selectedList: List<SELECTION_TYPE>,
@@ -34,7 +32,7 @@ abstract class BaseViewHolder<M, SELECTION_TYPE>(
     open fun setOptions(
         position: Int,
         item: M,
-        option: Map<String,Any>
+        option: Map<String, Any> = mutableMapOf()
     ) {
     }
 
