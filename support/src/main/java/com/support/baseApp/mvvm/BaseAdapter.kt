@@ -1,14 +1,12 @@
 package com.support.baseApp.mvvm
 
-import androidx.recyclerview.widget.AsyncListDiffer
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.support.utills.Log
 import com.support.widgets.BaseViewHolder
-import java.util.*
+import java.util.ArrayList
 
-abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE> :
-    RecyclerView.Adapter<BaseViewHolder<ITEM_TYPE, SELECTION_TYPE>>() {
+abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
+    RecyclerView.Adapter<BaseViewHolder<ITEM_TYPE,SELECTION_TYPE>>() {
     private val TAG: String = "BaseAdapter"
     private val selectionList: MutableList<SELECTION_TYPE> = ArrayList()
 
@@ -16,7 +14,7 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE> :
         const val PAYLOAD_SELECTION_MODE: String = "is_selection_mode"
     }
 
-    fun setSelected(key: SELECTION_TYPE) {
+    fun setSelected(key: SELECTION_TYPE) { //todo: selecting heppen for unselectable topic
         if (isSelectable(key)) {
             if (selectionList.contains(key)) {
                 Log.e(TAG, "error: item already selected")
@@ -30,20 +28,20 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE> :
         }
     }
 
-    fun clearSelection(key: SELECTION_TYPE) {
-        if (!selectionList.contains(key)) {
+    fun clearSelection(topic: SELECTION_TYPE) {
+        if (!selectionList.contains(topic)) {
             Log.e(TAG, "error: item already cleared")
             return
         }
-        selectionList.remove(key)
+        selectionList.remove(topic)
         notifyItemChanged(
-            getIndex(key),
+            getIndex(topic),
             PAYLOAD_SELECTION_MODE
         )
     }
 
     fun clearSelection(notifyAll: Boolean = false) {
-        if (!notifyAll) {
+        if (notifyAll) {
             for (topicId in selectionList) {
                 val itemId = getIndex(topicId)
                 if (itemId != -1) {
@@ -52,7 +50,7 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE> :
                     Log.e(TAG, "error: item not found $topicId")
                 }
             }
-        } else {
+        }else{
             notifyDataSetChanged()
         }
         selectionList.clear()
@@ -80,8 +78,8 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE> :
 
     }
 
-    fun isSelected(key: SELECTION_TYPE): Boolean {
-        return selectionList.contains(key)
+    fun isSelected(topic: SELECTION_TYPE): Boolean {
+        return selectionList.contains(topic)
     }
 
     fun isSelectionMode(): Boolean {
@@ -92,11 +90,7 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE> :
         return selectionList
     }
 
-    fun getList(): List<ITEM_TYPE>{
-        return asyncListDiffer.currentList
-    }
-
-    override fun getItemCount(): Int = fileList.size
+    abstract fun getList():List<ITEM_TYPE>
 
     open fun getIndex(itemKey: SELECTION_TYPE): Int {
         return -1
@@ -109,32 +103,4 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE> :
     open fun isSelectable(key: SELECTION_TYPE): Boolean {
         return true
     }
-
-    private val asyncDiffCallback: DiffUtil.ItemCallback<ITEM_TYPE>
-        get() = object : DiffUtil.ItemCallback<ITEM_TYPE>() {
-            override fun areItemsTheSame(
-                oldItem: ITEM_TYPE,
-                newItem: ITEM_TYPE
-            ): Boolean {
-                return isSameItem(oldItem, newItem)
-            }
-
-            override fun areContentsTheSame(
-                oldItem: ITEM_TYPE,
-                newItem: ITEM_TYPE
-            ): Boolean {
-                return isSameContent(oldItem, newItem)
-            }
-        }
-
-    private var asyncListDiffer: AsyncListDiffer<ITEM_TYPE> =
-        AsyncListDiffer(this, asyncDiffCallback)
-    open val fileList: List<ITEM_TYPE> get() = asyncListDiffer.currentList
-
-    open fun submitList(list: List<ITEM_TYPE>) {
-        asyncListDiffer.submitList(list)
-    }
-
-    abstract fun isSameItem(oldItem: ITEM_TYPE, newItem: ITEM_TYPE):Boolean
-    abstract fun isSameContent(oldItem: ITEM_TYPE, newItem: ITEM_TYPE): Boolean
 }
