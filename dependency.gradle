@@ -1,7 +1,7 @@
 ext.versions = [
         compile_sdk            : 30,
         min_sdk                : 19,
-        target_sdk             : 29,
+        target_sdk             : 28,
         versionCode            : 1,
         build_tools            : "30.0.1",
         core_ktx               : "1.1.0-alpha05",
@@ -40,7 +40,7 @@ ext.versions = [
         firebase_database      : "20.0.0",
         google_play_core       : "1.7.2",
         lifecycle              : "2.2.0",
-        room                   : "2.4.0-alpha04",
+        room                   : "2.3.0",
         joda_time              : "2.10",
         joda_convert           : "2.1.1",
         paging_runtime         : "2.1.0",
