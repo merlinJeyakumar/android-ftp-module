@@ -1,12 +1,15 @@
 package com.support.baseApp.mvvm
 
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.support.utills.Log
 import com.support.widgets.BaseViewHolder
-import java.util.ArrayList
+import java.util.*
 
-abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
-    RecyclerView.Adapter<BaseViewHolder<ITEM_TYPE,SELECTION_TYPE>>() {
+abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE>(diffCallback: DiffUtil.ItemCallback<ITEM_TYPE>) :
+    ListAdapter<ITEM_TYPE, BaseViewHolder<ITEM_TYPE, SELECTION_TYPE>>(diffCallback) {
+
+
     private val TAG: String = "BaseAdapter"
     private val selectionList: MutableList<SELECTION_TYPE> = ArrayList()
 
@@ -50,7 +53,7 @@ abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
                     Log.e(TAG, "error: item not found $topicId")
                 }
             }
-        }else{
+        } else {
             notifyDataSetChanged()
         }
         selectionList.clear()
@@ -90,7 +93,7 @@ abstract class BaseAdapter<ITEM_TYPE,SELECTION_TYPE> :
         return selectionList
     }
 
-    abstract fun getList():List<ITEM_TYPE>
+    abstract fun getList(): List<ITEM_TYPE>
 
     open fun getIndex(itemKey: SELECTION_TYPE): Int {
         return -1
