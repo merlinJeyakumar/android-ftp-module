@@ -13,9 +13,13 @@ object Utils {
         }
     }
 
-    fun RecyclerView.scrolledToPosition(int: Int) {
+    fun RecyclerView.scrollToPositionSmooth(int: Int) {
         this.layoutManager?.startSmoothScroll(this.context.getSmoothScroll().apply {
             targetPosition = int
         })
+    }
+
+    fun RecyclerView.scrollToPositionFast(position: Int) {
+        this.layoutManager?.scrollToPosition(position)
     }
 }
