@@ -451,7 +451,7 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
         progressDialog?.dismiss()
     }
 
-    suspend fun runOnUiThread(callback: suspend CoroutineScope.() -> Unit) {
+    suspend fun runOnMainThread(callback: suspend CoroutineScope.() -> Unit) {
         withContext(Dispatchers.Main) {
             callback()
         }
