@@ -33,6 +33,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.ma_base_layout.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
@@ -449,6 +450,12 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
 
     fun hideLoader() {
         progressDialog?.dismiss()
+    }
+
+    fun runOnNewThread(callback: suspend CoroutineScope.() -> Unit){
+        CoroutineScope(Dispatchers.IO).launch {
+            callback()
+        }
     }
 
     suspend fun runOnMainThread(callback: suspend CoroutineScope.() -> Unit) {

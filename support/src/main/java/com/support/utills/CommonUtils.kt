@@ -5,21 +5,13 @@ import android.content.*
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.webkit.MimeTypeMap
-import androidx.core.app.ShareCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.support.R
 import java.io.File
 import java.util.*
-import kotlin.collections.ArrayList
-import android.content.Intent
-
-import androidx.core.content.ContextCompat.startActivity
-
-
-
 
 
 fun getProgress(progressed: Long, totalCount: Long): Float {
@@ -40,8 +32,16 @@ fun Any.toJson(): String? {
     return null
 }
 
+fun <T> String.jsonToList(): List<T>? {
+    return try {
+        Gson().fromJson(this, object : TypeToken<List<T>>() {}.type)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
 
-fun Activity.shareText(description:String){
+fun Activity.shareText(description: String) {
     val sharebody = description
 
     // The value which we will sending through data via
@@ -71,7 +71,7 @@ fun Context.shareFileText(
     fileMimeType: Array<String> = arrayOf("text/*"),
     emailAddress: String? = null,
     emailSubject: String = "YOUR_SUBJECT_HERE - ${this.getString(R.string.app_name)}",
-    description: String = ""
+    description: String = "",
 ) {
     val intentShareFile = Intent(Intent.ACTION_SEND)
     if (fileList != null) {
@@ -163,6 +163,6 @@ fun Context.getPlayStoreUrl(): String {
     return "https://play.google.com/store/apps/details?id=" + applicationContext.packageName
 }
 
-fun Activity.sharePlayStoreUrl(){
+fun Activity.sharePlayStoreUrl() {
     shareFileText(description = "${resources.getString(R.string.app_name)}\n\nHope you like this application!\n\n${getPlayStoreUrl()}")
 }
