@@ -1,7 +1,7 @@
 package com.support.baseApp.mvvm
 
 import androidx.recyclerview.widget.DiffUtil
-
+import com.support.inline.orElse
 import com.support.utills.Log
 import com.support.widgets.BaseViewHolder
 import com.support.widgets.ListAdapter
@@ -10,12 +10,35 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.*
 
-abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE>(diffCallback: DiffUtil.ItemCallback<ITEM_TYPE>) :
-    ListAdapter<ITEM_TYPE, BaseViewHolder<ITEM_TYPE, SELECTION_TYPE>>(diffCallback) {
-
+abstract class BaseAdapter2<ITEM_TYPE, SELECTION_TYPE>() :
+    ListAdapter<ITEM_TYPE, BaseViewHolder<ITEM_TYPE, SELECTION_TYPE>>() {
 
     private val TAG: String = "BaseAdapter"
     private val selectionList: MutableList<SELECTION_TYPE> = ArrayList()
+
+    init {
+        val diffItemCallback = object : DiffUtil.ItemCallback<ITEM_TYPE>() {
+            override fun areItemsTheSame(
+                oldItem: ITEM_TYPE,
+                newItem: ITEM_TYPE
+            ): Boolean {
+                return isSameItem(oldItem,newItem)
+            }
+
+            override fun areContentsTheSame(
+                oldItem: ITEM_TYPE,
+                newItem: ITEM_TYPE
+            ): Boolean {
+                return isSameContent(oldItem,newItem)
+            }
+
+            override fun getChangePayload(oldItem: ITEM_TYPE, newItem: ITEM_TYPE): Any? {
+                return getChangePayload()?.let { it }
+                    .orElse { super.getChangePayload(oldItem, newItem) }
+            }
+        }
+        init(diffItemCallback)
+    }
 
     companion object {
         const val PAYLOAD_SELECTION_MODE: String = "is_selection_mode"
@@ -48,7 +71,7 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE>(diffCallback: DiffUtil.Ite
     }
 
     fun clearSelection(notifyAll: Boolean = false) {
-        if (notifyAll) {
+        if (!notifyAll) {
             for (topicId in selectionList) {
                 val itemId = getIndex(topicId)
                 if (itemId != -1) {
@@ -109,6 +132,18 @@ abstract class BaseAdapter<ITEM_TYPE, SELECTION_TYPE>(diffCallback: DiffUtil.Ite
 
     open fun isSelectable(key: SELECTION_TYPE): Boolean {
         return true
+    }
+
+    open fun isSameItem(oldItem: ITEM_TYPE, newItem: ITEM_TYPE): Boolean {
+        return false
+    }
+
+    open fun isSameContent(oldItem: ITEM_TYPE, newItem: ITEM_TYPE): Boolean {
+        return true
+    }
+
+    open fun getChangePayload():Any?{
+        return null
     }
 
     suspend fun runOnUiThread(callback: suspend CoroutineScope.() -> Unit) {

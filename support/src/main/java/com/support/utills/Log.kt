@@ -9,6 +9,7 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 
+//todo: timber log
 object Log {
     @JvmStatic
     fun i(TAG: String?, message: String?) {

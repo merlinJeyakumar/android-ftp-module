@@ -50,4 +50,12 @@ object TextUtills {
     fun getFirebaseKeyInEmail(email: String): String {
         return email.replace("\\.".toRegex(), "").replace("@".toRegex(), "")
     }
+
+    fun String.substringOrReturn(maxLength: Int): String {
+        return if (length > maxLength) {
+            substring(0, maxLength)
+        }else{
+            this
+        }
+    }
 }

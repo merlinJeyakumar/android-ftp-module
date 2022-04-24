@@ -22,15 +22,19 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
-import com.support.device.connection.ConnectivityLiveData
 import com.google.android.material.snackbar.Snackbar
 import com.support.R
-import com.support.dialog.getLoaderDialog
 import com.support.baseApp.mvvm.dialog.MConfirmationDialog
+import com.support.device.connection.ConnectivityLiveData
 import com.support.dialog.getInformationDialog
+import com.support.dialog.getLoaderDialog
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import kotlinx.android.synthetic.main.ma_base_layout.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppCompatActivity(),
@@ -110,7 +114,7 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
             })
 
         viewModel.showInformationDialog.observe(this@MBaseActivity, Observer {
-            alertDialog = getInformationDialog(title = it.first, message = it.second)
+            showInformationDialog(it.first, it.second)
         })
 
         viewModel.showLoaderDialog.observe(this@MBaseActivity, Observer {
@@ -319,6 +323,13 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
 
     val activity: Activity = this
 
+    fun showInformationDialog(
+        title: String = resources.getString(R.string.app_name),
+        message: String
+    ) {
+        alertDialog = getInformationDialog(title = title, message = message)
+    }
+
     fun showMessage(@StringRes resId: Int) {
         showMessage(true, getString(resId))
     }
@@ -425,19 +436,33 @@ abstract class MBaseActivity<B : ViewDataBinding, VM : MBaseViewModel> : AppComp
         isCancelable: Boolean = false,
         disposable: Disposable? = null
     ) {
-        if (progressDialog != null && progressDialog?.isShowing!!) {
-            progressDialog?.setMessage(message)
-            progressDialog?.setCancelable(isCancelable)
-            return
+        this@MBaseActivity.runOnUiThread {
+            if (progressDialog != null && progressDialog?.isShowing!!) {
+                progressDialog?.setMessage(message)
+                progressDialog?.setCancelable(isCancelable)
+                return@runOnUiThread
+            }
+            progressDialog = getLoaderDialog(
+                message = message,
+                isCancellable = isCancelable
+            )
+            progressDialog?.setOnDismissListener { disposable?.dispose() }
         }
-        progressDialog = getLoaderDialog(
-            message = message,
-            isCancellable = isCancelable
-        )
-        progressDialog?.setOnDismissListener { disposable?.dispose() }
     }
 
     fun hideLoader() {
         progressDialog?.dismiss()
+    }
+
+    fun runOnNewThread(callback: suspend CoroutineScope.() -> Unit){
+        CoroutineScope(Dispatchers.IO).launch {
+            callback()
+        }
+    }
+
+    suspend fun runOnMainThread(callback: suspend CoroutineScope.() -> Unit) {
+        withContext(Dispatchers.Main) {
+            callback()
+        }
     }
 }

@@ -14,6 +14,7 @@ enum class DateFormatType(val value: String) {
     hh_mm_ss_a("hh:mm:ss a"),
     dd_MM_hh_mm_a("dd'/'MM',' hh:mm a"),
     dd_MM_yyyy("dd-MM-yyyy"),
+    dd_MM_yyyy_hh_mm_ss("dd-MM-yyyy HH:mm:ss"),
     yyyy_MM_dd_T_HH_mm_ss_SSS_Z("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 }
 
