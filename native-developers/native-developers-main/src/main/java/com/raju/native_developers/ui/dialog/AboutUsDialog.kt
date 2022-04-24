@@ -28,7 +28,7 @@ class AboutUsDialog(
 
     private fun intiListener() {
         binding.profileFrameLayout.setOnClickListener {
-            openURL(activity, developerModel.remote_dev_profile_link)
+            openURL(activity, developerModel.developerLink)
         }
         binding.requestSomethingAppCompatTextView.setOnClickListener {
             contactUs()
@@ -39,8 +39,8 @@ class AboutUsDialog(
     }
 
     private fun initUi() {
-        binding.developerNameAppCompatTextView.text = developerModel.remote_dev_developer_name
-        binding.organisationNameAppCompatTextView.text = developerModel.remote_dev_organisation_name
+        binding.developerNameAppCompatTextView.text = developerModel.developerName
+        binding.organisationNameAppCompatTextView.text = developerModel.organisationName
         binding.appNameAppCompatTextView.text = appName
     }
 }
