@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="remote_dev_developer_name">developer_remote_name</string>
-    <string name="remote_dev_email_address">developer_contact_email</string>
-    <string name="remote_dev_profile_link">developer_profile_link</string>
-    <string name="remote_dev_mobile_number">developer_mobile_number</string>
-    <string name="remote_dev_organisation_name">developer_organisation_name</string>
-    <string name="remote_dev_publisher_link">developer_publisher_link</string>
+    <string name="remote_developer_detail">developer_detail</string>
     <string name="remote_dev_dynamic_link">developer_dynamic_link</string>
 </resources>

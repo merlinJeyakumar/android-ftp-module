@@ -4,12 +4,12 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class DeveloperModel(
-    val developerName: String,
-    val developerEmail: String,
-    val developerLink: String,
-    val developerPhone: String,
-    val organisationName:String,
-    val publisherLink: String
+    val remote_dev_developer_name: String,
+    val remote_dev_email_address: String,
+    val remote_dev_profile_link: String,
+    val remote_dev_mobile_number: String,
+    val remote_dev_organisation_name:String,
+    val remote_dev_publisher_link: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
@@ -22,12 +22,12 @@ data class DeveloperModel(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(organisationName)
-        parcel.writeString(developerName)
-        parcel.writeString(developerLink)
-        parcel.writeString(developerPhone)
-        parcel.writeString(developerEmail)
-        parcel.writeString(publisherLink)
+        parcel.writeString(remote_dev_organisation_name)
+        parcel.writeString(remote_dev_developer_name)
+        parcel.writeString(remote_dev_profile_link)
+        parcel.writeString(remote_dev_mobile_number)
+        parcel.writeString(remote_dev_email_address)
+        parcel.writeString(remote_dev_publisher_link)
     }
 
     override fun describeContents(): Int {
