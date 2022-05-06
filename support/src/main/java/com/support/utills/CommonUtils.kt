@@ -1,8 +1,12 @@
 package com.support.utills
 
 import android.app.Activity
+import android.app.UiModeManager
 import android.content.*
+import android.content.Context.UI_MODE_SERVICE
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.Uri
 import android.webkit.MimeTypeMap
 import androidx.core.content.ContextCompat.startActivity
@@ -165,4 +169,13 @@ fun Context.getPlayStoreUrl(): String {
 
 fun Activity.sharePlayStoreUrl() {
     shareFileText(description = "${resources.getString(R.string.app_name)}\n\nHope you like this application!\n\n${getPlayStoreUrl()}")
+}
+
+fun Context.isAndroidTV(): Boolean {
+    val uiModeManager = getSystemService(UI_MODE_SERVICE) as UiModeManager?
+    return uiModeManager?.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION ?: false
+}
+
+fun Context.hasCamera(): Boolean {
+    return packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
 }
