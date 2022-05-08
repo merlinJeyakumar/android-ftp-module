@@ -18,10 +18,6 @@ class ClientManager(
     lateinit var credentialModel: CredentialModel
     private var clientState: ClientState = ClientState.DISCONNECTED
 
-    fun setCredentials(credentialModel: CredentialModel) {
-        this.credentialModel = credentialModel
-    }
-
     fun build(): IClientManager {
         return this
     }
@@ -172,4 +168,10 @@ class ClientManager(
             callback(false, "Kindly retry unable to process")
         }
     }
+
+    override fun setCredentials(credentialModel: CredentialModel): ClientManager {
+        this.credentialModel = credentialModel
+        return this
+    }
+
 }

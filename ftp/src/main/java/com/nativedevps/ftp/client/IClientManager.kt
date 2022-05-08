@@ -1,11 +1,12 @@
 package com.nativedevps.ftp.client
 
+import com.nativedevps.ftp.model.CredentialModel
 import org.apache.commons.net.ftp.FTPFile
 import java.io.InputStream
 import java.io.OutputStream
 
 abstract class IClientManager {
-    abstract fun isActiveConnection():Boolean
+    abstract fun isActiveConnection(): Boolean
 
     enum class ClientState {
         ERROR,
@@ -25,15 +26,16 @@ abstract class IClientManager {
         fileName: String,
         outputStream: OutputStream,
         progress: ((Int) -> Unit)?,
-        callback: (Boolean, String?) -> Unit
+        callback: (Boolean, String?) -> Unit,
     )
 
     abstract suspend fun push(
         fileName: String,
         inputStream: InputStream,
         progress: ((Int) -> Unit)?,
-        callback: (Boolean, String?) -> Unit
+        callback: (Boolean, String?) -> Unit,
     )
 
     abstract fun disconnect(callback: (Boolean, String?) -> Unit)
+    abstract fun setCredentials(credentialModel: CredentialModel): ClientManager
 }

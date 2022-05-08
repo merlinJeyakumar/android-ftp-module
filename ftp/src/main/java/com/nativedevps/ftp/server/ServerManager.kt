@@ -1,12 +1,12 @@
 package com.nativedevps.ftp.server
 
 import android.content.Context
+import android.net.wifi.WifiManager
 import android.os.Environment
-import androidx.core.content.ContextCompat
-import com.nativedevps.ftp.checkWifiOnAndConnected
-import com.nativedevps.ftp.getWiFiIpAddress
-import com.nativedevps.ftp.wifiHotspotEnabled
 import com.support.utills.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.support.device.connection.WiFiReceiverManager
 import org.apache.ftpserver.ConnectionConfigFactory
 import org.apache.ftpserver.FtpServer
 import org.apache.ftpserver.FtpServerFactory
@@ -20,6 +20,8 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.lang.reflect.InvocationTargetException
+import java.lang.reflect.Method
+import java.util.*
 
 
 class ServerManager private constructor(val context: Context) :
@@ -73,14 +75,14 @@ class ServerManager private constructor(val context: Context) :
         username: String?,
         password: String?,
         serverBrowserPath: String,
-        port: Int,
+        port: Int
     ) {
-        val wiFiIpAddress = getWiFiIpAddress(context)
+        val wiFiIpAddress = getWiFiIpAddress()
         // anonymous/authenticated
         fileTransferServerConnectionProperties = FileTransferServerConnectionProperties(
             userName = username,
             password = password,
-            address = getWiFiIpAddress(context),
+            address = getWiFiIpAddress(),
             browsePath = serverBrowserPath,
             port = port,
             exception = null
@@ -98,8 +100,7 @@ class ServerManager private constructor(val context: Context) :
 
     private fun getUser(transferServerConnectionProperties: FileTransferServerConnectionProperties): BaseUser {
         return if (transferServerConnectionProperties.userName != null && transferServerConnectionProperties.password != null) {
-            getAuthenticatedUser(transferServerConnectionProperties.userName!!,
-                transferServerConnectionProperties.password!!)
+            getAuthenticatedUser(transferServerConnectionProperties.userName!!,transferServerConnectionProperties.password!!)
         } else {
             getAnonymousUser()
         }
@@ -137,7 +138,7 @@ class ServerManager private constructor(val context: Context) :
         override fun afterCommand(
             session: FtpSession,
             request: FtpRequest,
-            reply: FtpReply,
+            reply: FtpReply
         ): FtpletResult {
             Log.e(TAG, "afterCommand ${session.sessionId} ${request.command} ${reply.message}")
             return FtpletResult.DEFAULT
@@ -156,7 +157,7 @@ class ServerManager private constructor(val context: Context) :
 
     private fun getAuthenticatedUser(
         username: String = "admin",
-        pass: String = "pass",
+        pass: String = "pass"
     ): BaseUser {
         val user = BaseUser()
         user.name = username.trim()
@@ -241,12 +242,11 @@ class ServerManager private constructor(val context: Context) :
     private fun setupStart(
         port: Int,
         propsFile: File,
-        user: BaseUser,
+        user: BaseUser
     ) {
         listenerFactory.port = port
         ftpServerFactory.addListener("default", listenerFactory.createListener())
-        val files =
-            File(ContextCompat.getExternalFilesDirs(context, null)[0].path + "/users.properties")
+        val files = File(ContextCompat.getExternalFilesDirs(context, null)[0].path + "/users.properties")
         if (!files.exists()) {
             try {
                 files.createNewFile()
@@ -265,8 +265,37 @@ class ServerManager private constructor(val context: Context) :
         startServer()
     }
 
+    @Throws(InvocationTargetException::class, IllegalAccessException::class)
+    private fun wifiHotspotEnabled(context: Context): Boolean {
+        val manager =
+            context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+        var method: Method? = null
+        try {
+            method = manager.javaClass.getDeclaredMethod("isWifiApEnabled")
+        } catch (e: NoSuchMethodException) {
+            e.printStackTrace()
+        }
+        method!!.isAccessible = true //in the case of visibility change in future APIs
+        return method.invoke(manager) as Boolean
+    }
+
+    private fun checkWifiOnAndConnected(context: Context): Boolean {
+        val wifiMgr =
+            (context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager)
+        return if (wifiMgr.isWifiEnabled) { // Wi-Fi adapter is ON
+            val wifiInfo = wifiMgr.connectionInfo
+            wifiInfo.networkId != -1 || getWiFiIpAddress().isNotEmpty()
+        } else {
+            false // Wi-Fi adapter is OFF
+        }
+    }
+
     override fun getConnectionStatus(): FileTransferConnection? {
         return fileTransferConnection
+    }
+
+    override fun getWiFiIpAddress(): String {
+        return WiFiReceiverManager.getInstance(context).getLocalIpAddress()
     }
 
     override fun addServerConnectionListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener) {
@@ -282,8 +311,7 @@ class ServerManager private constructor(val context: Context) :
     }
 
     override fun getPropsFile(): File {
-        val files =
-            File(ContextCompat.getExternalFilesDirs(context, null)[0].path + "/users.properties")
+        val files = File(ContextCompat.getExternalFilesDirs(context, null)[0].path + "/users.properties")
         if (!files.exists()) {
             try {
                 files.createNewFile()
@@ -316,7 +344,7 @@ class ServerManager private constructor(val context: Context) :
         }
     }
 
-    override fun setBoosted(isBoosting: Boolean) {
+    override fun setBoosted(isBoosting:Boolean){
         this.isBoosting = isBoosting
     }
 
