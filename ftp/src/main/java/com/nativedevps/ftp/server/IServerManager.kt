@@ -20,7 +20,6 @@ interface IServerManager {
     fun disconnect()
     fun pause()
     fun isStopped(): Boolean
-    fun getWiFiIpAddress(): String
     fun addServerConnectionListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener)
     fun clearListener(fileTransferServerConnectionListener: FileTransferServerConnectionListener)
     fun getPropsFile(): File
