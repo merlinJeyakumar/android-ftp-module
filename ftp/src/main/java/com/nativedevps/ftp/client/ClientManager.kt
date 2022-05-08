@@ -173,5 +173,4 @@ class ClientManager(
         this.credentialModel = credentialModel
         return this
     }
-
 }
