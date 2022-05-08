@@ -4,6 +4,7 @@ import android.content.Context
 import com.nativedevps.ftp.model.CredentialModel
 import com.support.utills.Log
 import org.apache.commons.net.ftp.FTP
+import org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPFile
 import org.apache.commons.net.ftp.FTPReply
@@ -44,6 +45,7 @@ class ClientManager(
             setState(ClientState.LOGGED_IN)
             ftp.controlEncoding = "UTF-8"
             setState(ClientState.FILES_RETRIEVING)
+            //ftp.setFileType(BINARY_FILE_TYPE)
             ftp.listFiles().toList().apply {
                 setState(ClientState.FILES_RETRIEVED)
                 callback(true, this, null)
