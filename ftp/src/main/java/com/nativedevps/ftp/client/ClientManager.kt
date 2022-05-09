@@ -11,6 +11,8 @@ import org.apache.commons.net.ftp.FTPReply
 import java.io.InputStream
 import java.io.OutputStream
 
+const val PREVIOUS_DIRECTORY = ".."
+
 class ClientManager(
     private val context: Context,
     private val clientStateCallback: ((ClientState) -> Unit)?,
@@ -81,19 +83,6 @@ class ClientManager(
                 callback(false, null, "Kindly retry unable to process")
             }
         }
-    }
-
-    /**
-     * Executes dot command with cwd (cwd..)
-     * lists out last directory contents
-     **/
-    override suspend fun prevPull(
-        fileName: String,
-        outputStream: OutputStream,
-        progress: ((Int) -> Unit)?,
-        callback: (Boolean, String?) -> Unit,
-    ) {
-        pull(fileName, outputStream, progress, callback)
     }
 
     /**

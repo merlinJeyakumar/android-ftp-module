@@ -22,12 +22,6 @@ abstract class IClientManager {
 
     abstract suspend fun login(callback: (Boolean, List<FTPFile>?, String?) -> Unit)
     abstract suspend fun cwd(fileName: String, callback: (Boolean, List<FTPFile>?, String?) -> Unit)
-    abstract suspend fun prevPull(
-        fileName: String,
-        outputStream: OutputStream,
-        progress: ((Int) -> Unit)?,
-        callback: (Boolean, String?) -> Unit,
-    )
 
     abstract suspend fun push(
         fileName: String,
