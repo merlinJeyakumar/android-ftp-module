@@ -39,4 +39,8 @@ class CredentialModel(
             return arrayOfNulls(size)
         }
     }
+
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
 }
