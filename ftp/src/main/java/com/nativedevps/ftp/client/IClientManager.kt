@@ -1,6 +1,8 @@
 package com.nativedevps.ftp.client
 
+import android.graphics.Bitmap
 import com.nativedevps.ftp.model.CredentialModel
+import com.nativedevps.ftp.model.FtpFileModel
 import org.apache.commons.net.ftp.FTPFile
 import java.io.InputStream
 import java.io.OutputStream
@@ -20,8 +22,8 @@ abstract class IClientManager {
         FILES_RETRIEVED
     }
 
-    abstract suspend fun login(callback: (Boolean, List<FTPFile>?, String?) -> Unit)
-    abstract suspend fun cwd(fileName: String, callback: (Boolean, List<FTPFile>?, String?) -> Unit)
+    abstract suspend fun login(callback: (Boolean, List<FtpFileModel>?, String?) -> Unit)
+    abstract suspend fun cwd(fileName: String, callback: (Boolean, List<FtpFileModel>?, String?) -> Unit)
 
     abstract suspend fun push(
         fileName: String,
@@ -32,4 +34,8 @@ abstract class IClientManager {
 
     abstract fun disconnect(callback: (Boolean, String?) -> Unit)
     abstract fun setCredentials(credentialModel: CredentialModel): ClientManager
+    abstract suspend fun getImageBitmap(
+        fileName: String,
+        callback: (Boolean, Bitmap?, String?) -> Unit
+    )
 }

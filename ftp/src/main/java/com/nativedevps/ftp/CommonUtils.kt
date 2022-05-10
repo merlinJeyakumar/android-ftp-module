@@ -1,11 +1,20 @@
 package com.nativedevps.ftp
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.net.wifi.WifiManager
 import androidx.appcompat.app.AppCompatActivity
 import com.support.device.connection.WiFiReceiverManager
+import com.support.inline.orElse
+import com.support.utills.file.getMimeTypeExtension
+import org.apache.commons.net.ftp.FTPClient
+import java.io.File
+import java.io.InputStream
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
+
 
 fun getWiFiIpAddress(context: Context): String {
     return WiFiReceiverManager.getInstance(context).getLocalIpAddress()
@@ -34,4 +43,64 @@ fun checkWifiOnAndConnected(context: Context): Boolean {
     } else {
         false // Wi-Fi adapter is OFF
     }
+}
+
+suspend fun decodeUriBitmapToSize(
+    context: Context,
+    uri: Uri,
+    maxImageSize: Int,
+): Bitmap? {
+    return context.contentResolver.openInputStream(uri)?.use { inputStream ->
+        decodeBitmapToSize(inputStream, maxImageSize)
+    }.orElse {
+        null
+    }
+}
+
+suspend fun decodeFileBitmapToSize(
+    file: File,
+    maxImageSize: Int,
+) {
+    file.inputStream().use { inputStream ->
+        decodeBitmapToSize(inputStream, maxImageSize)
+    }.orElse {
+        null
+    }
+}
+
+fun decodeBitmapToSize(
+    fis: InputStream,
+    maxImageSize: Int,
+): Bitmap? {
+    var b: Bitmap? = null
+    //Decode image size
+    val bitmapOptions = BitmapFactory.Options()
+    bitmapOptions.inJustDecodeBounds = true
+    bitmapOptions.inInputShareable = true;
+    bitmapOptions.inPurgeable = true;
+    BitmapFactory.decodeStream(fis, null, bitmapOptions)
+    var scale = 1
+    if (bitmapOptions.outHeight > maxImageSize || bitmapOptions.outWidth > maxImageSize) {
+        scale = Math.pow(
+            2.0,
+            Math.ceil(Math.log(maxImageSize / Math.max(
+                bitmapOptions.outHeight,
+                bitmapOptions.outWidth
+            ).toDouble()) / Math.log(0.5))
+        ).toInt()
+    }
+
+    //Decode with inSampleSize
+    val o2 = BitmapFactory.Options()
+    o2.inSampleSize = scale
+    b = BitmapFactory.decodeStream(fis, null, o2)
+    return b
+}
+
+fun getMime(filename: String): String? {
+    return getMimeTypeExtension(filename)
+}
+
+fun FTPClient.flushedInputStream(fileName:String): FlushedInputStream {
+    return FlushedInputStream(this.retrieveFileStream(fileName))
 }
