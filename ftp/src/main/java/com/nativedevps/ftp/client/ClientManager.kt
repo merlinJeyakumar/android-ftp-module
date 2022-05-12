@@ -2,13 +2,12 @@ package com.nativedevps.ftp.client
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import com.nativedevps.ftp.FlushedInputStream
+import com.nativedevps.ftp.Utilitsss.downloadSample
+import com.nativedevps.ftp.getFtpAddress
 import com.nativedevps.ftp.model.CredentialModel
 import com.nativedevps.ftp.model.FtpFileModel
 import com.support.utills.Log
 import org.apache.commons.net.ftp.FTP
-import org.apache.commons.net.ftp.FTP.BINARY_FILE_TYPE
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPFile
 import org.apache.commons.net.ftp.FTPReply
@@ -24,6 +23,7 @@ class ClientManager(
     private var ftpClient = FTPClient()
     lateinit var credentialModel: CredentialModel
     private var clientState: ClientState = ClientState.DISCONNECTED
+    private lateinit var baseAddress: String
 
     fun build(): IClientManager {
         return this
@@ -51,7 +51,9 @@ class ClientManager(
             setState(ClientState.LOGGED_IN)
             ftpClient.controlEncoding = "UTF-8"
             setState(ClientState.FILES_RETRIEVING)
-            ftpClient.setFileType(BINARY_FILE_TYPE)
+            //ftpClient.setFileType(BINARY_FILE_TYPE)
+            baseAddress = credentialModel.getFtpAddress()
+
             ftpClient.listFiles().toList().apply {
                 setState(ClientState.FILES_RETRIEVED)
                 callback(true, getFtpAsModel(this), null)
@@ -69,19 +71,20 @@ class ClientManager(
      **/
     override suspend fun cwd(
         fileName: String,
-        callback: (Boolean, List<FtpFileModel>?, String?) -> Unit
+        callback: (Boolean, List<FtpFileModel>?, String?) -> Unit,
     ) {
         if (isActiveConnection()) {
             try {
                 setState(ClientState.FILES_RETRIEVING)
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
                 val replyCode = ftpClient.cwd(fileName)
                 if (!FTPReply.isPositiveCompletion(replyCode)) {
                     callback(false, null, "Error in connection, code: $replyCode")
                     return
                 }
-                val files = ftpClient.listFiles()
+                val files = getFtpAsModel(ftpClient.listFiles().toList())
                 setState(ClientState.FILES_RETRIEVED)
-                callback(true, getFtpAsModel(files.toList()), null)
+                callback(true, files, null)
             } catch (e: Exception) {
                 e.printStackTrace()
                 callback(false, null, "Kindly retry unable to process")
@@ -174,11 +177,14 @@ class ClientManager(
         callback: (Boolean, Bitmap?, String?) -> Unit,
     ) {
         try {
-            val inputStream = FlushedInputStream(ftpClient.retrieveFileStream(fileName))
-            val bitmap = BitmapFactory.decodeStream(inputStream)
-            callback(true, bitmap, null)
+            ftpClient.retrieveFileStream(fileName).use {
+                val bitmap = downloadSample(it)
+                ftpClient.completePendingCommand()
+                callback(true, bitmap, null)
+            }
         } catch (e: Exception) {
             Log.e("getImageBitmap: " + e.localizedMessage)
+            ftpClient.completePendingCommand()
             callback(false, null, e.localizedMessage)
         }
     }
@@ -186,7 +192,7 @@ class ClientManager(
     private suspend fun getFtpAsModel(list: List<FTPFile>): List<FtpFileModel> {
         val ftpFileModel = mutableListOf<FtpFileModel>()
         for (ftpFile in list) {
-            ftpFileModel.add(FtpFileModel().build(ftpFile, ftpClient))
+            ftpFileModel.add(FtpFileModel().build(baseAddress, ftpFile, ftpClient))
         }
         return ftpFileModel.toList()
     }

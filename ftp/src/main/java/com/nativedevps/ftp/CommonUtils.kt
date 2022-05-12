@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.net.wifi.WifiManager
 import androidx.appcompat.app.AppCompatActivity
+import com.nativedevps.ftp.model.CredentialModel
 import com.support.device.connection.WiFiReceiverManager
 import com.support.inline.orElse
 import com.support.utills.file.getMimeTypeExtension
@@ -103,4 +104,12 @@ fun getMime(filename: String): String? {
 
 fun FTPClient.flushedInputStream(fileName:String): FlushedInputStream {
     return FlushedInputStream(this.retrieveFileStream(fileName))
+}
+
+fun CredentialModel.getFtpAddress(): String {
+    return if (isAuthenticated) {
+        "ftp://${this.userName}:${this.password}@${this.address}:${this.port}"
+    }else{
+        "ftp://${this.address}:${this.port}"
+    }
 }

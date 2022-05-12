@@ -1,10 +1,6 @@
 package com.nativedevps.ftp.model
 
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import com.nativedevps.ftp.decodeBitmapToSize
-import com.nativedevps.ftp.flushedInputStream
-import com.support.utills.Log
 import com.support.utills.file.FileType
 import com.support.utills.file.getFileType
 import org.apache.commons.net.ftp.FTPClient
@@ -22,11 +18,14 @@ class FtpFileModel {
     val size get() = ftpFile.size
 
     suspend fun build(
+        baseAddress: String,
         ftpFile: FTPFile,
         ftpClient: FTPClient,
     ): FtpFileModel {
         this.ftpFile = ftpFile
         this.fileType = getFileType(ftpFile.name)
+        this.filePath = "$baseAddress${ftpClient.printWorkingDirectory()}/${ftpFile.name}"
+
         when (this.fileType) {
             FileType.IMAGE -> {
                 /*try {
@@ -39,4 +38,10 @@ class FtpFileModel {
         }
         return this
     }
+
+
+}
+
+fun getFullPath(cd: String) {
+
 }
