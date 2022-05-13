@@ -6,7 +6,10 @@ import com.nativedevps.ftp.Utilitsss.downloadSample
 import com.nativedevps.ftp.getFtpAddress
 import com.nativedevps.ftp.model.CredentialModel
 import com.nativedevps.ftp.model.FtpFileModel
+import com.support.utills.GeneralUtils.getProgress
 import com.support.utills.Log
+import com.support.utills.file.copy
+import org.apache.commons.io.output.CountingOutputStream
 import org.apache.commons.net.ftp.FTP
 import org.apache.commons.net.ftp.FTPClient
 import org.apache.commons.net.ftp.FTPFile
@@ -51,7 +54,7 @@ class ClientManager(
             setState(ClientState.LOGGED_IN)
             ftpClient.controlEncoding = "UTF-8"
             setState(ClientState.FILES_RETRIEVING)
-            //ftpClient.setFileType(BINARY_FILE_TYPE)
+            ftpClient.cwd(credentialModel.initialPath)
             baseAddress = credentialModel.getFtpAddress()
 
             ftpClient.listFiles().toList().apply {
@@ -96,19 +99,32 @@ class ClientManager(
      * Executes cwd command
      * list a files in the directory
      **/
-    suspend fun pull(
+    override suspend fun pull(
         fileName: String,
         outputStream: OutputStream,
-        progress: ((Int) -> Unit)?,
+        progress: ((Int, Int, Int) -> Unit)?,
         callback: (Boolean, String?) -> Unit,
     ) {
         if (isActiveConnection()) {
             try {
-                progress?.invoke(0)
+                val cos: CountingOutputStream = object : CountingOutputStream(outputStream) {
+                    override fun beforeWrite(size: Int) {
+                        super.beforeWrite(size)
+                        progress?.invoke(
+                            getProgress(count, size),
+                            count,
+                            size
+                        )
+                        println("Downloaded $count/$size")
+                    }
+                }
+
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
-                ftpClient.retrieveFile(fileName, outputStream)
-                progress?.invoke(100)
+                copy(ftpClient.retrieveFileStream(fileName), cos)
+                callback(true, null)
+                ftpClient.completePendingCommand()
             } catch (e: Exception) {
+                ftpClient.completePendingCommand()
                 Log.e("disconnect " + e.localizedMessage)
                 callback(false, "Kindly retry unable to process")
             }
@@ -192,8 +208,21 @@ class ClientManager(
     private suspend fun getFtpAsModel(list: List<FTPFile>): List<FtpFileModel> {
         val ftpFileModel = mutableListOf<FtpFileModel>()
         for (ftpFile in list) {
-            ftpFileModel.add(FtpFileModel().build(baseAddress, ftpFile, ftpClient))
+            ftpFileModel.add(FtpFileModel().build(context, baseAddress, ftpFile, ftpClient))
         }
         return ftpFileModel.toList()
+    }
+
+
+    companion object {
+        private var clientManager: ClientManager? = null
+        open fun getInstance(
+            context: Context,
+            clientStateCallback: ((ClientState) -> Unit)?,
+        ): ClientManager {
+            return clientManager ?: (ClientManager(context, clientStateCallback).apply {
+                clientManager = this
+            })
+        }
     }
 }

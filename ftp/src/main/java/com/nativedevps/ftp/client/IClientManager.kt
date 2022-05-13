@@ -38,4 +38,11 @@ abstract class IClientManager {
         fileName: String,
         callback: (Boolean, Bitmap?, String?) -> Unit
     )
+
+    abstract suspend fun pull(
+        fileName: String,
+        outputStream: OutputStream,
+        progress: ((Int,Int,Int) -> Unit)?,
+        callback: (Boolean, String?) -> Unit
+    )
 }

@@ -1,6 +1,8 @@
 package com.nativedevps.ftp.model
 
+import android.content.Context
 import android.graphics.Bitmap
+import com.bumptech.glide.Glide
 import com.support.utills.file.FileType
 import com.support.utills.file.getFileType
 import org.apache.commons.net.ftp.FTPClient
@@ -10,7 +12,6 @@ class FtpFileModel {
     lateinit var ftpFile: FTPFile
     var filePath: String = ""
     var fileType: FileType = FileType.ELSE
-    var thumbnail: Bitmap? = null
     val fileName get() = ftpFile.name
     val createdOn get() = ftpFile.timestamp
     val uid get() = ftpFile.rawListing
@@ -18,6 +19,7 @@ class FtpFileModel {
     val size get() = ftpFile.size
 
     suspend fun build(
+        context: Context,
         baseAddress: String,
         ftpFile: FTPFile,
         ftpClient: FTPClient,
@@ -28,20 +30,13 @@ class FtpFileModel {
 
         when (this.fileType) {
             FileType.IMAGE -> {
-                /*try {
-                    ftpClient.flushedInputStream(ftpFile.name).use {
-                        thumbnail = BitmapFactory.decodeStream(it)
-                    }
-                } catch (e: Exception) {
-                }*/
+                //noop
             }
         }
         return this
     }
 
-
-}
-
-fun getFullPath(cd: String) {
-
+    fun getCredentialModel(): CredentialModel {
+        return CredentialModel().fromUrl(filePath)
+    }
 }

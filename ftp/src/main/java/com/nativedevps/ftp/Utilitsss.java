@@ -57,7 +57,7 @@ public class Utilitsss {
     public static Bitmap downloadSample(InputStream inputStream) {
         BitmapFactory.Options options = new BitmapFactory.Options();
 
-        options.inSampleSize = 200;
+        options.inSampleSize = calculateInSampleSize(options, 1200, 1200);
 
         return BitmapFactory.decodeStream(inputStream, null, options);
     }

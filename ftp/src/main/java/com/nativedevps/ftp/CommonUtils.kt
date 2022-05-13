@@ -10,6 +10,7 @@ import com.nativedevps.ftp.model.CredentialModel
 import com.support.device.connection.WiFiReceiverManager
 import com.support.inline.orElse
 import com.support.utills.file.getMimeTypeExtension
+import okhttp3.HttpUrl
 import org.apache.commons.net.ftp.FTPClient
 import java.io.File
 import java.io.InputStream
@@ -112,4 +113,9 @@ fun CredentialModel.getFtpAddress(): String {
     }else{
         "ftp://${this.address}:${this.port}"
     }
+}
+
+fun parseFtpUrl(): HttpUrl? {
+    val ftpUrl = "ftp://admin:admin@192.168.0.4:2020/DCIM/Camera/PANO_20220306_143231.vr.jpg"
+    return HttpUrl.parse(ftpUrl)
 }
