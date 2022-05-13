@@ -213,7 +213,6 @@ class ClientManager(
         return ftpFileModel.toList()
     }
 
-
     companion object {
         private var clientManager: ClientManager? = null
         open fun getInstance(
