@@ -18,12 +18,17 @@ abstract class IClientManager {
         CONNECTED,
         LOGGING,
         LOGGED_IN,
+        CACHE_RETRIEVED,
         FILES_RETRIEVING,
         FILES_RETRIEVED
     }
 
     abstract suspend fun login(callback: (Boolean, List<FtpFileModel>?, String?) -> Unit)
-    abstract suspend fun cwd(fileName: String, callback: (Boolean, List<FtpFileModel>?, String?) -> Unit)
+    abstract suspend fun cwd(
+        fileName: String,
+        cacheCallback: ((List<FtpFileModel>?)->Unit)?,
+        callback: (Boolean, List<FtpFileModel>?, String?) -> Unit,
+    )
 
     abstract suspend fun push(
         fileName: String,

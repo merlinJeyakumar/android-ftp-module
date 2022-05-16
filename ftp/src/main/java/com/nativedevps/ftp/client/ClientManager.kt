@@ -3,6 +3,7 @@ package com.nativedevps.ftp.client
 import android.content.Context
 import android.graphics.Bitmap
 import com.nativedevps.ftp.Utilitsss.downloadSample
+import com.nativedevps.ftp.client.cache.FilesCache
 import com.nativedevps.ftp.getFtpAddress
 import com.nativedevps.ftp.model.CredentialModel
 import com.nativedevps.ftp.model.FtpFileModel
@@ -27,6 +28,7 @@ class ClientManager(
     lateinit var credentialModel: CredentialModel
     private var clientState: ClientState = ClientState.DISCONNECTED
     private lateinit var baseAddress: String
+    private var filesCache = FilesCache()
 
     fun build(): IClientManager {
         return this
@@ -56,10 +58,13 @@ class ClientManager(
             setState(ClientState.FILES_RETRIEVING)
             ftpClient.cwd(credentialModel.initialPath)
             baseAddress = credentialModel.getFtpAddress()
-
+            filesCache.dump()
             ftpClient.listFiles().toList().apply {
                 setState(ClientState.FILES_RETRIEVED)
-                callback(true, getFtpAsModel(this), null)
+                val ftpModelList = getFtpAsModel(this)
+
+                cacheFiles(ftpModelList)
+                callback(true, ftpModelList, null)
             }
         } catch (e: Exception) {
             Log.e(e.localizedMessage)
@@ -74,11 +79,32 @@ class ClientManager(
      **/
     override suspend fun cwd(
         fileName: String,
+        cacheCallback: ((List<FtpFileModel>?) -> Unit)?,
         callback: (Boolean, List<FtpFileModel>?, String?) -> Unit,
     ) {
         if (isActiveConnection()) {
             try {
-                setState(ClientState.FILES_RETRIEVING)
+                if (fileName == PREVIOUS_DIRECTORY) {
+                    if (isInitialPath()) {
+                        setState(ClientState.FILES_RETRIEVED)
+                        callback(true, getLastElement(), null)
+                        return
+                    }
+                    getLastElement()?.let {
+                        setState(ClientState.CACHE_RETRIEVED)
+                        cacheCallback?.invoke(it)
+                        Log.e("JeyK", "FilePath ${it[0].filePath}")
+                    }
+                } else {
+                    retrieveCachedFiles(fileName)?.let {
+                        setState(ClientState.CACHE_RETRIEVED)
+                        cacheCallback?.invoke(it)
+                        Log.e("JeyK", "FilePath ${it[0].filePath}")
+                    }
+                }
+                if (clientState != ClientState.CACHE_RETRIEVED) {
+                    setState(ClientState.FILES_RETRIEVING)
+                }
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
                 val replyCode = ftpClient.cwd(fileName)
                 if (!FTPReply.isPositiveCompletion(replyCode)) {
@@ -86,7 +112,11 @@ class ClientManager(
                     return
                 }
                 val files = getFtpAsModel(ftpClient.listFiles().toList())
+                cacheFiles(files)
                 setState(ClientState.FILES_RETRIEVED)
+                if (fileName == PREVIOUS_DIRECTORY) {
+                    filesCache.moveCursorTop()
+                }
                 callback(true, files, null)
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -211,6 +241,22 @@ class ClientManager(
             ftpFileModel.add(FtpFileModel().build(context, baseAddress, ftpFile, ftpClient))
         }
         return ftpFileModel.toList()
+    }
+
+    private fun cacheFiles(list: List<FtpFileModel>) {
+        filesCache.pushElement(ftpClient.printWorkingDirectory(), list)
+    }
+
+    private fun retrieveCachedFiles(path: String): List<FtpFileModel>? {
+        return filesCache.getElement("${ftpClient.printWorkingDirectory()}/$path")
+    }
+
+    private fun getLastElement(): List<FtpFileModel>? {
+        return filesCache.getLastElement()
+    }
+
+    private fun isInitialPath(): Boolean {
+        return credentialModel.initialPath == ftpClient.printWorkingDirectory()
     }
 
     companion object {

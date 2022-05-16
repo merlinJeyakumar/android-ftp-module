@@ -14,7 +14,7 @@ class FtpFileModel {
     var fileType: FileType = FileType.ELSE
     val fileName get() = ftpFile.name
     val createdOn get() = ftpFile.timestamp
-    val uid get() = ftpFile.rawListing
+    val uid get() = filePath
     val isDirectory get() = ftpFile.isDirectory
     val size get() = ftpFile.size
 
