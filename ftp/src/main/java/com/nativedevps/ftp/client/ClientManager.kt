@@ -4,9 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import com.nativedevps.ftp.Utilitsss.downloadSample
 import com.nativedevps.ftp.client.cache.FilesCache
-import com.nativedevps.ftp.getFtpAddress
-import com.nativedevps.ftp.model.CredentialModel
 import com.nativedevps.ftp.model.FtpFileModel
+import com.nativedevps.ftp.model.FtpUrlModel
 import com.support.utills.GeneralUtils.getProgress
 import com.support.utills.Log
 import com.support.utills.file.copy
@@ -25,10 +24,11 @@ class ClientManager(
     private val clientStateCallback: ((ClientState) -> Unit)?,
 ) : IClientManager() {
     private var ftpClient = FTPClient()
-    lateinit var credentialModel: CredentialModel
+    lateinit var ftpUrlModel: FtpUrlModel
     private var clientState: ClientState = ClientState.DISCONNECTED
     private lateinit var baseAddress: String
     private var filesCache = FilesCache()
+    private var currentDirectory: FtpUrlModel? = null
 
     fun build(): IClientManager {
         return this
@@ -42,7 +42,7 @@ class ClientManager(
     override suspend fun login(callback: (Boolean, List<FtpFileModel>?, String?) -> Unit) {
         try {
             setState(ClientState.CONNECTING)
-            ftpClient.connect(credentialModel.address ?: "", credentialModel.port?.toInt() ?: 0)
+            ftpClient.connect(ftpUrlModel.address ?: "", ftpUrlModel.port?.toInt() ?: 0)
             setState(ClientState.CONNECTED)
             val replyCode = ftpClient.replyCode
             if (!FTPReply.isPositiveCompletion(replyCode)) {
@@ -52,16 +52,18 @@ class ClientManager(
                 return
             }
             setState(ClientState.LOGGING)
-            ftpClient.login(credentialModel.userName, credentialModel.password)
+            ftpClient.login(ftpUrlModel.userName, ftpUrlModel.password)
             setState(ClientState.LOGGED_IN)
             ftpClient.controlEncoding = "UTF-8"
             setState(ClientState.FILES_RETRIEVING)
-            ftpClient.cwd(credentialModel.initialPath)
-            baseAddress = credentialModel.getFtpAddress()
+            ftpClient.changeWorkingDirectory(ftpUrlModel.initialPath)
+            baseAddress = ftpUrlModel.ftpBaseAddress
             filesCache.dump()
             ftpClient.listFiles().toList().apply {
                 setState(ClientState.FILES_RETRIEVED)
-                val ftpModelList = getFtpAsModel(this)
+                val ftpModelList = getFtpAsModel(this).apply {
+                    currentDirectory = FtpUrlModel.fromUrl(first().ftpAddress)
+                }
 
                 cacheFiles(ftpModelList)
                 callback(true, ftpModelList, null)
@@ -78,50 +80,49 @@ class ClientManager(
      * set current directory and list out it files
      **/
     override suspend fun cwd(
-        fileName: String,
+        path: String,
         cacheCallback: ((List<FtpFileModel>?) -> Unit)?,
         callback: (Boolean, List<FtpFileModel>?, String?) -> Unit,
     ) {
         if (isActiveConnection()) {
             try {
-                if (fileName == PREVIOUS_DIRECTORY) {
-                    if (isInitialPath()) {
-                        setState(ClientState.FILES_RETRIEVED)
-                        callback(true, getLastElement(), null)
-                        return
-                    }
-                    getLastElement()?.let {
-                        setState(ClientState.CACHE_RETRIEVED)
-                        cacheCallback?.invoke(it)
-                        Log.e("JeyK", "FilePath ${it[0].filePath}")
-                    }
-                } else {
-                    retrieveCachedFiles(fileName)?.let {
-                        setState(ClientState.CACHE_RETRIEVED)
-                        cacheCallback?.invoke(it)
-                        Log.e("JeyK", "FilePath ${it[0].filePath}")
-                    }
+                Log.e("TAG", "CurrentDirectory: $currentDirectory")
+                Log.e("TAG", "Path: $path")
+
+                val urlModel = getFtpUrlModel(path)!!
+                retrieveCachedFiles(urlModel)?.let {
+                    setState(ClientState.CACHE_RETRIEVED)
+                    cacheCallback?.invoke(it)
                 }
                 if (clientState != ClientState.CACHE_RETRIEVED) {
                     setState(ClientState.FILES_RETRIEVING)
                 }
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE)
-                val replyCode = ftpClient.cwd(fileName)
-                if (!FTPReply.isPositiveCompletion(replyCode)) {
-                    callback(false, null, "Error in connection, code: $replyCode")
+                if (!ftpClient.changeWorkingDirectory(urlModel.getRawPath())) {
+                    callback(false, null, "unable to change directory")
                     return
                 }
-                val files = getFtpAsModel(ftpClient.listFiles().toList())
+                val files = getFtpAsModel(ftpClient.listFiles().toList()).apply {
+                    currentDirectory = getFtpUrlModel(firstOrNull()?.ftpAddress) ?: currentDirectory
+                }
                 cacheFiles(files)
                 setState(ClientState.FILES_RETRIEVED)
-                if (fileName == PREVIOUS_DIRECTORY) {
+                /*if (path == PREVIOUS_DIRECTORY) { //noop
                     filesCache.moveCursorTop()
-                }
+                }*/
                 callback(true, files, null)
             } catch (e: Exception) {
                 e.printStackTrace()
                 callback(false, null, "Kindly retry unable to process")
             }
+        }
+    }
+
+    private fun getFtpUrlModel(path: String?): FtpUrlModel? {
+        return if (path == PREVIOUS_DIRECTORY) {
+            FtpUrlModel.fromUrl(currentDirectory?.previousPathAddress ?: ftpUrlModel.initialPath!!) //fixme: previous not working as expected
+        } else {
+            path?.let { FtpUrlModel.fromUrl(it) }
         }
     }
 
@@ -187,6 +188,7 @@ class ClientManager(
 
     private fun setState(clientState: ClientState) {
         this.clientState = clientState
+        Log.e("ClientState: ${clientState.name}")
         clientStateCallback?.invoke(clientState)
     }
 
@@ -213,8 +215,8 @@ class ClientManager(
         }
     }
 
-    override fun setCredentials(credentialModel: CredentialModel): ClientManager {
-        this.credentialModel = credentialModel
+    override fun setCredentials(ftpUrlModel: FtpUrlModel): ClientManager {
+        this.ftpUrlModel = ftpUrlModel
         return this
     }
 
@@ -244,19 +246,22 @@ class ClientManager(
     }
 
     private fun cacheFiles(list: List<FtpFileModel>) {
-        filesCache.pushElement(ftpClient.printWorkingDirectory(), list)
+        currentDirectory?.let { filesCache.pushElement(it, list) } //fixme:
     }
 
-    private fun retrieveCachedFiles(path: String): List<FtpFileModel>? {
-        return filesCache.getElement("${ftpClient.printWorkingDirectory()}/$path")
+    private fun retrieveCachedFiles(path: FtpUrlModel): List<FtpFileModel>? {
+        return filesCache.getElement(path)
     }
 
-    private fun getLastElement(): List<FtpFileModel>? {
-        return filesCache.getLastElement()
+    override fun dump(){
+        ftpClient.disconnect()
+        setState(ClientState.DISCONNECTED)
+        currentDirectory = null
+        filesCache.dump()
     }
 
     private fun isInitialPath(): Boolean {
-        return credentialModel.initialPath == ftpClient.printWorkingDirectory()
+        return ftpUrlModel.initialPath == ftpClient.printWorkingDirectory()
     }
 
     companion object {

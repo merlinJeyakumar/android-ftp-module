@@ -1,16 +1,16 @@
 package com.nativedevps.ftp
 
 import android.content.Context
+import android.content.Context.WIFI_SERVICE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.net.wifi.WifiManager
 import androidx.appcompat.app.AppCompatActivity
-import com.nativedevps.ftp.model.CredentialModel
+import com.nativedevps.ftp.model.FtpUrlModel
 import com.support.device.connection.WiFiReceiverManager
 import com.support.inline.orElse
 import com.support.utills.file.getMimeTypeExtension
-import okhttp3.HttpUrl
 import org.apache.commons.net.ftp.FTPClient
 import java.io.File
 import java.io.InputStream
@@ -25,7 +25,7 @@ fun getWiFiIpAddress(context: Context): String {
 @Throws(InvocationTargetException::class, IllegalAccessException::class)
 fun wifiHotspotEnabled(context: Context): Boolean {
     val manager =
-        context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager
+        context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
     var method: Method? = null
     try {
         method = manager.javaClass.getDeclaredMethod("isWifiApEnabled")
@@ -38,7 +38,7 @@ fun wifiHotspotEnabled(context: Context): Boolean {
 
 fun checkWifiOnAndConnected(context: Context): Boolean {
     val wifiMgr =
-        (context.applicationContext.getSystemService(AppCompatActivity.WIFI_SERVICE) as WifiManager)
+        (context.applicationContext.getSystemService(WIFI_SERVICE) as WifiManager)
     return if (wifiMgr.isWifiEnabled) { // Wi-Fi adapter is ON
         val wifiInfo = wifiMgr.connectionInfo
         wifiInfo.networkId != -1 || getWiFiIpAddress(context).isNotEmpty()
@@ -105,17 +105,4 @@ fun getMime(filename: String): String? {
 
 fun FTPClient.flushedInputStream(fileName:String): FlushedInputStream {
     return FlushedInputStream(this.retrieveFileStream(fileName))
-}
-
-fun CredentialModel.getFtpAddress(): String {
-    return if (isAuthenticated) {
-        "ftp://${this.userName}:${this.password}@${this.address}:${this.port}"
-    }else{
-        "ftp://${this.address}:${this.port}"
-    }
-}
-
-fun parseFtpUrl(): HttpUrl? {
-    val ftpUrl = "ftp://admin:admin@192.168.0.4:2020/DCIM/Camera/PANO_20220306_143231.vr.jpg"
-    return HttpUrl.parse(ftpUrl)
 }

@@ -7,7 +7,7 @@ import androidx.annotation.NonNull;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.data.DataFetcher;
-import com.nativedevps.ftp.model.CredentialModel;
+import com.nativedevps.ftp.model.FtpUrlModel;
 import com.nativedevps.ftp.model.FtpFileModel;
 
 import org.apache.commons.net.ftp.FTP;
@@ -21,7 +21,7 @@ import java.io.InputStream;
 
 
 public class FTPDataFetcher implements DataFetcher<InputStream> {
-    private final CredentialModel model;
+    private final FtpUrlModel model;
     private final FtpFileModel ftpFileModel;
     private InputStream stream;
     FTPClient ftpClient;
@@ -76,7 +76,7 @@ public class FTPDataFetcher implements DataFetcher<InputStream> {
                 ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             }
             // 先判断服务器文件是否存在
-            FTPFile[] files = ftpClient.listFiles(ftpFileModel.getFilePath());
+            FTPFile[] files = ftpClient.listFiles(ftpFileModel.getFtpAddress());
             if (files.length == 0 || !files[0].isFile()) {
                 Log.d("", "文件不存在");
             }
@@ -84,7 +84,7 @@ public class FTPDataFetcher implements DataFetcher<InputStream> {
             ftpClient.enterLocalPassiveMode();
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-            stream = ftpClient.retrieveFileStream(ftpFileModel.getFilePath());
+            stream = ftpClient.retrieveFileStream(ftpFileModel.getFtpAddress());
             callback.onDataReady(stream);
 
         } catch (Exception ex) {

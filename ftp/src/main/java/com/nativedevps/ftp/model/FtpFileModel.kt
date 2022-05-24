@@ -1,8 +1,7 @@
 package com.nativedevps.ftp.model
 
 import android.content.Context
-import android.graphics.Bitmap
-import com.bumptech.glide.Glide
+import android.net.Uri
 import com.support.utills.file.FileType
 import com.support.utills.file.getFileType
 import org.apache.commons.net.ftp.FTPClient
@@ -10,11 +9,12 @@ import org.apache.commons.net.ftp.FTPFile
 
 class FtpFileModel {
     lateinit var ftpFile: FTPFile
+    var ftpAddress: String = ""
     var filePath: String = ""
     var fileType: FileType = FileType.ELSE
     val fileName get() = ftpFile.name
     val createdOn get() = ftpFile.timestamp
-    val uid get() = filePath
+    val uid get() = ftpAddress
     val isDirectory get() = ftpFile.isDirectory
     val size get() = ftpFile.size
 
@@ -26,7 +26,8 @@ class FtpFileModel {
     ): FtpFileModel {
         this.ftpFile = ftpFile
         this.fileType = getFileType(ftpFile.name)
-        this.filePath = "$baseAddress${ftpClient.printWorkingDirectory()}/${ftpFile.name}"
+        this.ftpAddress = "$baseAddress${ftpClient.printWorkingDirectory()}/${ftpFile.name}"
+        this.filePath = "${ftpClient.printWorkingDirectory()}/${ftpFile.name}"
 
         when (this.fileType) {
             FileType.IMAGE -> {
@@ -36,7 +37,7 @@ class FtpFileModel {
         return this
     }
 
-    fun getCredentialModel(): CredentialModel {
-        return CredentialModel().fromUrl(filePath)
+    fun getCredentialModel(): FtpUrlModel {
+        return FtpUrlModel.fromUrl(ftpAddress)
     }
 }
