@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="remote_developer_detail">developer_detail</string>
+    <string name="remote_dev_dynamic_link">developer_dynamic_link</string>
+</resources>

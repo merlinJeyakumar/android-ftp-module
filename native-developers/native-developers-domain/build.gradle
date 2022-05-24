@@ -1,0 +1,57 @@
+apply plugin: 'com.android.library'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-kapt'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'org.jetbrains.kotlin.android.extensions'
+
+
+android {
+    compileSdkVersion versions.compile_sdk
+
+
+    defaultConfig {
+        minSdkVersion versions.min_sdk
+        targetSdkVersion versions.target_sdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            useProguard true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+androidExtensions {
+    experimental = true
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    api project(path: ':support')
+
+    api rxJavaDependencies.values()
+    api networkDependencies.values()
+    api workManagerDependencies.values()
+    api roomDependencies.values()
+    kapt kaptProcessorDep.room_compiler
+    api libraries.facebook_stetho
+    api libraries.okhttp3_stetho
+    api jodaTimeDependencies.values()
+    api basicLibraries.gson_lib
+    api commonDependencies.paging_runtime
+    api commonDependencies.paging_rxjava2
+    api libraries.phoneUtils
+}
