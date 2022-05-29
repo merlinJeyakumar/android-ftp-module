@@ -53,12 +53,14 @@ class ClientManager(
             }
             setState(ClientState.LOGGING)
             ftpClient.login(ftpUrlModel.userName, ftpUrlModel.password)
+            ftpClient.enterLocalPassiveMode()
             setState(ClientState.LOGGED_IN)
             ftpClient.controlEncoding = "UTF-8"
             setState(ClientState.FILES_RETRIEVING)
-            ftpClient.changeWorkingDirectory(ftpUrlModel.initialPath)
+            if (!ftpClient.changeWorkingDirectory(ftpUrlModel.initialPath)) {
+                callback(false, null, "Unable to change directory, code: x101")
+            }
             baseAddress = ftpUrlModel.ftpBaseAddress
-            filesCache.dump()
             ftpClient.listFiles().toList().apply {
                 setState(ClientState.FILES_RETRIEVED)
                 val ftpModelList = getFtpAsModel(this).apply {
@@ -115,6 +117,8 @@ class ClientManager(
                 e.printStackTrace()
                 callback(false, null, "Kindly retry unable to process")
             }
+        }else{
+            callback(false,null,"Kindly retry, connection is inactive")
         }
     }
 

@@ -112,7 +112,7 @@ class FtpUrlModel : Parcelable {
         var directory = ""
         Uri.parse(ftpAddress)
             .pathSegments?.toMutableList()?.let {
-                if (prev) it.dropLast(1) else it
+                if (prev) it.dropLast(2) else it
             }?.map { directory = "$directory/$it" }
 
         return ftpBaseAddress + directory.ifEmpty { "/" }
